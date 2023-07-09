@@ -26,6 +26,15 @@ buildscript {
     }
 }
 
+val env = loadEnv()
+
+val mod_id: String by extra
+val mod_name: String by extra
+val mod_author: String by extra
+val mod_version: String by extra
+val repository: String by extra
+val artifact_group: String by extra
+
 fun Project.java(block: JavaPluginExtension.() -> Unit) =
     extensions.getByType<JavaPluginExtension>().apply(block)
 
@@ -49,15 +58,6 @@ fun Project.loadEnv(fileName: String = ".env"): ProjectEnvironment {
 allprojects {
     apply(plugin = "java")
     apply(plugin = "maven-publish")
-
-    val env = loadEnv()
-
-    val mod_id: String by extra
-    val mod_name: String by extra
-    val mod_author: String by extra
-    val mod_version: String by extra
-    val repository: String by extra
-    val artifact_group: String by extra
 
     java {
         toolchain {
@@ -150,32 +150,32 @@ allprojects {
             )
         }
     }
+}
 
-    ext["enablePublishing"] = { id: String ->
-        publishing {
-            repositories {
-                maven {
-                    name = "GitHubPackages"
-                    url = uri("https://maven.pkg.github.com/${repository}")
-                    version = mod_version
-                    credentials {
-                        username = env["GITHUB_ACTOR"]
-                        password = env["GITHUB_TOKEN"]
-                    }
+fun Project.enablePublishing(id: String  = mod_id) {
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/${repository}")
+                version = mod_version
+                credentials {
+                    username = env["GITHUB_ACTOR"]
+                    password = env["GITHUB_TOKEN"]
                 }
             }
-            publications {
-                create<MavenPublication>("gpr") {
-                    groupId = artifact_group
-                    artifactId = "${mod_id}-${project.name}"
-                    version = mod_version
-                    from(components["java"])
+        }
+        publications {
+            create<MavenPublication>("gpr") {
+                groupId = artifact_group
+                artifactId = "${mod_id}-${project.name}"
+                version = mod_version
+                from(components["java"])
 
-                    pom.withXml {
-                        val node = asNode()
-                        val list = node.get("dependencies") as NodeList
-                        list.forEach { node.remove(it as Node) }
-                    }
+                pom.withXml {
+                    val node = asNode()
+                    val list = node.get("dependencies") as NodeList
+                    list.forEach { node.remove(it as Node) }
                 }
             }
         }
