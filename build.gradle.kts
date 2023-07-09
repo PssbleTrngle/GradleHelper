@@ -1,6 +1,6 @@
 import groovy.util.Node
 import groovy.util.NodeList
-import org.gradle.internal.impldep.org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 
 buildscript {
     repositories {
