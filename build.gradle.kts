@@ -59,12 +59,6 @@ allprojects {
     val repository: String by extra
     val artifact_group: String by extra
 
-    ext["enableKotlin"] = {
-        apply(plugin = "org.jetbrains.kotlin.jvm")
-    }
-
-    ext["env"] = { loadEnv() }
-
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(17))
