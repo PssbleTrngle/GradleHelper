@@ -2,14 +2,26 @@ package com.possible_triangle.gradle.features.publishing
 
 import com.modrinth.minotaur.Minotaur
 import com.modrinth.minotaur.ModrinthExtension
+import com.possible_triangle.gradle.features.loaders.ModLoader
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
+private class ModrinthExtensionImpl(project: Project) : UploadExtensionImpl(project) {
+    override val platform = "modrinth"
+
+    override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
+        when(loader) {
+            ModLoader.FORGE -> required("ordsPcFz")
+            ModLoader.FABRIC -> required("Ha28R6CL")
+        }
+    }
+}
+
 fun Project.uploadToModrinth(block: UploadExtension.() -> Unit = {}) {
     apply<Minotaur>()
 
-    val uploadInfo = UploadExtensionImpl(this, "modrinth").apply(block).buildIfToken() ?: return run {
+    val uploadInfo = ModrinthExtensionImpl(this).apply(block).buildIfToken() ?: return run {
         logger.warn("No modrinth token set, minotaur will not be configured")
     }
 

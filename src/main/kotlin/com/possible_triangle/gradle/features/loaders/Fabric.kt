@@ -1,6 +1,5 @@
 package com.possible_triangle.gradle.features.loaders
 
-import com.possible_triangle.gradle.features.publishing.UploadExtension
 import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.LoomGradlePlugin
 import net.fabricmc.loom.LoomRepositoryPlugin
@@ -21,7 +20,7 @@ interface FabricExtension : LoaderExtension, OutgoingProjectExtension {
     fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency)
 }
 
-private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project, "forge"), FabricExtension {
+private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project), FabricExtension {
     override var loaderVersion: String? = project.stringProperty("fabric_loader_version")
     override var apiVersion: String? = project.stringProperty("fabric_api_version")
     override var kotlinFabricVersion: String? = project.stringProperty("kotlin_fabric_version")
@@ -39,18 +38,6 @@ private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionIm
     override fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency) {
         this.mappingsSupplier = supplier
     }
-
-    override fun UploadExtension.configureCurseforge() {
-        if (kotlinFabricVersion != null) dependencies {
-            required("fabric-language-kotlin")
-        }
-    }
-
-    override fun UploadExtension.configureModrinth() {
-        if (kotlinFabricVersion != null) dependencies {
-            required("Ha28R6CL")
-        }
-    }
 }
 
 private class FixedLoomPlugin : Plugin<Project> {
@@ -65,6 +52,8 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
     apply<FixedLoomPlugin>()
 
     val config = FabricExtensionImpl(this).apply(block)
+
+    if(config.enabledDataGen) configureDatagen()
 
     configureOutputProject(config)
 

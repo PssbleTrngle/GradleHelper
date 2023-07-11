@@ -22,3 +22,7 @@ fun Project.enableKotlin() = allprojects {
         add("implementation", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     }
 }
+
+internal fun Project.detectKotlin(): Boolean {
+    return plugins.findPlugin(KotlinPlatformJvmPlugin::class.java) != null
+}

@@ -43,8 +43,8 @@ private fun Project.modDependency(
     type: String,
     dependencyNotation: Any,
 ): Dependency? {
-    val fg = extensions.findByType<DependencyManagementExtension>()
-    return if (fg != null) dependencies.add(type, dependencyNotation)?.let { fg.deobf(it) }
+    val loader = detectModLoader()
+    return if (loader == ModLoader.FORGE) dependencies.add(type, dependencyNotation)?.let { fg.deobf(it) }
     else dependencies.add("mod${type.capitalized()}", dependencyNotation)
 }
 

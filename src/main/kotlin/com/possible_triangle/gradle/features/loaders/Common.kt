@@ -38,14 +38,14 @@ fun Project.setupCommon(block: CommonExtension.() -> Unit) {
             add("implementation", it)
         }
     }
-
-    if (this == dataGenProject) {
-        mainSourceSet.resources {
-            srcDir(datagenOutput)
-        }
-    }
 }
 
 internal val Project.dataGenProject get() = if (isSubProject) project(":common") else this
 
 internal val Project.datagenOutput get() = dataGenProject.file("src/generated/resources")
+
+internal fun Project.configureDatagen() {
+    dataGenProject.mainSourceSet.resources {
+        srcDir(datagenOutput)
+    }
+}

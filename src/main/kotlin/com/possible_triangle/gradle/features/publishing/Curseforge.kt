@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle.features.publishing
 
+import com.possible_triangle.gradle.features.loaders.ModLoader
 import net.darkhax.curseforgegradle.Constants
 import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
@@ -8,10 +9,21 @@ import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
 
+private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(project) {
+    override val platform = "curseforge"
+
+    override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
+        when(loader) {
+            ModLoader.FORGE -> required("kotlin-for-forge")
+            ModLoader.FABRIC -> required("fabric-language-kotlin")
+        }
+    }
+}
+
 fun Project.uploadToCurseforge(block: UploadExtension.() -> Unit = {}) {
     apply<CurseForgeGradlePlugin>()
 
-    val uploadInfo = UploadExtensionImpl(this, "curseforge").apply(block).buildIfToken() ?: return run {
+    val uploadInfo = CurseForgeExtensionImpl(this).apply(block).buildIfToken() ?: return run {
         logger.warn("No curseforge token set, cursegradle will not be configured")
     }
 

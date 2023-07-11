@@ -1,17 +1,13 @@
 package com.possible_triangle.gradle.features.loaders
 
-import com.possible_triangle.gradle.features.publishing.UploadExtension
-import com.possible_triangle.gradle.features.publishing.uploadToCurseforge
-import com.possible_triangle.gradle.features.publishing.uploadToModrinth
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.minecraftforge.gradle.userdev.DependencyManagementExtension
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.mod
-import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 interface LoaderExtension {
@@ -44,34 +40,13 @@ internal val Project.mainSourceSet: SourceSet
 val Project.isSubProject: Boolean get() = rootProject != project
 
 interface OutgoingProjectExtension {
-    fun uploadToCurseforge(block: UploadExtension.() -> Unit = {})
-    fun uploadToModrinth(block: UploadExtension.() -> Unit = {})
     fun enableMixins()
 }
 
-internal sealed class OutgoingProjectExtensionImpl(
-    private val project: Project,
-    private val loader: String,
-) : LoaderExtensionImpl(project), OutgoingProjectExtension {
+internal sealed class OutgoingProjectExtensionImpl(project: Project) : LoaderExtensionImpl(project),
+    OutgoingProjectExtension {
     var mixinsEnabled: Boolean = false
         private set
-
-    protected open fun UploadExtension.configureCurseforge() {}
-    protected open fun UploadExtension.configureModrinth() {}
-
-    override fun uploadToCurseforge(block: UploadExtension.() -> Unit) =
-        project.uploadToCurseforge {
-            modLoaders = setOf(loader)
-            configureCurseforge()
-            block()
-        }
-
-    override fun uploadToModrinth(block: UploadExtension.() -> Unit) =
-        project.uploadToModrinth {
-            modLoaders = setOf(loader)
-            configureModrinth()
-            block()
-        }
 
     override fun enableMixins() {
         mixinsEnabled = true
@@ -96,5 +71,17 @@ internal fun Project.configureOutputProject(config: OutgoingProjectExtensionImpl
         config.dependsOn.forEach {
             source(it.mainSourceSet.allSource)
         }
+    }
+}
+
+internal enum class ModLoader {
+    FORGE, FABRIC
+}
+
+internal fun Project.detectModLoader(): ModLoader? {
+    return extensions.findByType<DependencyManagementExtension>()?.let {
+        ModLoader.FORGE
+    } ?: extensions.findByType<LoomGradleExtensionAPI>()?.let {
+        ModLoader.FABRIC
     }
 }

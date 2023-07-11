@@ -1,6 +1,5 @@
 package com.possible_triangle.gradle.features.loaders
 
-import com.possible_triangle.gradle.features.publishing.UploadExtension
 import com.possible_triangle.gradle.stringProperty
 import net.minecraftforge.gradle.common.util.MinecraftExtension
 import net.minecraftforge.gradle.userdev.UserDevPlugin
@@ -22,7 +21,7 @@ interface ForgeExtension : LoaderExtension, OutgoingProjectExtension {
     fun dataGen(existingMods: Collection<String> = emptySet())
 }
 
-private class ForgeExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project, "forge"),
+private class ForgeExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project),
     ForgeExtension {
     override var mappingChannel: String = "official"
     override var mappingVersion: String? = null
@@ -39,24 +38,14 @@ private class ForgeExtensionImpl(project: Project) : OutgoingProjectExtensionImp
         enabledDataGen = true
         this.existingMods = existingMods
     }
-
-    override fun UploadExtension.configureCurseforge() {
-        if (kotlinForgeVersion != null) dependencies {
-            required("kotlin-for-forge")
-        }
-    }
-
-    override fun UploadExtension.configureModrinth() {
-        if (kotlinForgeVersion != null) dependencies {
-            required("ordsPcFz")
-        }
-    }
 }
 
 fun Project.setupForge(block: ForgeExtension.() -> Unit) {
     apply<UserDevPlugin>()
 
     val config = ForgeExtensionImpl(this).apply(block)
+
+    if(config.enabledDataGen) configureDatagen()
 
     configureOutputProject(config)
 
