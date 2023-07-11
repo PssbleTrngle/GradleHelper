@@ -18,7 +18,7 @@ private class ModrinthExtensionImpl(project: Project) : UploadExtensionImpl(proj
     }
 }
 
-fun Project.uploadToModrinth(block: UploadExtension.() -> Unit = {}) {
+fun Project.enableMinotaur(block: UploadExtension.() -> Unit) {
     apply<Minotaur>()
 
     val uploadInfo = ModrinthExtensionImpl(this).apply(block).buildIfToken() ?: return run {

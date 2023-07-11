@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.gradle.kotlin.dsl
 
 import com.possible_triangle.gradle.ModExtension
@@ -7,9 +9,7 @@ import com.possible_triangle.gradle.features.addModrinthMaven
 import com.possible_triangle.gradle.features.configureSonarQube
 import com.possible_triangle.gradle.features.enableKotlin
 import com.possible_triangle.gradle.features.loaders.*
-import com.possible_triangle.gradle.features.publishing.ModMavenPublishingExtension
-import com.possible_triangle.gradle.features.publishing.addGithubPackages
-import com.possible_triangle.gradle.features.publishing.enableMavenPublishing
+import com.possible_triangle.gradle.features.publishing.*
 import com.possible_triangle.gradle.loadEnv
 import net.minecraftforge.gradle.userdev.DependencyManagementExtension
 import org.gradle.api.Project
@@ -38,6 +38,8 @@ fun RepositoryHandler.modrinthMaven() = addModrinthMaven()
 fun RepositoryHandler.githubPackages(project: Project) = addGithubPackages(project)
 
 fun Project.enablePublishing(block: ModMavenPublishingExtension.() -> Unit = {}) = enableMavenPublishing(block)
+fun Project.uploadToCurseforge(block: UploadExtension.() -> Unit = {}) =  enableCursegradle(block)
+fun Project.uploadToModrinth(block: UploadExtension.() -> Unit = {}) =  enableMinotaur(block)
 
 private fun Project.modDependency(
     type: String,

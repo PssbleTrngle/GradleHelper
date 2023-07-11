@@ -20,7 +20,7 @@ private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(pr
     }
 }
 
-fun Project.uploadToCurseforge(block: UploadExtension.() -> Unit = {}) {
+fun Project.enableCursegradle(block: UploadExtension.() -> Unit) {
     apply<CurseForgeGradlePlugin>()
 
     val uploadInfo = CurseForgeExtensionImpl(this).apply(block).buildIfToken() ?: return run {
