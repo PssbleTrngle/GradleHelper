@@ -9,9 +9,7 @@ import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
 
-private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(project) {
-    override val platform = "curseforge"
-
+private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(project, "curseforge") {
     override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
         when(loader) {
             ModLoader.FORGE -> required("kotlin-for-forge")

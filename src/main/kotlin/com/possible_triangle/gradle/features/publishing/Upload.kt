@@ -53,12 +53,11 @@ data class GatheredUploadInfo(
     val embeddedDependencies: Collection<String>,
 )
 
-internal abstract class UploadExtensionImpl(private val project: Project) : UploadExtension {
-    abstract val platform: String
+internal abstract class UploadExtensionImpl(private val project: Project, private val platform: String) : UploadExtension {
     protected abstract fun DependencyBuilder.requireKotlin(loader: ModLoader)
 
-    private val tokenKey get() = "${platform.uppercase()}_TOKEN"
-    private val projectIdKey get() = "${platform}_project_id"
+    private val tokenKey = "${platform.uppercase()}_TOKEN"
+    private val projectIdKey = "${platform}_project_id"
 
     private val requiredDependencies = hashSetOf<String>()
     private val optionalDependencies = hashSetOf<String>()
@@ -131,7 +130,7 @@ internal abstract class UploadExtensionImpl(private val project: Project) : Uplo
 internal fun Project.detectOutputJar(): File {
     val jarTask = tasks.getByName<Jar>("jar")
     return when (detectModLoader()) {
-        ModLoader.FORGE ->  (tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as JarJar?) ?: jarTask
+        ModLoader.FORGE -> (tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as JarJar?) ?: jarTask
         ModLoader.FABRIC -> tasks.getByName<RemapJarTask>("remapJar")
         else -> jarTask
     }.archiveFile.get().asFile

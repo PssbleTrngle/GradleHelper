@@ -7,9 +7,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
-private class ModrinthExtensionImpl(project: Project) : UploadExtensionImpl(project) {
-    override val platform = "modrinth"
-
+private class ModrinthExtensionImpl(project: Project) : UploadExtensionImpl(project, "modrinth") {
     override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
         when(loader) {
             ModLoader.FORGE -> required("ordsPcFz")
