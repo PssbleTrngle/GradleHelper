@@ -3,17 +3,16 @@ package com.possible_triangle.gradle.features.loaders
 import com.possible_triangle.gradle.features.publishing.UploadExtension
 import com.possible_triangle.gradle.features.publishing.uploadToCurseforge
 import com.possible_triangle.gradle.features.publishing.uploadToModrinth
-import com.possible_triangle.gradle.mod
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.mod
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
 
 interface LoaderExtension {
     fun dependOn(vararg projects: Project)
@@ -45,8 +44,8 @@ internal val Project.mainSourceSet: SourceSet
 val Project.isSubProject: Boolean get() = rootProject != project
 
 interface OutgoingProjectExtension {
-    fun uploadToCurseforge(block: UploadExtension.() -> Unit)
-    fun uploadToModrinth(block: UploadExtension.() -> Unit)
+    fun uploadToCurseforge(block: UploadExtension.() -> Unit = {})
+    fun uploadToModrinth(block: UploadExtension.() -> Unit = {})
     fun enableMixins()
 }
 
@@ -99,9 +98,3 @@ internal fun Project.configureOutputProject(config: OutgoingProjectExtensionImpl
         }
     }
 }
-
-internal val Project.datagenOutput
-    get(): File {
-        val project = if (isSubProject) project(":common") else this
-        return project.file("src/generated/resources")
-    }

@@ -4,6 +4,8 @@ import com.possible_triangle.gradle.features.defaultRepositories
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -18,30 +20,32 @@ interface ModExtension {
     val repository: Property<String>
     val mavenGroup: Property<String>
 
-    val includedLibraries: Property<Collection<String>>
+    val includedLibraries: SetProperty<String>
 }
-
-fun Project.mod(block: ModExtension.() -> Unit) = extensions.configure<ModExtension>(block)
-
-val Project.mod get() = rootProject.extensions.getByName<ModExtension>("mod")
 
 class GradleHelperPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        val mod = target.extensions.create<ModExtension>("mod")
-
-        mod.id.convention(target.stringProperty("mod_id"))
-        mod.name.convention(target.stringProperty("mod_name"))
-        mod.version.convention(target.stringProperty("mod_version"))
-        mod.author.convention(target.stringProperty("mod_author"))
-        mod.minecraftVersion.convention(target.stringProperty("mc_version"))
-        mod.releaseType.convention(target.stringProperty("release_type"))
-        mod.repository.convention(target.stringProperty("repository"))
-        mod.mavenGroup.convention(target.stringProperty("maven_group"))
-
-        mod.includedLibraries.convention(emptySet())
 
         target.allprojects {
+            val rootMod = target.rootProject.takeUnless { it == target }?.extensions?.findByType<ModExtension>()
+            val mod = extensions.create<ModExtension>("mod")
+
+            fun <T> Property<T>.convention(property: Provider<T>?, value: Provider<T>): Property<T> =
+                if (property != null) convention(property.orElse(value))
+                else convention(value)
+
+            mod.id.convention(rootMod?.id, target.stringProvider("mod_id"))
+            mod.name.convention(rootMod?.name, target.stringProvider("mod_name"))
+            mod.version.convention(rootMod?.version, target.stringProvider("mod_version"))
+            mod.author.convention(rootMod?.author, target.stringProvider("mod_author"))
+            mod.minecraftVersion.convention(rootMod?.minecraftVersion, target.stringProvider("mc_version"))
+            mod.releaseType.convention(rootMod?.releaseType, target.stringProvider("release_type"))
+            mod.repository.convention(rootMod?.repository, target.stringProvider("repository"))
+            mod.mavenGroup.convention(rootMod?.mavenGroup, target.stringProvider("maven_group"))
+
+            mod.includedLibraries.convention(rootMod?.includedLibraries?.orElse(emptySet()) ?: provider { emptySet() })
+
             repositories {
                 defaultRepositories()
             }
@@ -56,7 +60,7 @@ class GradleHelperPlugin : Plugin<Project> {
             @Suppress("UnstableApiUsage")
             tasks.withType<ProcessResources> {
                 // this will ensure that this task is redone when the versions change.
-                inputs.property("version", mod.version.get())
+                inputs.property("version", mod.version)
 
                 filesMatching(
                     listOf(
@@ -69,6 +73,7 @@ class GradleHelperPlugin : Plugin<Project> {
                     expand(
                         mapOf(
                             "version" to mod.version.orNull,
+                            "mod_version" to mod.version.orNull,
                             "mod_name" to mod.name.orNull,
                             "mod_id" to mod.id.orNull,
                             "mod_author" to mod.author.orNull,

@@ -1,10 +1,10 @@
 package com.possible_triangle.gradle.features.loaders
 
-import com.possible_triangle.gradle.mod
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.mod
 import org.spongepowered.gradle.vanilla.MinecraftExtension
 import org.spongepowered.gradle.vanilla.VanillaGradle
 
@@ -16,13 +16,15 @@ private class CommonExtensionImpl(project: Project) : LoaderExtensionImpl(projec
     override var minecraftVersion: String? = project.mod.minecraftVersion.orNull
 }
 
-fun Project.common(block: CommonExtension.() -> Unit) {
+fun Project.setupCommon(block: CommonExtension.() -> Unit) {
     apply<VanillaGradle>()
 
     val config = CommonExtensionImpl(this).apply(block)
 
     configure<MinecraftExtension> {
-        version(config.minecraftVersion)
+        version().set(provider {
+            config.minecraftVersion ?: throw IllegalStateException("minecraft version missing")
+        })
     }
 
     dependencies {
@@ -31,5 +33,19 @@ fun Project.common(block: CommonExtension.() -> Unit) {
         config.dependsOn.forEach {
             add("implementation", it)
         }
+
+        config.includes.forEach {
+            add("implementation", it)
+        }
+    }
+
+    if (this == dataGenProject) {
+        mainSourceSet.resources {
+            srcDir(datagenOutput)
+        }
     }
 }
+
+internal val Project.dataGenProject get() = if (isSubProject) project(":common") else this
+
+internal val Project.datagenOutput get() = dataGenProject.file("src/generated/resources")

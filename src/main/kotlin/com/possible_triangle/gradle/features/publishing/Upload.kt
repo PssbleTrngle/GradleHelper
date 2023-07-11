@@ -1,9 +1,9 @@
 package com.possible_triangle.gradle.features.publishing
 
-import com.possible_triangle.gradle.env
-import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.env
+import org.gradle.kotlin.dsl.mod
 import java.io.File
 
 interface DependencyBuilder {
@@ -68,16 +68,16 @@ class UploadExtensionImpl(project: Project, private val platform: String) : Uplo
 
     fun build() = GatheredUploadInfo(
         projectId = projectId
-            ?: throw NullPointerException("$platform project ID missing. Provide using $projectIdKey gradle property or set manually"),
+            ?: throw IllegalStateException("$platform project ID missing. Provide using $projectIdKey gradle property or set manually"),
         token = token
-            ?: throw NullPointerException("$platform token missing! Provide using environmental variable $tokenKey or set manually"),
-        file = file ?: throw NullPointerException("No upload file specified"),
-        minecraftVersions = minecraftVersions.ifEmpty { throw NullPointerException("No minecraft version specified") },
-        version = version ?: throw NullPointerException("No version specified"),
+            ?: throw IllegalStateException("$platform token missing! Provide using environmental variable $tokenKey or set manually"),
+        file = file ?: throw IllegalStateException("No upload file specified"),
+        minecraftVersions = minecraftVersions.ifEmpty { throw IllegalStateException("No minecraft version specified") },
+        version = version ?: throw IllegalStateException("No version specified"),
         versionName = versionName ?: "${modLoaders.joinToString(", ")} $version",
-        changelog = changelog ?: throw NullPointerException("No changelog specified"),
+        changelog = changelog ?: throw IllegalStateException("No changelog specified"),
         releaseType = releaseType,
-        modLoaders = modLoaders.ifEmpty { throw NullPointerException("No mod loader specified") },
+        modLoaders = modLoaders.ifEmpty { throw IllegalStateException("No mod loader specified") },
         requiredDependencies = requiredDependencies,
         optionalDependencies = optionalDependencies,
         embeddedDependencies = embeddedDependencies,

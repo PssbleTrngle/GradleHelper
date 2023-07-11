@@ -10,6 +10,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.mod
 import java.time.LocalDateTime
 
 internal fun Project.setupJava() {

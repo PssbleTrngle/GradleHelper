@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
-fun Project.uploadToModrinth(block: UploadExtension.() -> Unit) {
+fun Project.uploadToModrinth(block: UploadExtension.() -> Unit = {}) {
     apply<Minotaur>()
 
     val uploadInfo = UploadExtensionImpl(this, "modrinth").apply(block).buildIfToken() ?: return run {

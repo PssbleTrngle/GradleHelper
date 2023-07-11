@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin
 
-fun Project.enableKotlin() {
+fun Project.enableKotlin() = allprojects {
     apply<KotlinPlatformJvmPlugin>()
 
     repositories {

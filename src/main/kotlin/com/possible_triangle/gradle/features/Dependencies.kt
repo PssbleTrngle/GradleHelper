@@ -3,7 +3,7 @@ package com.possible_triangle.gradle.features
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import java.net.URI
 
-fun RepositoryHandler.modrinthMaven() {
+fun RepositoryHandler.addModrinthMaven() {
     maven {
         url = URI("https://api.modrinth.com/maven")
         content {
@@ -12,7 +12,7 @@ fun RepositoryHandler.modrinthMaven() {
     }
 }
 
-fun RepositoryHandler.curseMaven() {
+fun RepositoryHandler.addCurseMaven() {
     maven {
         url = URI("https://www.cursemaven.com")
         content {
@@ -37,6 +37,13 @@ internal fun RepositoryHandler.defaultRepositories() {
         url = URI("https://libraries.minecraft.net/")
         content {
             includeGroup("com.mojang")
+        }
+    }
+
+    maven {
+        url = URI("https://repo.spongepowered.org/repository/maven-public/")
+        content {
+            includeGroup("org.spongepowered")
         }
     }
 }

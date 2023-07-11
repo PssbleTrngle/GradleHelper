@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.publishing.UploadExtension
-import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.stringProperty
 import net.minecraftforge.gradle.common.util.MinecraftExtension
 import net.minecraftforge.gradle.userdev.UserDevPlugin
@@ -54,7 +53,7 @@ private class ForgeExtensionImpl(project: Project) : OutgoingProjectExtensionImp
     }
 }
 
-fun Project.forge(block: ForgeExtension.() -> Unit) {
+fun Project.setupForge(block: ForgeExtension.() -> Unit) {
     apply<UserDevPlugin>()
 
     val config = ForgeExtensionImpl(this).apply(block)
@@ -80,10 +79,8 @@ fun Project.forge(block: ForgeExtension.() -> Unit) {
     }
 
     configure<MinecraftExtension> {
-        mappings(
-            config.mappingChannel,
-            config.mappingVersion ?: mod.minecraftVersion.get()
-        )
+        mappingChannel.set(config.mappingChannel)
+        mappingVersion.set(provider { config.mappingVersion ?: mod.minecraftVersion.get() })
 
         val ideaModule = rootProject.name.replace(" ", "_").let { rootName ->
             if (isSubProject) "${rootName}.${project.name}.main"
@@ -133,19 +130,6 @@ fun Project.forge(block: ForgeExtension.() -> Unit) {
         }
     }
 
-    dependencies {
-        add("compileOnly", "org.spongepowered:mixin:0.8.5")
-        add("implementation", "com.google.code.findbugs:jsr305:3.0.2")
-
-        config.dependsOn.forEach {
-            add("implementation", it)
-        }
-
-        config.includes.forEach {
-            include(it)
-        }
-    }
-
     tasks.getByName<Jar>("jar") {
         finalizedBy("reobfJar")
     }
@@ -157,14 +141,18 @@ fun Project.forge(block: ForgeExtension.() -> Unit) {
     }
 
     dependencies {
-        val forgeVersion = config.forgeVersion ?: throw IllegalArgumentException("forge version missing")
-        add("minecraft", "net.minecraftforge:forge:${mod.minecraftVersion.get()}-${forgeVersion}")
+        val forgeVersion = config.forgeVersion ?: throw IllegalStateException("forge version missing")
+        add("minecraft", mod.minecraftVersion.map { "net.minecraftforge:forge:${it}-${forgeVersion}" })
 
         config.dependsOn.forEach {
             add("implementation", it)
         }
 
-        if(config.mixinsEnabled) {
+        config.includes.forEach {
+            include(it)
+        }
+
+        if (config.mixinsEnabled) {
             add("annotationProcessor", "org.spongepowered:mixin:0.8.5:processor")
         }
 

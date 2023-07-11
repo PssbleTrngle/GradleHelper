@@ -1,21 +1,18 @@
 package com.possible_triangle.gradle.features.publishing
 
-import com.possible_triangle.gradle.env
 import com.possible_triangle.gradle.features.loaders.isSubProject
-import com.possible_triangle.gradle.mod
 import groovy.util.Node
 import groovy.util.NodeList
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.*
 
-fun RepositoryHandler.githubPackages(project: Project) {
+fun RepositoryHandler.addGithubPackages(project: Project) {
     maven {
         name = "GitHubPackages"
         url = project.uri("https://maven.pkg.github.com/${project.mod.repository.get()}")
@@ -26,25 +23,39 @@ fun RepositoryHandler.githubPackages(project: Project) {
     }
 }
 
-private fun Project.defaultArtifactName(): String {
-    return if(isSubProject) "${mod.id.get()}-${name.lowercase()}"
-    else mod.id.get()
+private fun Project.defaultArtifactName(): Provider<String> {
+    return mod.id.map { modId ->
+        if (isSubProject) "${modId}-${name.lowercase()}"
+        else modId
+    }
 }
 
-fun Project.enablePublishing(
-    artifactVersion: String = mod.version.get(),
-    group: String = mod.mavenGroup.get(),
-    name: String =  defaultArtifactName(),
-    block: PublishingExtension.() -> Unit,
-) {
+interface ModMavenPublishingExtension {
+    val artifactVersion: Property<String>
+    val group: Property<String>
+    val name: Property<String>
+    val repositories: RepositoryHandler
+}
+
+private class ModMavenPublishingExtensionImpl(project: Project, private val parentExtension: PublishingExtension) :
+    ModMavenPublishingExtension {
+    override val artifactVersion: Property<String> = project.objects.property<String>().convention(project.mod.version)
+    override val group: Property<String> = project.objects.property<String>().convention(project.mod.mavenGroup)
+    override val name: Property<String> = project.objects.property<String>().convention(project.defaultArtifactName())
+    override val repositories: RepositoryHandler get() = parentExtension.repositories
+}
+
+fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit) {
     apply<MavenPublishPlugin>()
 
     configure<PublishingExtension> {
+        val config = ModMavenPublishingExtensionImpl(this@enableMavenPublishing, this).apply(block)
+
         publications {
             create<MavenPublication>("gpr") {
-                groupId = group
-                artifactId = name
-                version = artifactVersion
+                groupId = config.group.get()
+                artifactId = config.name.get()
+                version = config.artifactVersion.get()
                 from(components["java"])
 
                 pom.withXml {
@@ -54,6 +65,5 @@ fun Project.enablePublishing(
                 }
             }
         }
-        block()
     }
 }

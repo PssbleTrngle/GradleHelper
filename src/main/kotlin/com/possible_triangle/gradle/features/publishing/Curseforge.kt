@@ -8,7 +8,7 @@ import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
 
-fun Project.uploadToCurseforge(block: UploadExtension.() -> Unit) {
+fun Project.uploadToCurseforge(block: UploadExtension.() -> Unit = {}) {
     apply<CurseForgeGradlePlugin>()
 
     val uploadInfo = UploadExtensionImpl(this, "curseforge").apply(block).buildIfToken() ?: return run {

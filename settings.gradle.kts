@@ -1,7 +1,9 @@
+val plugin_id: String by extra
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
     }
 }
 
-rootProject.name = "Gradle Helpers"
+rootProject.name = plugin_id

@@ -1,8 +1,8 @@
 package com.possible_triangle.gradle
 
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.extra
-import org.jetbrains.kotlin.com.google.common.base.Suppliers
 
 class ProjectEnvironment(private val values: Map<String, String>) {
     operator fun get(key: String) = values[key]
@@ -18,6 +18,5 @@ fun Project.loadEnv(fileName: String = ".env"): ProjectEnvironment {
     return ProjectEnvironment(System.getenv() + localEnv)
 }
 
-val Project.env get(): ProjectEnvironment = Suppliers.memoize { loadEnv() }.get()
-
-internal fun Project.stringProperty(key: String) = if (extra.has(key)) extra[key].toString() else null
+internal fun Project.stringProperty(key: String): String? = if (extra.has(key)) extra[key].toString() else null
+internal fun Project.stringProvider(key: String): Provider<String> = provider { stringProperty(key) }
