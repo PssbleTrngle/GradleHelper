@@ -20,7 +20,7 @@ internal sealed class LoaderExtensionImpl(private val project: Project) : Loader
     private val includedLibraries = arrayListOf<String>()
 
     val dependsOn get() = parentProject.toSet()
-    val includes get() = includedLibraries.toSet() + project.mod.includedLibraries.get()
+    val includes get() = includedLibraries.toSet() + project.mod.includedLibraries.get() + project.rootProject.mod.includedLibraries.get()
 
     override fun dependOn(vararg projects: Project) {
         parentProject.addAll(projects)

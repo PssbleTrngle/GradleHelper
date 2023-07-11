@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle
 
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.extra
 
 class ProjectEnvironment(private val values: Map<String, String>) {
@@ -19,4 +18,3 @@ fun Project.loadEnv(fileName: String = ".env"): ProjectEnvironment {
 }
 
 internal fun Project.stringProperty(key: String): String? = if (extra.has(key)) extra[key].toString() else null
-internal fun Project.stringProvider(key: String): Provider<String> = provider { stringProperty(key) }

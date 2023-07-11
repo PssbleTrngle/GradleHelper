@@ -4,7 +4,6 @@ import com.possible_triangle.gradle.features.defaultRepositories
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.kotlin.dsl.*
@@ -28,23 +27,23 @@ class GradleHelperPlugin : Plugin<Project> {
     override fun apply(target: Project) {
 
         target.allprojects {
-            val rootMod = target.rootProject.takeUnless { it == target }?.extensions?.findByType<ModExtension>()
+            val rootMod = target.rootProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
             val mod = extensions.create<ModExtension>("mod")
 
-            fun <T> Property<T>.convention(property: Provider<T>?, value: Provider<T>): Property<T> =
-                if (property != null) convention(property.orElse(value))
-                else convention(value)
+            fun <T> configureDefault(default: T?, supplier: ModExtension.() -> Property<T>) {
+                mod.supplier().convention(provider { rootMod?.supplier()?.orNull ?: default })
+            }
 
-            mod.id.convention(rootMod?.id, target.stringProvider("mod_id"))
-            mod.name.convention(rootMod?.name, target.stringProvider("mod_name"))
-            mod.version.convention(rootMod?.version, target.stringProvider("mod_version"))
-            mod.author.convention(rootMod?.author, target.stringProvider("mod_author"))
-            mod.minecraftVersion.convention(rootMod?.minecraftVersion, target.stringProvider("mc_version"))
-            mod.releaseType.convention(rootMod?.releaseType, target.stringProvider("release_type"))
-            mod.repository.convention(rootMod?.repository, target.stringProvider("repository"))
-            mod.mavenGroup.convention(rootMod?.mavenGroup, target.stringProvider("maven_group"))
+            configureDefault(target.stringProperty("mod_id")) { id }
+            configureDefault(target.stringProperty("mod_name")) { name }
+            configureDefault(target.stringProperty("mod_version")) { version }
+            configureDefault(target.stringProperty("mod_author")) { author }
+            configureDefault(target.stringProperty("mc_version")) { minecraftVersion }
+            configureDefault(target.stringProperty("release_type")) { releaseType }
+            configureDefault(target.stringProperty("repository")) { repository }
+            configureDefault(target.stringProperty("maven_group")) { mavenGroup }
 
-            mod.includedLibraries.convention(rootMod?.includedLibraries?.orElse(emptySet()) ?: provider { emptySet() })
+            mod.includedLibraries.convention(provider { rootMod?.includedLibraries?.orNull ?: emptySet() })
 
             repositories {
                 defaultRepositories()
