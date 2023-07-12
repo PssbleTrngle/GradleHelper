@@ -15,3 +15,6 @@ out/
 /bin/
 logs/
 .cache/
+
+
+.env
