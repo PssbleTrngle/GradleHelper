@@ -79,7 +79,7 @@ publishing {
             }
         }
 
-        env["GRADLE_KEY"]?.let {
+        env["GRADLE_PUBLISH_KEY"]?.let {
             gradlePluginPortal {
                 name = "gradle-plugin-portal"
             }
