@@ -6,11 +6,7 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.withType
-import org.gradle.kotlin.dsl.mod
+import org.gradle.kotlin.dsl.*
 import java.time.LocalDateTime
 
 internal fun Project.setupJava() {
@@ -38,14 +34,14 @@ internal fun Project.configureJarTasks() {
         manifest {
             attributes(
                 mapOf(
-                    "Specification-Title" to mod.name.orElse(mod.id).orNull,
-                    "Specification-Vendor" to mod.author.orNull,
-                    "Specification-Version" to mod.version.orNull,
-                    "Implementation-Title" to name,
-                    "Implementation-Version" to archiveVersion,
-                    "Implementation-Vendor" to mod.author.orNull,
+                    "Specification-Title" to modName,
+                    "Specification-Vendor" to mod.author,
+                    "Specification-Version" to mod.version,
+                    "Implementation-Title" to modName,
+                    "Implementation-Version" to archiveVersion.orElse(mod.version),
+                    "Implementation-Vendor" to mod.author,
                     "Implementation-Timestamp" to now,
-                ).filterValues { it != null }
+                )
             )
         }
     }

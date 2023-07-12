@@ -45,12 +45,13 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
 
     val config = ForgeExtensionImpl(this).apply(block)
 
-    if(config.enabledDataGen) configureDatagen()
+    if (config.enabledDataGen) configureDatagen()
 
     configureOutputProject(config)
 
     val jarJar = the<JarJarProjectExtension>()
-    if (config.includes.isNotEmpty()) jarJar.enable()
+    val jarJarEnabled = config.includes.isNotEmpty()
+    if (jarJarEnabled) jarJar.enable()
 
     fun DependencyHandlerScope.include(dependencyNotation: String) {
         add("implementation", dependencyNotation)
@@ -121,25 +122,24 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
 
     tasks.getByName<Jar>("jar") {
         finalizedBy("reobfJar")
+        if (jarJarEnabled) archiveClassifier.set("raw")
     }
 
-    tasks.getByName<JarJar>("jarJar") {
-        finalizedBy("reobfJarJar")
-        archiveClassifier.set("")
-        // TODO works? classifier = ""
+    if (jarJarEnabled) {
+        tasks.getByName<JarJar>("jarJar") {
+            from(mainSourceSet.output)
+            config.dependsOn.forEach {
+                from(it.mainSourceSet.output)
+            }
+
+            finalizedBy("reobfJarJar")
+            archiveClassifier.set("")
+        }
     }
 
     dependencies {
         val forgeVersion = config.forgeVersion ?: throw IllegalStateException("forge version missing")
         add("minecraft", mod.minecraftVersion.map { "net.minecraftforge:forge:${it}-${forgeVersion}" })
-
-        config.dependsOn.forEach {
-            add("implementation", it)
-        }
-
-        config.includes.forEach {
-            include(it)
-        }
 
         if (config.mixinsEnabled) {
             add("annotationProcessor", "org.spongepowered:mixin:0.8.5:processor")
@@ -147,6 +147,14 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
 
         config.kotlinForgeVersion?.let {
             add("implementation", "thedarkcolour:kotlinforforge:${it}")
+        }
+
+        config.dependsOn.forEach {
+            add("implementation", it)
+        }
+
+        config.includes.forEach {
+            include(it)
         }
     }
 

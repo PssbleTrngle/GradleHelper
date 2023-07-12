@@ -29,6 +29,7 @@ val mixin_version: String by extra
 
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}")
+    api("org.jetbrains.kotlin:kotlin-serialization:${kotlin_version}")
 
     api("net.darkhax.curseforgegradle:CurseForgeGradle:${cursegradle_version}")
     api("com.modrinth.minotaur:Minotaur:${minotaur_version}")

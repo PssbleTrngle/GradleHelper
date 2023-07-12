@@ -8,6 +8,7 @@ import net.fabricmc.loom.task.RemapJarTask
 import net.minecraftforge.gradle.userdev.UserDevPlugin
 import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
+import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.env
 import org.gradle.kotlin.dsl.getByName
@@ -53,7 +54,8 @@ data class GatheredUploadInfo(
     val embeddedDependencies: Collection<String>,
 )
 
-internal abstract class UploadExtensionImpl(private val project: Project, private val platform: String) : UploadExtension {
+internal abstract class UploadExtensionImpl(private val project: Project, private val platform: String) :
+    UploadExtension {
     protected abstract fun DependencyBuilder.requireKotlin(loader: ModLoader)
 
     private val tokenKey = "${platform.uppercase()}_TOKEN"
@@ -115,7 +117,7 @@ internal abstract class UploadExtensionImpl(private val project: Project, privat
             file = file,
             minecraftVersions = minecraftVersions.ifEmpty { throw IllegalStateException("No minecraft version specified") },
             version = version ?: throw IllegalStateException("No version specified"),
-            versionName = versionName ?: "${loaders.joinToString(", ")} $version",
+            versionName = versionName ?: "${loaders.joinToString(", ") { it.capitalized() }} $version",
             changelog = changelog ?: throw IllegalStateException("No changelog specified"),
             releaseType = releaseType,
             modLoaders = loaders,

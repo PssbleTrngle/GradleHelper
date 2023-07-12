@@ -1,29 +1,50 @@
 package com.possible_triangle.gradle.features.publishing
 
 import com.modrinth.minotaur.Minotaur
-import com.modrinth.minotaur.ModrinthExtension
+import com.modrinth.minotaur.TaskModrinthSyncBody
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import java.io.File
+import com.modrinth.minotaur.ModrinthExtension as MinotaurExtension
 
-private class ModrinthExtensionImpl(project: Project) : UploadExtensionImpl(project, "modrinth") {
+interface ModrinthExtension : UploadExtension {
+    fun syncBodyFrom(file: File)
+    fun syncBodyFrom(file: RegularFile) = syncBodyFrom(file.asFile)
+    fun syncBodyFromReadme()
+}
+
+private class ModrinthExtensionImpl(project: Project, private val syncFile: RegularFileProperty) :
+    UploadExtensionImpl(project, "modrinth"), ModrinthExtension {
+    private val readmeFile = project.rootProject.file("README.md")
+
+    override fun syncBodyFrom(file: File) {
+        syncFile.set(file)
+    }
+
+    override fun syncBodyFromReadme() = syncBodyFrom(readmeFile)
+
     override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
-        when(loader) {
+        when (loader) {
             ModLoader.FORGE -> required("ordsPcFz")
             ModLoader.FABRIC -> required("Ha28R6CL")
         }
     }
 }
 
-fun Project.enableMinotaur(block: UploadExtension.() -> Unit) {
+fun Project.enableMinotaur(block: ModrinthExtension.() -> Unit) {
     apply<Minotaur>()
 
-    val uploadInfo = ModrinthExtensionImpl(this).apply(block).buildIfToken() ?: return run {
+    val syncFile = project.objects.fileProperty()
+    val uploadInfo = ModrinthExtensionImpl(this, syncFile).apply(block).buildIfToken() ?: return run {
         logger.warn("No modrinth token set, minotaur will not be configured")
     }
 
-    configure<ModrinthExtension> {
+    configure<MinotaurExtension> {
         token.set(uploadInfo.token)
         projectId.set(uploadInfo.projectId)
         versionNumber.set(uploadInfo.version)
@@ -32,18 +53,18 @@ fun Project.enableMinotaur(block: UploadExtension.() -> Unit) {
         gameVersions.set(uploadInfo.minecraftVersions)
         loaders.set(uploadInfo.modLoaders)
         versionType.set(uploadInfo.releaseType)
-        uploadFile.set(uploadInfo.file)
+        file.set(uploadInfo.file)
 
         uploadInfo.requiredDependencies.forEach { required.project(it) }
         uploadInfo.optionalDependencies.forEach { optional.project(it) }
         uploadInfo.embeddedDependencies.forEach { embedded.project(it) }
 
-        /* TODO
-        syncBodyFrom.set(project.file("README.md").readText())
+        syncFile.orNull?.let {
+            syncBodyFrom.set(it.asFile.readText())
 
-        tasks.named("modrinth") {
-            dependsOn(tasks.withType<TaskModrinthSyncBody>())
+            tasks.named("modrinth") {
+                dependsOn(tasks.withType<TaskModrinthSyncBody>())
+            }
         }
-        */
     }
 }

@@ -14,6 +14,7 @@ import com.possible_triangle.gradle.loadEnv
 import net.minecraftforge.gradle.userdev.DependencyManagementExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.configurationcache.extensions.capitalized
@@ -38,23 +39,30 @@ fun RepositoryHandler.modrinthMaven() = addModrinthMaven()
 fun RepositoryHandler.githubPackages(project: Project) = addGithubPackages(project)
 
 fun Project.enablePublishing(block: ModMavenPublishingExtension.() -> Unit = {}) = enableMavenPublishing(block)
-fun Project.uploadToCurseforge(block: UploadExtension.() -> Unit = {}) =  enableCursegradle(block)
-fun Project.uploadToModrinth(block: UploadExtension.() -> Unit = {}) =  enableMinotaur(block)
+fun Project.uploadToCurseforge(block: CurseforgeExtension.() -> Unit = {}) = enableCursegradle(block)
+fun Project.uploadToModrinth(block: ModrinthExtension.() -> Unit = {}) = enableMinotaur(block)
+
+fun DependencyManagementExtension.deobf(dependencyNotation: String, block: ExternalModuleDependency.() -> Unit = {}) =
+    deobf(dependencyNotation, closureOf<ExternalModuleDependency> { block() })
 
 private fun Project.modDependency(
     type: String,
-    dependencyNotation: Any,
+    dependencyNotation: String,
+    block: ExternalModuleDependency.() -> Unit,
 ): Dependency? {
     val loader = detectModLoader()
-    return if (loader == ModLoader.FORGE) dependencies.add(type, dependencyNotation)?.let { fg.deobf(it) }
-    else dependencies.add("mod${type.capitalized()}", dependencyNotation)
+    return if (loader == ModLoader.FORGE) dependencies.add(type, fg.deobf(dependencyNotation, block))
+    else dependencies.add("mod${type.capitalized()}", dependencyNotation, block)
 }
 
-fun Project.modImplementation(dependencyNotation: Any) = modDependency("implementation", dependencyNotation)
+fun Project.modImplementation(dependencyNotation: String, block: ExternalModuleDependency.() -> Unit = {}) =
+    modDependency("implementation", dependencyNotation, block)
 
-fun Project.modRuntimeOnly(dependencyNotation: Any) = modDependency("runtimeOnly", dependencyNotation)
+fun Project.modRuntimeOnly(dependencyNotation: String, block: ExternalModuleDependency.() -> Unit = {}) =
+    modDependency("runtimeOnly", dependencyNotation, block)
 
-fun Project.modCompileOnly(dependencyNotation: Any) = modDependency("compileOnly", dependencyNotation)
+fun Project.modCompileOnly(dependencyNotation: String, block: ExternalModuleDependency.() -> Unit = {}) =
+    modDependency("compileOnly", dependencyNotation, block)
 
 val Project.fg get() = the<DependencyManagementExtension>()
 

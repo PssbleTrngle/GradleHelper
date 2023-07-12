@@ -9,7 +9,9 @@ import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
 
-private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(project, "curseforge") {
+interface CurseforgeExtension : UploadExtension
+
+private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(project, "curseforge"), CurseforgeExtension {
     override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
         when(loader) {
             ModLoader.FORGE -> required("kotlin-for-forge")
@@ -18,7 +20,7 @@ private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(pr
     }
 }
 
-fun Project.enableCursegradle(block: UploadExtension.() -> Unit) {
+fun Project.enableCursegradle(block: CurseforgeExtension.() -> Unit) {
     apply<CurseForgeGradlePlugin>()
 
     val uploadInfo = CurseForgeExtensionImpl(this).apply(block).buildIfToken() ?: return run {

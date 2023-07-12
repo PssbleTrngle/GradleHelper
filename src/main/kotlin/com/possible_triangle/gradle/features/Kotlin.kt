@@ -2,12 +2,12 @@ package com.possible_triangle.gradle.features
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin
 
 fun Project.enableKotlin() = allprojects {
     apply<KotlinPlatformJvmPlugin>()
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     repositories {
         maven {
@@ -16,10 +16,6 @@ fun Project.enableKotlin() = allprojects {
                 includeGroup("thedarkcolour")
             }
         }
-    }
-
-    dependencies {
-        add("implementation", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     }
 }
 
