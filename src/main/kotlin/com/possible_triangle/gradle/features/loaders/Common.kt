@@ -34,7 +34,7 @@ fun Project.setupCommon(block: CommonExtension.() -> Unit) {
             add("implementation", it)
         }
 
-        config.includes.forEach {
+        config.includedLibraries.forEach {
             add("implementation", it)
         }
     }

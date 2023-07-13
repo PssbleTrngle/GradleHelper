@@ -108,9 +108,10 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
         add("minecraft", mod.minecraftVersion.map { "com.mojang:minecraft:${it}" })
         add("mappings", config.mappingsSupplier(loom))
 
-        val loaderVersion = config.loaderVersion ?: throw IllegalStateException("fabric loader version missing")
+        config.loaderVersion?.let { loaderVersion ->
+            add("modImplementation", "net.fabricmc:fabric-loader:${loaderVersion}")
+        }
 
-        add("modImplementation", "net.fabricmc:fabric-loader:${loaderVersion}")
         config.apiVersion?.let { apiVersion ->
             add("modImplementation", "net.fabricmc.fabric-api:fabric-api:${apiVersion}")
         }
@@ -123,8 +124,12 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
             add("implementation", it)
         }
 
-        config.includes.forEach {
+        config.includedLibraries.forEach {
             add("implementation", add("include", it)!!)
+        }
+
+        config.includedMods.forEach {
+            add("modImplementation", add("include", it)!!)
         }
     }
 }

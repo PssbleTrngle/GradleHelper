@@ -50,11 +50,10 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
     configureOutputProject(config)
 
     val jarJar = the<JarJarProjectExtension>()
-    val jarJarEnabled = config.includes.isNotEmpty()
+    val jarJarEnabled = config.includedLibraries.isNotEmpty() || config.includedMods.isNotEmpty()
     if (jarJarEnabled) jarJar.enable()
 
-    fun DependencyHandlerScope.include(dependencyNotation: String) {
-        add("implementation", dependencyNotation)
+    fun DependencyHandlerScope.pin(dependencyNotation: String) {
         add("jarJar", dependencyNotation) {
             jarJar.ranged(this, "[${version},)")
         }
@@ -153,8 +152,14 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
             add("implementation", it)
         }
 
-        config.includes.forEach {
-            include(it)
+        config.includedLibraries.forEach {
+            add("implementation", it)
+            pin(it)
+        }
+
+        config.includedMods.forEach {
+            add("implementation", fg.deobf(it))
+            pin(it)
         }
     }
 

@@ -56,7 +56,7 @@ gradlePlugin {
             version = plugin_version
             implementationClass = "com.possible_triangle.gradle.GradleHelperPlugin"
             displayName = "Gradle Helper"
-            description = "bundles fabric/forge/common gradle plugins and provides useful default configurations"
+            description = "bundles fabric/forge/common gradle plugins and provides useful default configurations for minecraft mod developers"
             tags.set(setOf("minecraft", "forge", "fabricmc", "loom"))
         }
     }

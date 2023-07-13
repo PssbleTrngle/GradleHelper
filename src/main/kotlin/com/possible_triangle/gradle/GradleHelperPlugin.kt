@@ -24,6 +24,7 @@ interface ModExtension {
     val mavenGroup: Property<String>
 
     val includedLibraries: SetProperty<String>
+    val includedMods: SetProperty<String>
 }
 
 class GradleHelperPlugin : Plugin<Project> {
@@ -48,6 +49,7 @@ class GradleHelperPlugin : Plugin<Project> {
         configureDefault(rootProject.stringProperty("maven_group")) { mavenGroup }
 
         mod.includedLibraries.convention(provider { rootMod?.includedLibraries?.orNull ?: emptySet() })
+        mod.includedMods.convention(provider { rootMod?.includedMods?.orNull ?: emptySet() })
 
         repositories {
             defaultRepositories()

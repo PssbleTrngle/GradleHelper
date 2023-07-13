@@ -16,18 +16,18 @@ interface LoaderExtension {
 }
 
 internal sealed class LoaderExtensionImpl(private val project: Project) : LoaderExtension {
-    private val parentProject = arrayListOf<Project>()
-    private val includedLibraries = arrayListOf<String>()
+    private val _dependsOn = arrayListOf<Project>()
+    private val _includedLibraries = arrayListOf<String>()
 
-    val dependsOn get() = parentProject.toSet()
-    val includes get() = includedLibraries.toSet() + project.mod.includedLibraries.get() + project.rootProject.mod.includedLibraries.get()
+    val dependsOn get() = _dependsOn.toSet()
+    val includedLibraries get() = _includedLibraries.toSet() + project.mod.includedLibraries.get() + project.rootProject.mod.includedLibraries.get()
 
     override fun dependOn(vararg projects: Project) {
-        parentProject.addAll(projects)
+        _dependsOn.addAll(projects)
     }
 
     override fun includesLibrary(vararg libraries: String) {
-        includedLibraries.addAll(libraries)
+        _includedLibraries.addAll(libraries)
     }
 }
 
@@ -41,15 +41,24 @@ val Project.isSubProject: Boolean get() = rootProject != project
 
 interface OutgoingProjectExtension {
     fun enableMixins()
+    fun includesMod(vararg libraries: String)
 }
 
-internal sealed class OutgoingProjectExtensionImpl(project: Project) : LoaderExtensionImpl(project),
+internal sealed class OutgoingProjectExtensionImpl(private val project: Project) : LoaderExtensionImpl(project),
     OutgoingProjectExtension {
     var mixinsEnabled: Boolean = false
         private set
 
+    private val _includedMods = arrayListOf<String>()
+
+    val includedMods get() = _includedMods.toSet() + project.mod.includedMods.get() + project.rootProject.mod.includedMods.get()
+
     override fun enableMixins() {
         mixinsEnabled = true
+    }
+
+    override fun includesMod(vararg libraries: String) {
+        _includedMods.addAll(libraries)
     }
 }
 
