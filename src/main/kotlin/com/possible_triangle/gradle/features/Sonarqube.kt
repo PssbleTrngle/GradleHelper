@@ -8,17 +8,17 @@ import org.sonarqube.gradle.SonarExtension
 import org.sonarqube.gradle.SonarProperties
 import org.sonarqube.gradle.SonarQubePlugin
 
-fun Project.configureSonarQube(block: Project.(SonarProperties) -> Unit) {
+fun Project.configureSonarQube(block: SonarProperties.(Project) -> Unit) {
     allprojects {
         apply<SonarQubePlugin>()
     }
 
     configure<SonarExtension> {
         properties {
-            property("sonar.projectVersion", mod.version)
-            property("sonar.projectKey", mod.id)
+            property("sonar.projectVersion", mod.version.get())
+            property("sonar.projectKey", mod.id.get())
 
-            block(this@properties)
+            block(this@properties, project)
         }
     }
 
@@ -27,7 +27,7 @@ fun Project.configureSonarQube(block: Project.(SonarProperties) -> Unit) {
             properties {
                 property("sonar.branch", this@subprojects.name)
 
-                block(this@properties)
+                block(this@properties, this@subprojects)
             }
         }
     }

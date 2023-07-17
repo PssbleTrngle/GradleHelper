@@ -20,7 +20,7 @@ The plugin only has to be applied in the root project using the plugins dsl bloc
 
 ```kotlin
 plugins {
-    id("net.somethingcatchy.gradle") version ("0.0.1")
+    id("net.somethingcatchy.gradle") version (VERSION)
 }
 ```
 
