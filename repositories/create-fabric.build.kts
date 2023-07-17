@@ -9,6 +9,12 @@ repositories {
         }
     }
     maven {
+        url = uri("https://maven.tterrag.com/")
+        content {
+            includeGroup("com.jozufozu.flywheel")
+        }
+    }
+    maven {
         url = uri("https://maven.jamieswhiteshirt.com/libs-release")
         content {
             includeGroup("com.jamieswhiteshirt")
