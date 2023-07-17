@@ -8,12 +8,14 @@ import net.fabricmc.loom.task.RemapJarTask
 import net.minecraftforge.gradle.userdev.UserDevPlugin
 import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Provider
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.env
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.mod
-import java.io.File
 
 interface DependencyBuilder {
     fun required(dependency: String)
@@ -24,7 +26,7 @@ interface DependencyBuilder {
 interface UploadExtension {
     var projectId: String?
     var token: String?
-    var file: File
+    val file: RegularFileProperty
 
     var minecraftVersions: Collection<String>
     var version: String?
@@ -42,7 +44,7 @@ interface UploadExtension {
 data class GatheredUploadInfo(
     val projectId: String,
     val token: String,
-    val file: File,
+    val file: Provider<RegularFile>,
     val minecraftVersions: Collection<String>,
     val version: String,
     val versionName: String,
@@ -81,7 +83,7 @@ internal abstract class UploadExtensionImpl(private val project: Project, privat
 
     override var projectId: String? = project.stringProperty(projectIdKey)
     override var token: String? = project.env[tokenKey]
-    override var file: File = project.detectOutputJar()
+    override val file: RegularFileProperty = project.detectOutputJar()
 
     override var minecraftVersions: Collection<String> = setOfNotNull(project.mod.minecraftVersion.orNull)
     override var modLoaders: Collection<String> = emptySet()
@@ -129,10 +131,10 @@ internal abstract class UploadExtensionImpl(private val project: Project, privat
 
 }
 
-internal fun Project.detectOutputJar(): File {
+internal fun Project.detectOutputJar(): RegularFileProperty = objects.fileProperty().convention {
     val jarTask = tasks.getByName<Jar>("jar")
     val jarJarTask = tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as JarJar?
-    return when (detectModLoader()) {
+    when (detectModLoader()) {
         ModLoader.FORGE -> jarJarTask?.takeIf { it.enabled } ?: jarTask
         ModLoader.FABRIC -> tasks.getByName<RemapJarTask>("remapJar")
         else -> jarTask

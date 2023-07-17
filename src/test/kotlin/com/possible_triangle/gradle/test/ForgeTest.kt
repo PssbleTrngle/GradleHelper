@@ -1,11 +1,14 @@
 package com.possible_triangle.gradle.test
 
+import com.modrinth.minotaur.ModrinthExtension
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.detectModLoader
+import net.minecraftforge.gradle.userdev.UserDevPlugin
+import net.minecraftforge.gradle.userdev.jarjar.JarJarProjectExtension
+import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.forge
-import org.gradle.kotlin.dsl.mod
+import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -97,6 +100,38 @@ class ForgeTest {
 
         val deps = project.findTestDependencies("implementation")
         assertEquals(1, deps.size)
+    }
+
+    private fun Project.configureModrinth() {
+        uploadToModrinth {
+            token = "token"
+            projectId = "id"
+            changelog = "changelog"
+        }
+    }
+
+    @Test
+    fun `uses jarJar file when enabled`() {
+        val project = createProjectWithForge()
+
+        project.configureModrinth()
+        project.the<JarJarProjectExtension>().enable()
+
+        val jarJarTask = project.tasks.getByName<JarJar>(UserDevPlugin.JAR_JAR_TASK_NAME)
+        val file = project.the<ModrinthExtension>().file
+        assertEquals(jarJarTask.archiveFile.get().asFile.path, file.get().asFile.path)
+    }
+
+    @Test
+    fun `uses jar file when jarjar is disabled`() {
+        val project = createProjectWithForge()
+        project.the<JarJarProjectExtension>().disable()
+
+        project.configureModrinth()
+
+        val jarTask = project.tasks.getByName<Jar>("jar")
+        val file = project.the<ModrinthExtension>().file
+        assertEquals(jarTask.archiveFile.get().asFile.path, file.get().asFile.path)
     }
 
 }
