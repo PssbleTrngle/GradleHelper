@@ -67,5 +67,5 @@ fun Project.modApi(dependencyNotation: Any, block: ExternalModuleDependency.() -
 
 val Project.fg get() = the<DependencyManagementExtension>()
 
-fun Project.enableSonarQube(block: Project.(SonarProperties) -> Unit = {}) = configureSonarQube(block)
+fun Project.enableSonarQube(block: SonarProperties.(Project) -> Unit = {}) = configureSonarQube(block)
 
