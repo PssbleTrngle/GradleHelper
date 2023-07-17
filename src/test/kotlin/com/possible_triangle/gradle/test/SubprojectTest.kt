@@ -91,10 +91,7 @@ class SubprojectTest {
             includesLibrary("test.something:that:1.0")
         }
 
-        val deps = subproject.configurations.getByName("implementation").dependencies.matching {
-            it.group == "test.something"
-        }
-
+        val deps = subproject.findTestDependencies("implementation")
         assertEquals(3, deps.size)
     }
 

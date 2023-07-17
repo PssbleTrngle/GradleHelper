@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle.features.loaders
 
+import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.stringProperty
 import net.minecraftforge.gradle.common.util.MinecraftExtension
 import net.minecraftforge.gradle.userdev.UserDevPlugin
@@ -91,15 +92,15 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
                 workingDirectory(project.file("run/data"))
                 taskName("Data")
 
+                val existingResources = existingResources.flatMap { listOf("--existing", it) }
+                val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
                 val dataGenArgs = listOf(
                     "--mod",
                     mod.id.get(),
                     "--all",
                     "--output",
-                    datagenOutput,
-                    "--existing",
-                    file("src/main/resources")
-                ) + config.existingMods.flatMap { listOf("--existing-mod", it) }
+                    datagenOutput
+                ) + existingResources + existingMods
 
                 args(dataGenArgs)
             }
@@ -144,17 +145,19 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
             add("annotationProcessor", "org.spongepowered:mixin:0.8.5:processor")
         }
 
-        config.kotlinForgeVersion?.let {
-            add("implementation", "thedarkcolour:kotlinforforge:${it}")
-        }
+        lazyDependencies("implementation") {
+            config.kotlinForgeVersion?.let {
+                add("thedarkcolour:kotlinforforge:${it}")
+            }
 
-        config.dependsOn.forEach {
-            add("implementation", it)
-        }
+            config.dependsOn.forEach {
+                add(it)
+            }
 
-        config.includedLibraries.forEach {
-            add("implementation", it)
-            pin(it)
+            config.includedLibraries.forEach {
+                add(it)
+                pin(it)
+            }
         }
 
         config.includedMods.forEach {

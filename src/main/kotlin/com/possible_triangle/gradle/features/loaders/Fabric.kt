@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle.features.loaders
 
+import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.LoomGradlePlugin
 import net.fabricmc.loom.LoomRepositoryPlugin
@@ -42,7 +43,7 @@ private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionIm
 
 private class FixedLoomPlugin : Plugin<Project> {
     private val plugin = LoomGradlePlugin()
-    override fun apply(target: Project)  {
+    override fun apply(target: Project) {
         plugin.apply(target)
         target.apply<LoomRepositoryPlugin>()
     }
@@ -53,7 +54,7 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
 
     val config = FabricExtensionImpl(this).apply(block)
 
-    if(config.enabledDataGen) configureDatagen()
+    if (config.enabledDataGen) configureDatagen()
 
     configureOutputProject(config)
 
@@ -108,28 +109,33 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
         add("minecraft", mod.minecraftVersion.map { "com.mojang:minecraft:${it}" })
         add("mappings", config.mappingsSupplier(loom))
 
-        config.loaderVersion?.let { loaderVersion ->
-            add("modImplementation", "net.fabricmc:fabric-loader:${loaderVersion}")
+        lazyDependencies("modImplementation") {
+            config.loaderVersion?.let { loaderVersion ->
+                add("net.fabricmc:fabric-loader:${loaderVersion}")
+            }
+
+            config.apiVersion?.let { apiVersion ->
+                add("net.fabricmc.fabric-api:fabric-api:${apiVersion}")
+            }
+
+            config.kotlinFabricVersion?.let {
+                add("net.fabricmc:fabric-language-kotlin:${it}")
+            }
+
+            config.includedMods.forEach {
+                add(add("include", it)!!)
+            }
         }
 
-        config.apiVersion?.let { apiVersion ->
-            add("modImplementation", "net.fabricmc.fabric-api:fabric-api:${apiVersion}")
+        lazyDependencies("implementation") {
+            config.dependsOn.forEach {
+                add(it)
+            }
+
+            config.includedLibraries.forEach {
+                add(add("include", it)!!)
+            }
         }
 
-        config.kotlinFabricVersion?.let {
-            add("modImplementation", "net.fabricmc:fabric-language-kotlin:${it}")
-        }
-
-        config.dependsOn.forEach {
-            add("implementation", it)
-        }
-
-        config.includedLibraries.forEach {
-            add("implementation", add("include", it)!!)
-        }
-
-        config.includedMods.forEach {
-            add("modImplementation", add("include", it)!!)
-        }
     }
 }
