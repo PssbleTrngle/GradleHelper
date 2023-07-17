@@ -131,8 +131,9 @@ internal abstract class UploadExtensionImpl(private val project: Project, privat
 
 internal fun Project.detectOutputJar(): File {
     val jarTask = tasks.getByName<Jar>("jar")
+    val jarJarTask = tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as JarJar?
     return when (detectModLoader()) {
-        ModLoader.FORGE -> (tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as JarJar?) ?: jarTask
+        ModLoader.FORGE -> jarJarTask?.takeIf { it.enabled } ?: jarTask
         ModLoader.FABRIC -> tasks.getByName<RemapJarTask>("remapJar")
         else -> jarTask
     }.archiveFile.get().asFile
