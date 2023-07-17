@@ -81,11 +81,12 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
                 create("data") {
                     client()
                     configName = "Fabric Datagen"
-                    runDir("run/data")
+                    runDir("run")
 
-                    vmArg("-Dfabric-api.datagen")
-                    vmArg("-Dfabric-api.datagen.output-dir=${datagenOutput}")
-                    vmArg("-Dfabric-api.datagen.modid=${mod.id.get()}")
+                    property("fabric-api.datagen")
+                    property("fabric-api.datagen.output-dir=${datagenOutput}")
+                    property("fabric-api.datagen.modid=${mod.id.get()}")
+                    property("porting_lib.datagen.existing_resources=${existingResources.first()}")
                 }
             }
             forEach {
