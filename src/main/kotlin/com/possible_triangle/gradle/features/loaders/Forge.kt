@@ -7,6 +7,7 @@ import net.minecraftforge.gradle.userdev.UserDevPlugin
 import net.minecraftforge.gradle.userdev.jarjar.JarJarProjectExtension
 import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.spongepowered.asm.gradle.plugins.MixinExtension
@@ -65,6 +66,15 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         configure<MixinExtension> {
             add(mainSourceSet, "${mod.id.get()}.refmap.json")
             config("${mod.id.get()}.mixins.json")
+        }
+
+        // workaround because of https://github.com/SpongePowered/MixinGradle/issues/48
+        tasks.withType<JavaCompile> {
+            doFirst {
+                options.compilerArgs.replaceAll { it: Any ->
+                    it.toString()
+                }
+            }
         }
     }
 

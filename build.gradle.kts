@@ -26,6 +26,7 @@ val fabric_loom_version: String by extra
 val forge_gradle_version: String by extra
 val vanilla_gradle_version: String by extra
 val mixin_version: String by extra
+val sonar_version: String by extra
 
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}")
@@ -40,7 +41,7 @@ dependencies {
 
     api("org.spongepowered:mixingradle:${mixin_version}")
 
-    api("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:4.2.1.3168")
+    api("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonar_version}")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("io.github.origin-energy:java-snapshot-testing-junit5:4.0.6")
