@@ -2,6 +2,7 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     id("com.gradle.plugin-publish") version ("1.2.0")
+    id("org.sonarqube") version ("4.3.0.3225")
 }
 
 repositories {
@@ -57,7 +58,8 @@ gradlePlugin {
             version = plugin_version
             implementationClass = "com.possible_triangle.gradle.GradleHelperPlugin"
             displayName = "Gradle Helper"
-            description = "bundles fabric/forge/common gradle plugins and provides useful default configurations for minecraft mod developers"
+            description =
+                "bundles fabric/forge/common gradle plugins and provides useful default configurations for minecraft mod developers"
             tags.set(setOf("minecraft", "forge", "fabricmc", "loom"))
         }
     }
@@ -85,5 +87,11 @@ publishing {
                 name = "gradle-plugin-portal"
             }
         }
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "gradle-helper")
     }
 }
