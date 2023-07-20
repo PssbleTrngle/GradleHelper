@@ -3,6 +3,7 @@ plugins {
     `kotlin-dsl`
     id("com.gradle.plugin-publish") version ("1.2.0")
     id("org.sonarqube") version ("4.3.0.3225")
+    jacoco
 }
 
 repositories {
@@ -69,6 +70,14 @@ tasks.test {
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
+    }
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
     }
 }
 
