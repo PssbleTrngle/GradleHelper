@@ -8,27 +8,32 @@ import org.sonarqube.gradle.SonarExtension
 import org.sonarqube.gradle.SonarProperties
 import org.sonarqube.gradle.SonarQubePlugin
 
-fun Project.configureSonarQube(block: SonarProperties.(Project) -> Unit) {
+fun Project.configureSonarQube(block: SonarProperties.() -> Unit) {
     allprojects {
         apply<SonarQubePlugin>()
     }
 
-    configure<SonarExtension> {
-        properties {
-            property("sonar.projectVersion", mod.version.get())
-            property("sonar.projectKey", mod.id.get())
-
-            block(this@properties, project)
+    allprojects {
+        configure<SonarExtension> {
+            properties {
+                file("src/main").takeIf { it.exists() }?.let {
+                    property("sonar.sources", it)
+                }
+                file("src/test").takeIf { it.exists() }?.let {
+                    property("sonar.tests", it)
+                }
+            }
         }
     }
 
-    subprojects {
-        configure<SonarExtension> {
-            properties {
-                property("sonar.branch", this@subprojects.name)
+    configure<SonarExtension> {
+        properties {
+            val version = mod.minecraftVersion.map { "$it-${mod.version.get()}" }.orElse(mod.version)
+            property("sonar.projectVersion", version.get())
+            property("sonar.projectKey", mod.id.get())
+            mod.repository.orNull?.let { property("sonar.links.scm", it) }
 
-                block(this@properties, this@subprojects)
-            }
+            block(this@properties)
         }
     }
 }
