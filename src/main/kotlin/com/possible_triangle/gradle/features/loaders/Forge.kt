@@ -163,7 +163,9 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
             config.dependsOn.forEach {
                 add(it)
             }
+        }
 
+        lazyDependencies("minecraftLibrary") {
             config.includedLibraries.forEach {
                 add(it)
                 pin(it)

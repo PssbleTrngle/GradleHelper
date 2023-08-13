@@ -3,10 +3,9 @@ package com.possible_triangle.gradle.features
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.repositories
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin
 
 fun Project.enableKotlin() = allprojects {
-    apply<KotlinPlatformJvmPlugin>()
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     repositories {
@@ -20,5 +19,5 @@ fun Project.enableKotlin() = allprojects {
 }
 
 internal fun Project.detectKotlin(): Boolean {
-    return plugins.findPlugin(KotlinPlatformJvmPlugin::class.java) != null
+    return plugins.findPlugin("org.jetbrains.kotlin.jvm") != null
 }
