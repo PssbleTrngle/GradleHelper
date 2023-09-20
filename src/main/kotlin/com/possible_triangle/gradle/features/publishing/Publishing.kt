@@ -35,14 +35,23 @@ interface ModMavenPublishingExtension {
     val group: Property<String>
     val name: Property<String>
     val repositories: RepositoryHandler
+    fun repositories(configure: RepositoryHandler.() -> Unit)
+    fun githubPackages()
 }
 
-private class ModMavenPublishingExtensionImpl(project: Project, private val parentExtension: PublishingExtension) :
+private class ModMavenPublishingExtensionImpl(
+    private val project: Project,
+    private val parentExtension: PublishingExtension,
+) :
     ModMavenPublishingExtension {
     override val artifactVersion: Property<String> = project.objects.property<String>().convention(project.mod.version)
     override val group: Property<String> = project.objects.property<String>().convention(project.mod.mavenGroup)
     override val name: Property<String> = project.objects.property<String>().convention(project.defaultArtifactName())
+
     override val repositories: RepositoryHandler get() = parentExtension.repositories
+    override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
+
+    override fun githubPackages() = repositories.githubPackages(project)
 }
 
 fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit) {
