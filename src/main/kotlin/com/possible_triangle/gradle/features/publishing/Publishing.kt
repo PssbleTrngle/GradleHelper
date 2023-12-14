@@ -55,6 +55,7 @@ interface ModMavenPublishingExtension {
     val repositories: RepositoryHandler
     fun repositories(configure: RepositoryHandler.() -> Unit)
     fun githubPackages()
+    fun localMaven()
 }
 
 private class ModMavenPublishingExtensionImpl(
@@ -70,6 +71,7 @@ private class ModMavenPublishingExtensionImpl(
     override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
 
     override fun githubPackages() = repositories.githubPackages(project)
+    override fun localMaven() = repositories.localMaven(project)
 }
 
 fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit) {
