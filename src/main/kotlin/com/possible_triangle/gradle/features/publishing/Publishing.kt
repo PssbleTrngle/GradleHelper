@@ -34,9 +34,8 @@ fun RepositoryHandler.addGithubPackages(project: Project) {
 fun RepositoryHandler.addLocalMaven(project: Project) {
     project.env["LOCAL_MAVEN"]?.let { dir ->
         maven {
-            maven {
-                url = project.uri(dir)
-            }
+            name = "LocalMaven"
+            url = project.uri(dir)
         }
     }
 }
