@@ -13,12 +13,30 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.kotlin.dsl.*
 
 fun RepositoryHandler.addGithubPackages(project: Project) {
+    val actor = project.env["GITHUB_ACTOR"]
+    val token = project.env["GITHUB_TOKEN"]
+
+    if (actor == null || token == null) {
+        project.logger.warn("Skipping GitHub publishing, actor or token missing")
+        return
+    }
+
     maven {
         name = "GitHubPackages"
         url = project.uri("https://maven.pkg.github.com/${project.mod.repository.get()}")
         credentials {
-            username = project.env["GITHUB_ACTOR"]
-            password = project.env["GITHUB_TOKEN"]
+            username = actor
+            password = token
+        }
+    }
+}
+
+fun RepositoryHandler.addLocalMaven(project: Project) {
+    project.env["LOCAL_MAVEN"]?.let { dir ->
+        maven {
+            maven {
+                url = project.uri(dir)
+            }
         }
     }
 }
