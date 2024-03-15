@@ -1,6 +1,6 @@
 repositories {
     maven {
-        url = uri("https://mvn.devos.one/snapshots/")
+        url = uri("https://mvn.devos.one/releases/")
         content {
             includeGroup("com.simibubi.create")
             includeGroup("io.github.fabricators_of_create.Porting-Lib")
@@ -8,6 +8,15 @@ repositories {
             includeGroup("com.tterrag.registrate_fabric")
         }
     }
+    maven {
+            url = uri("https://mvn.devos.one/snapshots/")
+            content {
+                includeGroup("com.simibubi.create")
+                includeGroup("io.github.fabricators_of_create.Porting-Lib")
+                includeGroup("io.github.tropheusj")
+                includeGroup("com.tterrag.registrate_fabric")
+            }
+        }
     maven {
         url = uri("https://maven.tterrag.com/")
         content {
