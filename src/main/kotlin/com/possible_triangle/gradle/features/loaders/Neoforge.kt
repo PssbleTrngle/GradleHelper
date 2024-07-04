@@ -159,8 +159,15 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
             }
         }
 
+        lazyDependencies("implementation") {
+            config.includedLibraries.forEach {
+                add(it)
+                pin(it)
+            }
+        }
+
         config.includedMods.forEach {
-            add("implementation", fg.deobf(it))
+            add("implementation", it)
             pin(it)
         }
     }

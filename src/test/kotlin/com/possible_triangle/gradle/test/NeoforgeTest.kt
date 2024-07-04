@@ -34,14 +34,14 @@ class NeoforgeTest {
     }
 
     @Test
-    fun `can setup neoforged project`() {
+    fun `can setup neoforge project`() {
         val project = createProjectWithNeoforge()
 
         assertNotNull(project.configurations.getByName("implementation"))
     }
 
     @Test
-    fun `can customize mod values after neoforged block`() {
+    fun `can customize mod values after neoforge block`() {
         val project = createProject {
             withProjectDir("example")
         }
@@ -56,7 +56,7 @@ class NeoforgeTest {
     }
 
     @Test
-    fun `detects neoforged modloader`() {
+    fun `detects neoforge modloader`() {
         val project = createProjectWithNeoforge()
 
         assertEquals(ModLoader.NEOFORGE, project.detectModLoader())
@@ -75,7 +75,7 @@ class NeoforgeTest {
     }
 
     @Test
-    fun `adds included libraries added after neoforged setup`() {
+    fun `adds included libraries added after neoforge setup`() {
         val project = createProjectWithNeoforge()
 
         project.mod {
