@@ -2,6 +2,7 @@ package com.possible_triangle.gradle.features.loaders
 
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.minecraftforge.gradle.userdev.DependencyManagementExtension
+import net.neoforged.gradle.userdev.runtime.extension.UserDevRuntimeExtension
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
@@ -84,7 +85,7 @@ internal fun Project.configureOutputProject(config: OutgoingProjectExtensionImpl
 }
 
 internal enum class ModLoader {
-    FORGE, FABRIC
+    FORGE, FABRIC, NEOFORGE
 }
 
 internal fun Project.detectModLoader(): ModLoader? {
@@ -92,5 +93,7 @@ internal fun Project.detectModLoader(): ModLoader? {
         ModLoader.FORGE
     } ?: extensions.findByType<LoomGradleExtensionAPI>()?.let {
         ModLoader.FABRIC
+    } ?: extensions.findByType<UserDevRuntimeExtension>()?.let {
+        ModLoader.NEOFORGE
     }
 }

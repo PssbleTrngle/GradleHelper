@@ -6,7 +6,6 @@ import com.possible_triangle.gradle.features.loaders.detectModLoader
 import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.task.RemapJarTask
 import net.minecraftforge.gradle.userdev.UserDevPlugin
-import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
@@ -133,9 +132,9 @@ internal abstract class UploadExtensionImpl(private val project: Project, privat
 
 internal fun Project.detectOutputJar(): RegularFileProperty = objects.fileProperty().convention {
     val jarTask = tasks.getByName<Jar>("jar")
-    val jarJarTask = tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as JarJar?
+    val jarJarTask = tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as Jar?
     when (detectModLoader()) {
-        ModLoader.FORGE -> jarJarTask?.takeIf { it.enabled } ?: jarTask
+        ModLoader.FORGE, ModLoader.NEOFORGE -> jarJarTask?.takeIf { it.enabled } ?: jarTask
         ModLoader.FABRIC -> tasks.getByName<RemapJarTask>("remapJar")
         else -> jarTask
     }.archiveFile.get().asFile

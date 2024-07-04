@@ -1,8 +1,8 @@
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    id("com.gradle.plugin-publish") version ("1.2.0")
-    id("org.sonarqube") version ("4.3.0.3225")
+    id("com.gradle.plugin-publish") version ("1.2.1")
+    id("org.sonarqube") version ("5.1.0.4872")
     jacoco
 }
 
@@ -12,6 +12,7 @@ repositories {
     maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
     maven { url = uri("https://maven.minecraftforge.net") }
     maven { url = uri("https://maven.fabricmc.net/") }
+    maven { url = uri("https://maven.neoforged.net/releases/") }
     maven { url = uri("https://plugins.gradle.org/m2/") }
 }
 
@@ -26,6 +27,7 @@ val kotlin_version: String by extra
 val kotlin_dsl_version: String by extra
 val fabric_loom_version: String by extra
 val forge_gradle_version: String by extra
+val neoforged_gradle_version: String by extra
 val vanilla_gradle_version: String by extra
 val mixin_version: String by extra
 val sonar_version: String by extra
@@ -39,6 +41,7 @@ dependencies {
 
     api("fabric-loom:fabric-loom.gradle.plugin:${fabric_loom_version}")
     api("net.minecraftforge.gradle:ForgeGradle:${forge_gradle_version}")
+    api("net.neoforged.gradle:userdev:${neoforged_gradle_version}")
     api("org.spongepowered:vanillagradle:${vanilla_gradle_version}")
 
     api("org.spongepowered:mixingradle:${mixin_version}")
@@ -47,6 +50,12 @@ dependencies {
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("io.github.origin-energy:java-snapshot-testing-junit5:4.0.6")
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.codehaus.groovy:groovy-all:3.0.21")
+    }
 }
 
 gradlePlugin {
