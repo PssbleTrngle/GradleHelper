@@ -27,6 +27,7 @@ val Project.mod get() = the<ModExtension>()
 
 fun Project.common(block: CommonExtension.() -> Unit = {}) = setupCommon(block)
 fun Project.forge(block: ForgeExtension.() -> Unit = {}) = setupForge(block)
+fun Project.neoforge(block: NeoforgeExtension.() -> Unit = {}) = setupNeoforge(block)
 fun Project.fabric(block: FabricExtension.() -> Unit = {}) = setupFabric(block)
 
 val Project.env get(): ProjectEnvironment = Suppliers.memoize { loadEnv() }.get()

@@ -14,7 +14,7 @@ interface CurseforgeExtension : UploadExtension
 private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(project, "curseforge"), CurseforgeExtension {
     override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
         when(loader) {
-            ModLoader.FORGE -> required("kotlin-for-forge")
+            ModLoader.FORGE, ModLoader.NEOFORGE -> required("kotlin-for-forge")
             ModLoader.FABRIC -> required("fabric-language-kotlin")
         }
     }

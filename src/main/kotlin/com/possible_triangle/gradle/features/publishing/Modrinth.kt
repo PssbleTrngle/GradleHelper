@@ -30,7 +30,7 @@ private class ModrinthExtensionImpl(project: Project, private val syncFile: Regu
 
     override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
         when (loader) {
-            ModLoader.FORGE -> required("ordsPcFz")
+            ModLoader.FORGE, ModLoader.NEOFORGE -> required("ordsPcFz")
             ModLoader.FABRIC -> required("Ha28R6CL")
         }
     }
