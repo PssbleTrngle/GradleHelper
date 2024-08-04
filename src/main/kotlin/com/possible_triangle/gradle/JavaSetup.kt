@@ -12,9 +12,11 @@ import java.time.LocalDateTime
 internal fun Project.setupJava() {
     apply<JavaPlugin>()
 
+    val javaVersion = intProperty("java_version") ?: 21
+
     configure<JavaPluginExtension> {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion.set(JavaLanguageVersion.of(javaVersion))
         }
         withSourcesJar()
     }

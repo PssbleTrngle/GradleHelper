@@ -24,3 +24,5 @@ fun Project.loadEnv(fileName: String = ".env"): ProjectEnvironment {
 }
 
 internal fun Project.stringProperty(key: String): String? = if (extra.has(key)) extra[key].toString() else null
+
+internal fun Project.intProperty(key: String): Int? = stringProperty(key)?.toIntOrNull()
