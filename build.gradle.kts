@@ -55,6 +55,7 @@ dependencies {
 configurations.all {
     resolutionStrategy {
         force("org.codehaus.groovy:groovy-all:3.0.21")
+        force("com.google.code.gson:gson:2.11.0")
     }
 }
 
