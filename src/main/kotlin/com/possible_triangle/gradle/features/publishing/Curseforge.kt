@@ -20,6 +20,13 @@ private class CurseForgeExtensionImpl(project: Project) : UploadExtensionImpl(pr
     }
 }
 
+private fun String.loaderName(): String {
+    return when(lowercase()) {
+        "neoforge" -> "NeoForge"
+        else -> capitalized()
+    }
+}
+
 fun Project.enableCursegradle(block: CurseforgeExtension.() -> Unit) {
     apply<CurseForgeGradlePlugin>()
 
@@ -34,7 +41,7 @@ fun Project.enableCursegradle(block: CurseforgeExtension.() -> Unit) {
             changelogType = Constants.CHANGELOG_MARKDOWN
             changelog = uploadInfo.changelog
             releaseType = uploadInfo.releaseType
-            uploadInfo.modLoaders.forEach { addModLoader(it.capitalized()) }
+            uploadInfo.modLoaders.forEach { addModLoader(it.loaderName()) }
             uploadInfo.minecraftVersions.forEach { addGameVersion(it) }
             displayName = uploadInfo.versionName
 
