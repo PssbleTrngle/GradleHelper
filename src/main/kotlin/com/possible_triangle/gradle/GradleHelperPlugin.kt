@@ -67,9 +67,10 @@ class GradleHelperPlugin : Plugin<Project> {
             filesMatching(
                 listOfNotNull(
                     "META-INF/mods.toml",
+                    "META-INF/neoforge.mods.toml",
                     "pack.mcmeta",
                     "fabric.mod.json",
-                    mod.id.map { modId -> "${modId}.mixins.json" }.orNull,
+                    mod.id.map { modId -> "${modId}*.mixins.json" }.orNull,
                 )
             ) {
                 expand(

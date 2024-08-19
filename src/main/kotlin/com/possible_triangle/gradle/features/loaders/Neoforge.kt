@@ -26,7 +26,7 @@ private class NeoforgeExtensionImpl(project: Project) : OutgoingProjectExtension
     NeoforgeExtension {
     override var mappingChannel: String = "official"
     override var mappingVersion: String? = null
-    override var neoforgeVersion: String? = project.stringProperty("forge_version")
+    override var neoforgeVersion: String? = project.stringProperty("neoforge_version")
 
     override var kotlinForgeVersion: String? = project.stringProperty("kotlin_forge_version")
 
@@ -129,7 +129,6 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
     */
 
     tasks.getByName<Jar>("jar") {
-        finalizedBy("reobfJar")
         if (jarJarEnabled) archiveClassifier.set("raw")
     }
 
@@ -140,7 +139,6 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
                 from(it.mainSourceSet.output)
             }
 
-            finalizedBy("reobfJarJar")
             archiveClassifier.set("")
         }
     }

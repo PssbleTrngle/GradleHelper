@@ -31,6 +31,14 @@ val neoforged_gradle_version: String by extra
 val vanilla_gradle_version: String by extra
 val mixin_version: String by extra
 val sonar_version: String by extra
+val gson_version: String by extra
+
+configurations.all {
+    resolutionStrategy {
+        force("com.google.code.gson:gson:${gson_version}")
+        force("org.codehaus.groovy:groovy-all:3.0.21")
+    }
+}
 
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}")
@@ -50,13 +58,6 @@ dependencies {
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("io.github.origin-energy:java-snapshot-testing-junit5:4.0.6")
-}
-
-configurations.all {
-    resolutionStrategy {
-        force("org.codehaus.groovy:groovy-all:3.0.21")
-        force("com.google.code.gson:gson:2.11.0")
-    }
 }
 
 gradlePlugin {
