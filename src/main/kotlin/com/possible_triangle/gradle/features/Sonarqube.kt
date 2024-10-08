@@ -13,24 +13,12 @@ fun Project.configureSonarQube(block: SonarProperties.() -> Unit) {
         apply<SonarQubePlugin>()
     }
 
-    allprojects {
-        configure<SonarExtension> {
-            properties {
-                file("src/main").takeIf { it.exists() }?.let {
-                    property("sonar.sources", it)
-                }
-                file("src/test").takeIf { it.exists() }?.let {
-                    property("sonar.tests", it)
-                }
-            }
-        }
-    }
-
     configure<SonarExtension> {
         properties {
             val version = mod.minecraftVersion.map { "$it-${mod.version.get()}" }.orElse(mod.version)
             property("sonar.projectVersion", version.get())
             property("sonar.projectKey", mod.id.get())
+            property("sonar.gradle.skipCompile", "true")
             mod.repository.orNull?.let { property("sonar.links.scm", it) }
 
             block(this@properties)
