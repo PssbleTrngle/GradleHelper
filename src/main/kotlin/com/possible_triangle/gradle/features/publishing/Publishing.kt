@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle.features.publishing
 
+import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.loaders.isSubProject
 import groovy.util.Node
 import groovy.util.NodeList
@@ -84,7 +85,12 @@ fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit)
                 groupId = config.group.get()
                 artifactId = config.name.get()
                 version = config.artifactVersion.get()
-                from(components["java"])
+
+                if (project.detectKotlin()) {
+                    from(components["kotlin"])
+                } else {
+                    from(components["java"])
+                }
 
                 pom.withXml {
                     val node = asNode()
