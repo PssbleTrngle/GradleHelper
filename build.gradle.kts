@@ -1,8 +1,9 @@
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    id("com.gradle.plugin-publish") version ("1.2.1")
-    id("org.sonarqube") version ("5.1.0.4872")
+    publishing
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.sonar)
     jacoco
 }
 
@@ -21,43 +22,32 @@ val artifact_id: String by extra
 val plugin_version: String by extra
 val repository: String by extra
 
-val cursegradle_version: String by extra
-val minotaur_version: String by extra
-val kotlin_version: String by extra
-val kotlin_dsl_version: String by extra
-val fabric_loom_version: String by extra
-val forge_gradle_version: String by extra
-val neoforged_gradle_version: String by extra
-val vanilla_gradle_version: String by extra
-val mixin_version: String by extra
-val sonar_version: String by extra
-val gson_version: String by extra
-
 configurations.all {
     resolutionStrategy {
-        force("com.google.code.gson:gson:${gson_version}")
+        force("com.google.code.gson:gson:2.11.0")
         force("org.codehaus.groovy:groovy-all:3.0.21")
     }
 }
 
 dependencies {
-    api("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}")
-    api("org.jetbrains.kotlin:kotlin-serialization:${kotlin_version}")
+    api(libs.kotlin.gradle)
+    api(libs.kotlin.serialization)
 
-    api("net.darkhax.curseforgegradle:CurseForgeGradle:${cursegradle_version}")
-    api("com.modrinth.minotaur:Minotaur:${minotaur_version}")
+    api(libs.cursegradle)
+    api(libs.minotaur)
 
-    api("fabric-loom:fabric-loom.gradle.plugin:${fabric_loom_version}")
-    api("net.minecraftforge.gradle:ForgeGradle:${forge_gradle_version}")
-    api("net.neoforged.gradle:userdev:${neoforged_gradle_version}")
-    api("org.spongepowered:vanillagradle:${vanilla_gradle_version}")
+    api(libs.fabric.loom.gradle)
+    api(libs.forge.gradle)
+    api(libs.neoforge.gradle)
+    api(libs.vanilla.gradle)
 
-    api("org.spongepowered:mixingradle:${mixin_version}")
+    api(libs.mixin.gradle)
 
-    api("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonar_version}")
+    api(libs.sonar.scanner)
+    api(libs.spotless)
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("io.github.origin-energy:java-snapshot-testing-junit5:4.0.6")
+    testImplementation(libs.junit.snapshots)
 }
 
 gradlePlugin {
@@ -107,6 +97,19 @@ publishing {
                 name = "gradle-plugin-portal"
             }
         }
+    }
+}
+
+spotless {
+    kotlin {
+        ktlint()
+        leadingTabsToSpaces()
+        suppressLintsFor { shortCode = "standard:package-name" }
+        suppressLintsFor { shortCode = "standard:no-wildcard-imports" }
+    }
+    kotlinGradle {
+        ktlint()
+        suppressLintsFor { shortCode = "standard:property-naming" }
     }
 }
 
