@@ -126,12 +126,13 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
             }
         }
 
-        runs.forEach { runConfig ->
-            runConfig.ideaModule(ideaModule)
-            runConfig.property("forge.logging.console.level", "debug")
-            runConfig.property("mixin.env.remapRefMap", "true")
-            runConfig.property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            runConfig.mods.create(mod.id.get()) {
+        runs.forEach { run ->
+            run.ideaModule(ideaModule)
+            run.property("forge.logging.console.level", "debug")
+            run.property("mixin.env.remapRefMap", "true")
+            run.property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
+            run.jvmArgs.addAll(JVM_ARGUMENTS)
+            run.mods.create(mod.id.get()) {
                 source(mainSourceSet)
                 config.dependsOn.forEach {
                     source(it.mainSourceSet)

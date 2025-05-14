@@ -92,8 +92,9 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
                     property("porting_lib.datagen.existing_resources=${existingResources.first()}")
                 }
             }
-            forEach {
-                it.ideConfigGenerated(true)
+            forEach { run ->
+                run.ideConfigGenerated(true)
+                run.vmArgs.addAll(JVM_ARGUMENTS)
             }
         }
 

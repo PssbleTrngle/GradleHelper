@@ -3,13 +3,12 @@ package com.possible_triangle.gradle.features.loaders
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.gradle.dsl.common.extensions.JarJar
+import net.neoforged.gradle.dsl.common.runs.run.Run
 import net.neoforged.gradle.userdev.UserDevPlugin
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
-import org.spongepowered.asm.gradle.plugins.MixinExtension
-import org.spongepowered.asm.gradle.plugins.MixinGradlePlugin
 import net.neoforged.gradle.common.tasks.JarJar as JarJarTask
 
 interface NeoforgeExtension : LoaderExtension, OutgoingProjectExtension {
@@ -19,11 +18,11 @@ interface NeoforgeExtension : LoaderExtension, OutgoingProjectExtension {
 
     var kotlinForgeVersion: String?
 
-    fun dataGen(existingMods: Collection<String> = emptySet())
+    fun dataGen(factory: ForgeDatagenBuilder.() -> Unit = {})
 }
 
 private class NeoforgeExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project),
-    NeoforgeExtension {
+    NeoforgeExtension, ForgeDatagenBuilder {
     override var mappingChannel: String = "official"
     override var mappingVersion: String? = null
     override var neoforgeVersion: String? = project.stringProperty("neoforge_version")
@@ -32,12 +31,18 @@ private class NeoforgeExtensionImpl(project: Project) : OutgoingProjectExtension
 
     var enabledDataGen: Boolean = false
         private set
-    var existingMods: Collection<String> = emptySet()
-        private set
+    private val _existingMods = mutableSetOf<String>()
+    val existingMods: Set<String> get() = _existingMods
 
-    override fun dataGen(existingMods: Collection<String>) {
+    override var owner: Project? = project.defaultDataGenProject
+
+    override fun existing(vararg mods: String) {
+        this._existingMods.addAll(mods)
+    }
+
+    override fun dataGen(factory: ForgeDatagenBuilder.() -> Unit) {
         enabledDataGen = true
-        this.existingMods = existingMods
+        factory(this)
     }
 }
 
@@ -60,73 +65,38 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
         }
     }
 
-    if (config.mixinsEnabled) {
-        apply<MixinGradlePlugin>()
-        configure<MixinExtension> {
-            add(mainSourceSet, "${mod.id.get()}.refmap.json")
-            config("${mod.id.get()}.mixins.json")
-        }
-
-        // workaround because of https://github.com/SpongePowered/MixinGradle/issues/48
-        tasks.withType<JavaCompile> {
-            doFirst {
-                options.compilerArgs.replaceAll { it: Any ->
-                    it.toString()
-                }
-            }
-        }
-    }
-
-    /*
-    configure<RunsExtension> {
-        val ideaModule = rootProject.name.replace(" ", "_").let { rootName ->
-            if (isSubProject) "${rootName}.${project.name}.main"
-            else "${rootName}.main"
+    extensions.getByName<NamedDomainObjectContainer<Run>>("runs").apply {
+        forEach { run ->
+            run.jvmArguments.addAll(JVM_ARGUMENTS)
         }
 
         create("client") {
             workingDirectory(project.file("run"))
-            taskName("Client")
         }
 
         create("server") {
             workingDirectory(project.file("run/server"))
-            taskName("Server")
+            programArgument("--nogui")
         }
 
         if (config.enabledDataGen) {
-            runs.create("data") {
+            create("data") {
                 workingDirectory(project.file("run/data"))
-                taskName("Data")
 
-                val existingResources = existingResources.flatMap { listOf("--existing", it) }
+                val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
                 val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
                 val dataGenArgs = listOf(
                     "--mod",
                     mod.id.get(),
                     "--all",
                     "--output",
-                    datagenOutput
+                    config.requireOwner().datagenOutput.path
                 ) + existingResources + existingMods
 
-                args(dataGenArgs)
-            }
-        }
-
-        runs.forEach { runConfig ->
-            runConfig.ideaModule(ideaModule)
-            runConfig.property("forge.logging.console.level", "debug")
-            runConfig.property("mixin.env.remapRefMap", "true")
-            runConfig.property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
-            runConfig.mods.create(mod.id.get()) {
-                source(mainSourceSet)
-                config.dependsOn.forEach {
-                    source(it.mainSourceSet)
-                }
+                programArguments(dataGenArgs)
             }
         }
     }
-    */
 
     tasks.getByName<Jar>("jar") {
         if (jarJarEnabled) archiveClassifier.set("raw")

@@ -69,3 +69,5 @@ internal fun Project.configureDatagen() {
         srcDir(datagenOutput)
     }
 }
+
+val JVM_ARGUMENTS = listOf("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")

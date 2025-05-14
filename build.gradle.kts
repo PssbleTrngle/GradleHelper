@@ -18,7 +18,6 @@ repositories {
 }
 
 val plugin_id: String by extra
-val artifact_id: String by extra
 val plugin_version: String by extra
 val repository: String by extra
 

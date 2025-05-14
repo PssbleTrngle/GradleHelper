@@ -50,8 +50,11 @@ private fun Project.modDependency(
 ): Dependency? {
     val loader = detectModLoader()
     val closure = closureOf<ExternalModuleDependency> { block() }
-    return if (loader == ModLoader.FORGE) dependencies.add(type, fg.deobf(dependencyNotation, closure))
-    else dependencies.add("mod${type.capitalized()}", dependencyNotation, closure)
+    return when (loader) {
+        ModLoader.FORGE -> dependencies.add(type, fg.deobf(dependencyNotation, closure))
+        ModLoader.NEOFORGE -> dependencies.add(type, dependencyNotation, closure)
+        else -> dependencies.add("mod${type.capitalized()}", dependencyNotation, closure)
+    }
 }
 
 fun Project.modImplementation(dependencyNotation: Any, block: ExternalModuleDependency.() -> Unit = {}) =
