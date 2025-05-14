@@ -12,7 +12,7 @@ cursegradle = { module = "net.darkhax.curseforgegradle:CurseForgeGradle", versio
 minotaur = { module = "com.modrinth.minotaur:Minotaur", version = "2.8.7" }
 
 vanilla-gradle = { module = "org.spongepowered:vanillagradle", version = "0.2.1-SNAPSHOT" }
-neoforge-gradle = { module = "net.neoforged.gradle:userdev", version = "7.0.177" }
+neoforge-gradle = { module = "net.neoforged.gradle:userdev", version = "7.0.120" }
 fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.9.2" }
 forge-gradle = { module = "net.minecraftforge.gradle:ForgeGradle", version = "[6.0,6.2)" }
 mixin-gradle = { module = "org.spongepowered:mixingradle", version = "0.7-SNAPSHOT" }

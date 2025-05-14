@@ -13,6 +13,10 @@ import org.gradle.kotlin.dsl.*
 import org.spongepowered.asm.gradle.plugins.MixinExtension
 import org.spongepowered.asm.gradle.plugins.MixinGradlePlugin
 
+interface ForgeDatagenBuilder : DatagenBuilder {
+    fun existing(vararg mods: String)
+}
+
 interface ForgeExtension : LoaderExtension, OutgoingProjectExtension {
     var mappingChannel: String
     var mappingVersion: String?
@@ -20,11 +24,11 @@ interface ForgeExtension : LoaderExtension, OutgoingProjectExtension {
 
     var kotlinForgeVersion: String?
 
-    fun dataGen(existingMods: Collection<String> = emptySet())
+    fun dataGen(factory: ForgeDatagenBuilder.() -> Unit = {})
 }
 
 private class ForgeExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project),
-    ForgeExtension {
+    ForgeExtension, ForgeDatagenBuilder {
     override var mappingChannel: String = "official"
     override var mappingVersion: String? = null
     override var forgeVersion: String? = project.stringProperty("forge_version")
@@ -33,12 +37,18 @@ private class ForgeExtensionImpl(project: Project) : OutgoingProjectExtensionImp
 
     var enabledDataGen: Boolean = false
         private set
-    var existingMods: Collection<String> = emptySet()
-        private set
+    private val _existingMods = mutableSetOf<String>()
+    val existingMods: Set<String> get() = _existingMods
 
-    override fun dataGen(existingMods: Collection<String>) {
+    override var owner: Project? = project.defaultDataGenProject
+
+    override fun existing(vararg mods: String) {
+        this._existingMods.addAll(mods)
+    }
+
+    override fun dataGen(factory: ForgeDatagenBuilder.() -> Unit) {
         enabledDataGen = true
-        this.existingMods = existingMods
+        factory(this)
     }
 }
 
@@ -47,7 +57,7 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
 
     val config = ForgeExtensionImpl(this).apply(block)
 
-    if (config.enabledDataGen) configureDatagen()
+    if (config.enabledDataGen) config.requireOwner().configureDatagen()
 
     configureOutputProject(config)
 
@@ -109,7 +119,7 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
                     mod.id.get(),
                     "--all",
                     "--output",
-                    datagenOutput
+                    config.requireOwner().datagenOutput
                 ) + existingResources + existingMods
 
                 args(dataGenArgs)

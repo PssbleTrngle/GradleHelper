@@ -16,12 +16,12 @@ interface FabricExtension : LoaderExtension, OutgoingProjectExtension {
 
     var kotlinFabricVersion: String?
 
-    fun dataGen()
+    fun dataGen(factory: DatagenBuilder.() -> Unit = {})
 
     fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency)
 }
 
-private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project), FabricExtension {
+private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project), FabricExtension, DatagenBuilder {
     override var loaderVersion: String? = project.stringProperty("fabric_loader_version")
     override var apiVersion: String? = project.stringProperty("fabric_api_version")
     override var kotlinFabricVersion: String? = project.stringProperty("kotlin_fabric_version")
@@ -32,8 +32,11 @@ private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionIm
     var mappingsSupplier: LoomGradleExtensionAPI.() -> Dependency = { officialMojangMappings() }
         private set
 
-    override fun dataGen() {
+    override var owner: Project? = project.defaultDataGenProject
+
+    override fun dataGen(factory: DatagenBuilder.() -> Unit) {
         enabledDataGen = true
+        factory(this)
     }
 
     override fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency) {
@@ -54,7 +57,7 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
 
     val config = FabricExtensionImpl(this).apply(block)
 
-    if (config.enabledDataGen) configureDatagen()
+    if (config.enabledDataGen) config.requireOwner().configureDatagen()
 
     configureOutputProject(config)
 
@@ -84,7 +87,7 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
                     runDir("run")
 
                     property("fabric-api.datagen")
-                    property("fabric-api.datagen.output-dir=${datagenOutput}")
+                    property("fabric-api.datagen.output-dir=${config.requireOwner().datagenOutput}")
                     property("fabric-api.datagen.modid=${mod.id.get()}")
                     property("porting_lib.datagen.existing_resources=${existingResources.first()}")
                 }

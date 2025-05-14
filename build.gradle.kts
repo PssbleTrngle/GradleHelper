@@ -1,7 +1,7 @@
 plugins {
+    `maven-publish`
     `java-gradle-plugin`
     `kotlin-dsl`
-    publishing
     alias(libs.plugins.spotless)
     alias(libs.plugins.sonar)
     jacoco
@@ -25,7 +25,7 @@ val repository: String by extra
 configurations.all {
     resolutionStrategy {
         force("com.google.code.gson:gson:2.11.0")
-        force("org.codehaus.groovy:groovy-all:3.0.21")
+        force("org.codehaus.groovy:groovy-all:3.0.22")
     }
 }
 
@@ -85,13 +85,7 @@ tasks.jacocoTestReport {
 val env: Map<String, String> = System.getenv()
 publishing {
     repositories {
-        env["LOCAL_MAVEN"]?.let { localMaven ->
-            maven {
-                name = "local-maven"
-                url = uri(localMaven)
-            }
-        }
-
+        mavenLocal()
         env["GRADLE_PUBLISH_KEY"]?.let {
             gradlePluginPortal {
                 name = "gradle-plugin-portal"

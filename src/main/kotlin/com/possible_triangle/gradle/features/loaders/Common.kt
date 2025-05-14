@@ -46,18 +46,26 @@ fun Project.setupCommon(block: CommonExtension.() -> Unit) {
     }
 }
 
-internal val Project.dataGenProject get() = if (isSubProject) project(":common") else this
+internal val Project.defaultDataGenProject get() = if (isSubProject) findProject(":common") else this
 
-internal val Project.datagenOutput get() = dataGenProject.file("src/generated/resources")
+internal val Project.datagenOutput get() = file("src/generated/resources")
 
 internal val Project.existingResources
-    get() = listOf(
-        dataGenProject.file("src/main/resources"),
+    get() = listOfNotNull(
+        defaultDataGenProject?.file("src/main/resources"),
         file("src/main/resources")
     )
 
+interface DatagenBuilder {
+    var owner: Project?
+}
+
+fun DatagenBuilder.requireOwner() = requireNotNull(owner) {
+    "could not locate default :common project, datagen owner must be configured manually"
+}
+
 internal fun Project.configureDatagen() {
-    dataGenProject.mainSourceSet.resources {
+    mainSourceSet.resources {
         srcDir(datagenOutput)
     }
 }

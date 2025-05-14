@@ -38,7 +38,6 @@ fun RepositoryHandler.curseMaven() = addCurseMaven()
 fun RepositoryHandler.modrinthMaven() = addModrinthMaven()
 
 fun RepositoryHandler.githubPackages(project: Project) = addGithubPackages(project)
-fun RepositoryHandler.localMaven(project: Project) = addLocalMaven(project)
 
 fun Project.enablePublishing(block: ModMavenPublishingExtension.() -> Unit = {}) = enableMavenPublishing(block)
 fun Project.uploadToCurseforge(block: CurseforgeExtension.() -> Unit = {}) = enableCursegradle(block)

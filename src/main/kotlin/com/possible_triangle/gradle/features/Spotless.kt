@@ -1,11 +1,15 @@
 package com.possible_triangle.gradle.features
 
 import com.diffplug.gradle.spotless.SpotlessExtension
+import com.diffplug.gradle.spotless.SpotlessPlugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import java.io.File
 
 fun Project.enableSpotless() {
+    apply<SpotlessPlugin>()
+
     configure<SpotlessExtension> {
         kotlin {
             ktlint()

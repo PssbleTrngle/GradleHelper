@@ -32,15 +32,6 @@ fun RepositoryHandler.addGithubPackages(project: Project) {
     }
 }
 
-fun RepositoryHandler.addLocalMaven(project: Project) {
-    project.env["LOCAL_MAVEN"]?.let { dir ->
-        maven {
-            name = "LocalMaven"
-            url = project.uri(dir)
-        }
-    }
-}
-
 private fun Project.defaultArtifactName(): Provider<String> {
     return mod.id.map { modId ->
         if (isSubProject) "${modId}-${name.lowercase()}"
@@ -55,7 +46,6 @@ interface ModMavenPublishingExtension {
     val repositories: RepositoryHandler
     fun repositories(configure: RepositoryHandler.() -> Unit)
     fun githubPackages()
-    fun localMaven()
 }
 
 private class ModMavenPublishingExtensionImpl(
@@ -71,7 +61,6 @@ private class ModMavenPublishingExtensionImpl(
     override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
 
     override fun githubPackages() = repositories.githubPackages(project)
-    override fun localMaven() = repositories.localMaven(project)
 }
 
 fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit) {
