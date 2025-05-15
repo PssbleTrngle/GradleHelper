@@ -119,7 +119,7 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
 
         lazyDependencies("implementation") {
             config.kotlinForgeVersion?.let {
-                add("thedarkcolour:kotlinforforge:${it}")
+                add("thedarkcolour:kotlinforforge-neoforge:${it}")
             }
 
             config.dependsOn.forEach {
