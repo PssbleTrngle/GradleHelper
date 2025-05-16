@@ -9,6 +9,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
+import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 interface LoaderExtension {
@@ -80,6 +81,12 @@ internal fun Project.configureOutputProject(config: OutgoingProjectExtensionImpl
     tasks.withType<KotlinCompile> {
         config.dependsOn.forEach {
             source(it.mainSourceSet.allSource)
+        }
+    }
+
+    tasks.withType<ProcessResources> {
+        config.dependsOn.forEach {
+            from(it.mainSourceSet.resources)
         }
     }
 }

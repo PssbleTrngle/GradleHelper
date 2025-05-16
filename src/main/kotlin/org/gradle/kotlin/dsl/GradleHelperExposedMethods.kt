@@ -8,6 +8,7 @@ import com.possible_triangle.gradle.features.addCurseMaven
 import com.possible_triangle.gradle.features.addModrinthMaven
 import com.possible_triangle.gradle.features.configureSonarQube
 import com.possible_triangle.gradle.features.enableKotlin
+import com.possible_triangle.gradle.features.enableSpotless
 import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.features.publishing.*
 import com.possible_triangle.gradle.loadEnv
@@ -72,4 +73,6 @@ fun Project.modApi(dependencyNotation: Any, block: ExternalModuleDependency.() -
 val Project.fg get() = the<DependencyManagementExtension>()
 
 fun Project.enableSonarQube(block: SonarProperties.() -> Unit = {}) = configureSonarQube(block)
+
+fun Project.enableSpotless(enableHook: Boolean = false) = enableSpotless(enableHook)
 

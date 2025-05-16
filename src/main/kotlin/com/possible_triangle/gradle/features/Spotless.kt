@@ -5,9 +5,8 @@ import com.diffplug.gradle.spotless.SpotlessPlugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import java.io.File
 
-fun Project.enableSpotless() {
+fun Project.enableSpotless(enableHook: Boolean) {
     apply<SpotlessPlugin>()
 
     configure<SpotlessExtension> {
@@ -34,18 +33,7 @@ fun Project.enableSpotless() {
         }
     }
 
-    tasks.create("initializeHooks") {
-        group = "other"
-
-        doLast {
-            copyHook("pre-commit")
-        }
+    if(enableHook) configure<GitExtension> {
+        preCommit("spotlessApply")
     }
-}
-
-private fun copyHook(name: String) {
-    val resource = object {}.javaClass.getResource("hooks/$name.sh")
-        ?: throw NullPointerException("Unable to find hook $name")
-    val text =  resource.readText()
-    File(".git/hooks/$name").writeText(text)
 }

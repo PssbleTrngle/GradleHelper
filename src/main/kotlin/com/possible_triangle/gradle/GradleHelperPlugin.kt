@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle
 
 import com.possible_triangle.gradle.features.defaultRepositories
+import com.possible_triangle.gradle.features.setupGitExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -29,7 +30,10 @@ interface ModExtension {
 
 class GradleHelperPlugin : Plugin<Project> {
 
-    override fun apply(target: Project) = target.allprojects { configure() }
+    override fun apply(target: Project) {
+        target.setupGitExtension()
+        target.allprojects { configure() }
+    }
 
     private fun Project.configure() {
         val rootMod = rootProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()

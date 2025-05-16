@@ -34,7 +34,7 @@ jobs:
       - name: Build and upload
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build publishPlugin
+          arguments: build publish
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_SECRET }}

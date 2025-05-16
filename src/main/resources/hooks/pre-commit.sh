@@ -1,13 +1,13 @@
 #!/bin/bash
 echo "*********************************************************"
-echo "Running git pre-commit hook. Running Spotless Apply... "
+echo "Running git pre-commit hook. Running Gradle tasks... "
 echo "*********************************************************"
 
 # Gather the staged files - to make sure changes are saved only for these files.
 stagedFiles=$(git diff --staged --name-only)
 
-# run spotless apply
-./gradlew spotlessApply
+# run tasks
+./gradlew {tasks}
 
 status=$?
 
@@ -24,8 +24,7 @@ if [ "$status" = 0 ] ; then
 else
     echo "*********************************************************"
     echo "       ********************************************      "
-    echo 1>&2 "Spotless Apply found violations it could not fix."
-    echo "Run spotless apply in your terminal and fix the issues before trying to commit again."
+    echo 1>&2 "Gradle found violations it could not fix."
     echo "       ********************************************      "
     echo "*********************************************************"
     #Exit
