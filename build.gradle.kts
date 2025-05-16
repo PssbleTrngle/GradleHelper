@@ -1,10 +1,10 @@
 plugins {
-    `maven-publish`
-    `java-gradle-plugin`
     `kotlin-dsl`
+    alias(libs.plugins.plugin.publish)
     alias(libs.plugins.spotless)
     alias(libs.plugins.sonar)
     jacoco
+
 }
 
 repositories {

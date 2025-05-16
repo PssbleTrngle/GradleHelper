@@ -26,3 +26,4 @@ junit-snapshots = { module = "io.github.origin-energy:java-snapshot-testing-juni
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless-version" }
 sonar = { id = "org.sonarqube", version.ref = "sonar-version" }
+plugin-publish = { id = "com.gradle.plugin-publish", version = "1.3.1" }
