@@ -83,12 +83,6 @@ internal fun Project.configureOutputProject(config: OutgoingProjectExtensionImpl
             source(it.mainSourceSet.allSource)
         }
     }
-
-    tasks.withType<ProcessResources> {
-        config.dependsOn.forEach {
-            from(it.mainSourceSet.resources)
-        }
-    }
 }
 
 internal enum class ModLoader {

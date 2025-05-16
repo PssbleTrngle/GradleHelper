@@ -9,6 +9,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
+import org.gradle.language.jvm.tasks.ProcessResources
 import net.neoforged.gradle.common.tasks.JarJar as JarJarTask
 
 interface NeoforgeExtension : LoaderExtension, OutgoingProjectExtension {
@@ -54,6 +55,12 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
     if (config.enabledDataGen) configureDatagen()
 
     configureOutputProject(config)
+
+    tasks.withType<ProcessResources> {
+        config.dependsOn.forEach {
+            from(it.mainSourceSet.resources)
+        }
+    }
 
     val jarJar = the<JarJar>()
     val jarJarEnabled = config.includedLibraries.isNotEmpty() || config.includedMods.isNotEmpty()
