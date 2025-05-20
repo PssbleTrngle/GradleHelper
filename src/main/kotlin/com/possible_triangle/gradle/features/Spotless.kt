@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
-fun Project.enableSpotless(enableHook: Boolean) {
+fun Project.configureSpotless() {
     apply<SpotlessPlugin>()
 
     configure<SpotlessExtension> {
@@ -31,9 +31,5 @@ fun Project.enableSpotless(enableHook: Boolean) {
 
             suppressLintsFor { shortCode = "standard:property-naming" }
         }
-    }
-
-    if(enableHook) configure<GitExtension> {
-        preCommit("spotlessApply")
     }
 }

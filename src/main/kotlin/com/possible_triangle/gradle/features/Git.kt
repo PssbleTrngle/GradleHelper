@@ -22,22 +22,28 @@ open class GitExtensionImpl : GitExtension {
     }
 }
 
-fun preCommitHook(tasks: Collection<String>) {
+fun preCommitHook() {
     val resource = GitExtension::class.java.getResource("hooks/pre-commit.sh")
         ?: throw NullPointerException("Unable to find pre commit hook")
-    val text = resource.readText().replace("{tasks}", tasks.joinToString(" "))
+    val text = resource.readText()
     File(".git/hooks/pre-commit").writeText(text)
 }
 
 fun Project.setupGitExtension() {
     extensions.create(GitExtension::class.java, "git", GitExtensionImpl::class.java)
 
+    val extension = project.the<GitExtension>()
+    tasks.findByName("check")?.let { task ->
+        extension.preCommitTasks.forEach {
+            task.dependsOn(it)
+        }
+    }
+
     tasks.register("initializeHooks") {
         group = "other"
 
         doLast {
-            val extension = project.the<GitExtension>()
-            preCommitHook(extension.preCommitTasks)
+            preCommitHook()
         }
     }
 }

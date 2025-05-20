@@ -7,7 +7,7 @@ echo "*********************************************************"
 stagedFiles=$(git diff --staged --name-only)
 
 # run tasks
-./gradlew {tasks}
+./gradlew check
 
 status=$?
 

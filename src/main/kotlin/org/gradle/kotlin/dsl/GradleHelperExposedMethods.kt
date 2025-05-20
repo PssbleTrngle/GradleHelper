@@ -4,11 +4,7 @@ package org.gradle.kotlin.dsl
 
 import com.possible_triangle.gradle.ModExtension
 import com.possible_triangle.gradle.ProjectEnvironment
-import com.possible_triangle.gradle.features.addCurseMaven
-import com.possible_triangle.gradle.features.addModrinthMaven
-import com.possible_triangle.gradle.features.configureSonarQube
-import com.possible_triangle.gradle.features.enableKotlin
-import com.possible_triangle.gradle.features.enableSpotless
+import com.possible_triangle.gradle.features.*
 import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.features.publishing.*
 import com.possible_triangle.gradle.loadEnv
@@ -74,5 +70,5 @@ val Project.fg get() = the<DependencyManagementExtension>()
 
 fun Project.enableSonarQube(block: SonarProperties.() -> Unit = {}) = configureSonarQube(block)
 
-fun Project.enableSpotless(enableHook: Boolean = false) = enableSpotless(enableHook)
+fun Project.enableSpotless() = configureSpotless()
 
