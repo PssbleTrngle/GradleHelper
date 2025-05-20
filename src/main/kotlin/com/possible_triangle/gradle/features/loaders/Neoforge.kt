@@ -83,7 +83,7 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
 
         create("server") {
             workingDirectory(project.file("run/server"))
-            programArgument("--nogui")
+            argument("--nogui")
         }
 
         if (config.enabledDataGen) {
@@ -100,7 +100,7 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
                     config.requireOwner().datagenOutput.path
                 ) + existingResources + existingMods
 
-                programArguments(dataGenArgs)
+                arguments(dataGenArgs)
             }
         }
     }
