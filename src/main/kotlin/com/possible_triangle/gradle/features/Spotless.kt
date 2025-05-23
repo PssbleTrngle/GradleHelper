@@ -9,6 +9,9 @@ import org.gradle.kotlin.dsl.configure
 fun Project.configureSpotless() {
     apply<SpotlessPlugin>()
 
+    val applyTask = tasks.findByName("spotlessApply")
+    tasks.findByName("preCommit")?.dependsOn(applyTask)
+
     configure<SpotlessExtension> {
         kotlin {
             ktlint()

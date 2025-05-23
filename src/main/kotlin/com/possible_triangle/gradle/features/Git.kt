@@ -9,6 +9,9 @@ fun Project.setupGitExtension() {
         ?: throw NullPointerException("Unable to find pre commit hook")
     val text = resource.readText()
     val to = File(".git/hooks/pre-commit")
+
+    tasks.register("preCommit")
+
     if (to.parentFile.exists()) to.writeText(text)
     else logger.warn("could not locate git directory at ${to.parentFile.parentFile.absoluteFile}")
 }

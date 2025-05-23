@@ -111,3 +111,7 @@ sonar {
         property("sonar.projectKey", "gradle-helper")
     }
 }
+
+tasks.register("preCommit") {
+    dependsOn(tasks.spotlessApply)
+}
