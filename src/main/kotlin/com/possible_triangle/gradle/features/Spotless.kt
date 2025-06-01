@@ -34,5 +34,10 @@ fun Project.configureSpotless() {
 
             suppressLintsFor { shortCode = "standard:property-naming" }
         }
+
+        json {
+            target("src/main/**/*.json", "*/src/main/**/*.json")
+            gson().indentWithSpaces(2)
+        }
     }
 }
