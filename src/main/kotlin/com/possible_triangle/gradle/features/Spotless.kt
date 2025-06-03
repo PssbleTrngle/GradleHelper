@@ -7,37 +7,39 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
 fun Project.configureSpotless() {
-    apply<SpotlessPlugin>()
+    allprojects {
+        apply<SpotlessPlugin>()
+
+        configure<SpotlessExtension> {
+            kotlin {
+                ktlint()
+
+                leadingTabsToSpaces()
+
+                suppressLintsFor { shortCode = "standard:package-name" }
+                suppressLintsFor { shortCode = "standard:no-wildcard-imports" }
+            }
+
+            java {
+                importOrder()
+                removeUnusedImports()
+
+                leadingTabsToSpaces()
+            }
+
+            kotlinGradle {
+                ktlint()
+
+                suppressLintsFor { shortCode = "standard:property-naming" }
+            }
+
+            json {
+                target("src/main/**/*.json")
+                gson().indentWithSpaces(2)
+            }
+        }
+    }
 
     val applyTask = tasks.findByName("spotlessApply")
     tasks.findByName("preCommit")?.dependsOn(applyTask)
-
-    configure<SpotlessExtension> {
-        kotlin {
-            ktlint()
-
-            leadingTabsToSpaces()
-
-            suppressLintsFor { shortCode = "standard:package-name" }
-            suppressLintsFor { shortCode = "standard:no-wildcard-imports" }
-        }
-
-        java {
-            importOrder()
-            removeUnusedImports()
-
-            leadingTabsToSpaces()
-        }
-
-        kotlinGradle {
-            ktlint()
-
-            suppressLintsFor { shortCode = "standard:property-naming" }
-        }
-
-        json {
-            target("src/main/**/*.json", "*/src/main/**/*.json")
-            gson().indentWithSpaces(2)
-        }
-    }
 }
