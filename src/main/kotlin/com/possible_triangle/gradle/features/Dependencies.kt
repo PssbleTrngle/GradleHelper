@@ -25,6 +25,7 @@ fun RepositoryHandler.addCurseMaven() {
 
 internal fun RepositoryHandler.defaultRepositories() {
     mavenCentral()
+    mavenLocal()
 
     maven {
         url = URI("https://maven.fabricmc.net/")

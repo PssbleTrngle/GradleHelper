@@ -33,6 +33,8 @@ class GradleHelperPlugin : Plugin<Project> {
     }
 
     private fun Project.configure() {
+        project.loadEnv()
+
         val rootMod = rootProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
         val mod = extensions.create<ModExtension>("mod")
 

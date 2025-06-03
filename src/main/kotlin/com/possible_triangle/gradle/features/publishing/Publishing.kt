@@ -6,29 +6,54 @@ import groovy.util.Node
 import groovy.util.NodeList
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.kotlin.dsl.*
+import java.net.URI
 
-fun RepositoryHandler.addGithubPackages(project: Project) {
-    val actor = project.env["GITHUB_ACTOR"]
-    val token = project.env["GITHUB_TOKEN"]
+fun RepositoryHandler.addGithubPackages(project: Project, block: MavenArtifactRepository.() -> Unit) =
+    addGithubPackages(project.mod.repository.get(), block)
 
-    if (actor == null || token == null) {
-        project.logger.warn("Skipping GitHub publishing, actor or token missing")
-        return
-    }
+
+fun RepositoryHandler.addGithubPackages(repository: String, block: MavenArtifactRepository.() -> Unit) {
+    val actor = env["GITHUB_ACTOR"]
+    val token = env["GITHUB_TOKEN"]
+
+    if (actor == null || token == null) return
 
     maven {
         name = "GitHubPackages"
-        url = project.uri("https://maven.pkg.github.com/${project.mod.repository.get()}")
+        url = URI("https://maven.pkg.github.com/${repository.lowercase()}")
         credentials {
             username = actor
             password = token
         }
+
+        block()
+    }
+}
+
+fun RepositoryHandler.addNexus(snapshot: Boolean, block: MavenArtifactRepository.() -> Unit) {
+    val repository = if (snapshot) "maven-snapshots" else "maven-releases"
+    val token = env["NEXUS_TOKEN"]
+    val user = env["NEXUS_USER"]
+
+    maven {
+        name = "Nexus"
+        url = URI("https://registry.somethingcatchy.net/repository/$repository/")
+
+        if (token != null || user != null) {
+            credentials {
+                username = user
+                password = token
+            }
+        }
+
+        block()
     }
 }
 
@@ -68,6 +93,10 @@ fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit)
 
     configure<PublishingExtension> {
         val config = ModMavenPublishingExtensionImpl(this@enableMavenPublishing, this).apply(block)
+
+        repositories {
+            mavenLocal()
+        }
 
         publications {
             create<MavenPublication>("gpr") {

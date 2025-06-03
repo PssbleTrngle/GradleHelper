@@ -81,14 +81,14 @@ internal abstract class UploadExtensionImpl(private val project: Project, privat
     }
 
     override var projectId: String? = project.stringProperty(projectIdKey)
-    override var token: String? = project.env[tokenKey]
+    override var token: String? = env[tokenKey]
     override val file: RegularFileProperty = project.detectOutputJar()
 
     override var minecraftVersions: Collection<String> = setOfNotNull(project.mod.minecraftVersion.orNull)
     override var modLoaders: Collection<String> = emptySet()
     override var version: String? = project.mod.version.orNull
     override var versionName: String? = null
-    override var changelog: String? = project.env["CHANGELOG"]
+    override var changelog: String? = env["CHANGELOG"]
     override var releaseType: String = project.mod.releaseType.orNull ?: "release"
 
     override var includeKotlinDependency: Boolean = true

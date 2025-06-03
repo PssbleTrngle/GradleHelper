@@ -21,7 +21,8 @@ interface FabricExtension : LoaderExtension, OutgoingProjectExtension {
     fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency)
 }
 
-private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project), FabricExtension, DatagenBuilder {
+private class FabricExtensionImpl(project: Project) : OutgoingProjectExtensionImpl(project), FabricExtension,
+    DatagenBuilder {
     override var loaderVersion: String? = project.stringProperty("fabric_loader_version")
     override var apiVersion: String? = project.stringProperty("fabric_api_version")
     override var kotlinFabricVersion: String? = project.stringProperty("kotlin_fabric_version")
@@ -109,6 +110,12 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
     }
 
     val loom = the<LoomGradleExtensionAPI>()
+
+    mainSourceSet.apply {
+        config.dependsOn.forEach {
+            resources.srcDir(it.mainSourceSet.resources)
+        }
+    }
 
     dependencies {
         add("minecraft", mod.minecraftVersion.map { "com.mojang:minecraft:${it}" })

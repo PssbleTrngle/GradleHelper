@@ -8,15 +8,15 @@ import com.possible_triangle.gradle.ProjectEnvironment
 import com.possible_triangle.gradle.features.*
 import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.features.publishing.*
-import com.possible_triangle.gradle.loadEnv
+import com.possible_triangle.gradle.getEnv
 import net.minecraftforge.gradle.userdev.DependencyManagementExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.configurationcache.extensions.capitalized
-import org.jetbrains.kotlin.com.google.common.base.Suppliers
 import org.sonarqube.gradle.SonarProperties
 
 fun ExtensionAware.mod(block: ModExtension.() -> Unit) = extensions.configure(block)
@@ -28,14 +28,16 @@ fun Project.forge(block: ForgeExtension.() -> Unit = {}) = setupForge(block)
 fun Project.neoforge(block: NeoforgeExtension.() -> Unit = {}) = setupNeoforge(block)
 fun Project.fabric(block: FabricExtension.() -> Unit = {}) = setupFabric(block)
 
-val Project.env get(): ProjectEnvironment = Suppliers.memoize { loadEnv() }.get()
+val env get(): ProjectEnvironment = getEnv()
 
 fun Project.withKotlin() = enableKotlin()
 
 fun RepositoryHandler.curseMaven() = addCurseMaven()
 fun RepositoryHandler.modrinthMaven() = addModrinthMaven()
 
-fun RepositoryHandler.githubPackages(project: Project) = addGithubPackages(project)
+fun RepositoryHandler.githubPackages(project: Project, block: MavenArtifactRepository.() -> Unit = {}) = addGithubPackages(project, block)
+fun RepositoryHandler.githubPackages(repository: String, block: MavenArtifactRepository.() -> Unit = {}) = addGithubPackages(repository, block)
+fun RepositoryHandler.nexus(snapshot: Boolean = false, block: MavenArtifactRepository.() -> Unit = {}) = addNexus(snapshot, block)
 
 fun Project.enablePublishing(block: ModMavenPublishingExtension.() -> Unit = {}) = enableMavenPublishing(block)
 fun Project.uploadToCurseforge(block: CurseforgeExtension.() -> Unit = {}) = enableCursegradle(block)

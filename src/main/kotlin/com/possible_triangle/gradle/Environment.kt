@@ -18,10 +18,14 @@ private fun Project.loadLocalEnv(fileName: String) = file(fileName).takeIf { it.
         key.trim() to value.trim()
     } ?: emptyMap()
 
-fun Project.loadEnv(fileName: String = ".env"): ProjectEnvironment {
+internal lateinit var loadedEnv: ProjectEnvironment
+
+internal fun Project.loadEnv(fileName: String = ".env") {
     val localEnv = rootProject.loadLocalEnv(fileName) + loadLocalEnv(fileName)
-    return ProjectEnvironment(System.getenv() + localEnv)
+    loadedEnv = ProjectEnvironment(System.getenv() + localEnv)
 }
+
+fun getEnv() = loadedEnv
 
 internal fun Project.stringProperty(key: String): String? = if (extra.has(key)) extra[key].toString() else null
 
