@@ -19,13 +19,13 @@ class EnvironmentTest {
 
     @Test
     fun `loads load environment files`() {
-        val project = createProject {
+        createProject {
             withProjectDir("with-env")
         }
 
         localEnv.forEach {(key, value) ->
-            assertContains(project.env.toMap(), key)
-            assertEquals(project.env[key], value)
+            assertContains(env.toMap(), key)
+            assertEquals(env[key], value)
         }
     }
 
@@ -35,15 +35,15 @@ class EnvironmentTest {
             withProjectDir("with-env")
         }
 
-        val subproject = createProjectWithoutPlugin {
+        createProjectWithoutPlugin {
             withParent(project)
         }
 
         project.apply<GradleHelperPlugin>()
 
         localEnv.forEach {(key, value) ->
-            assertContains(subproject.env.toMap(), key)
-            assertEquals(subproject.env[key], value)
+            assertContains(env.toMap(), key)
+            assertEquals(env[key], value)
         }
     }
 
