@@ -8,10 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.findByType
-import org.gradle.kotlin.dsl.repositories
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 
 interface ModExtension {
@@ -43,11 +40,14 @@ class GradleHelperPlugin : Plugin<Project> {
             mod.supplier().convention(provider { rootMod?.supplier()?.orNull ?: default })
         }
 
+        val modVersion = env["RELEASE_VERSION"] ?: rootProject.stringProperty("mod_version")
+        val mcVersion = rootProject.stringProperty("mc_version") ?: rootProject.stringProperty("minecraft_version")
+
         configureDefault(rootProject.stringProperty("mod_id")) { id }
         configureDefault(rootProject.stringProperty("mod_name")) { name }
-        configureDefault(rootProject.stringProperty("mod_version")) { version }
+        configureDefault(modVersion) { version }
         configureDefault(rootProject.stringProperty("mod_author")) { author }
-        configureDefault(rootProject.stringProperty("mc_version")) { minecraftVersion }
+        configureDefault(mcVersion) { minecraftVersion }
         configureDefault(rootProject.stringProperty("release_type")) { releaseType }
         configureDefault(rootProject.stringProperty("repository")) { repository }
         configureDefault(rootProject.stringProperty("maven_group")) { mavenGroup }

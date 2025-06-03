@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
-fun Project.configureSpotless() {
+fun Project.configureSpotless(enableHook: Boolean, block: SpotlessExtension.() -> Unit) {
     allprojects {
         apply<SpotlessPlugin>()
 
@@ -37,9 +37,13 @@ fun Project.configureSpotless() {
                 target("src/main/**/*.json")
                 gson().indentWithSpaces(2)
             }
+
+            block()
         }
     }
 
-    val applyTask = tasks.findByName("spotlessApply")
-    tasks.findByName("preCommit")?.dependsOn(applyTask)
+    if (enableHook) {
+        val applyTask = tasks.findByName("spotlessApply")
+        tasks.findByName("preCommit")?.dependsOn(applyTask)
+    }
 }

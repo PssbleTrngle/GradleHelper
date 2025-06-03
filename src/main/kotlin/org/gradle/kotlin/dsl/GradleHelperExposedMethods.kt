@@ -2,6 +2,7 @@
 
 package org.gradle.kotlin.dsl
 
+import com.diffplug.gradle.spotless.SpotlessExtension
 import com.possible_triangle.gradle.ModExtension
 import com.possible_triangle.gradle.ProjectEnvironment
 import com.possible_triangle.gradle.features.*
@@ -70,5 +71,6 @@ val Project.fg get() = the<DependencyManagementExtension>()
 
 fun Project.enableSonarQube(block: SonarProperties.() -> Unit = {}) = configureSonarQube(block)
 
-fun Project.enableSpotless() = configureSpotless()
+fun Project.enableSpotless(enableHook: Boolean = true, block: SpotlessExtension.() -> Unit = {}) =
+    configureSpotless(enableHook, block)
 
