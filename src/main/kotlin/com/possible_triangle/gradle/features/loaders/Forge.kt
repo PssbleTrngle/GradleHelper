@@ -1,12 +1,16 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.lazyDependencies
+import com.possible_triangle.gradle.features.publishing.PUBLICATION_NAME
 import com.possible_triangle.gradle.stringProperty
 import net.minecraftforge.gradle.common.util.MinecraftExtension
 import net.minecraftforge.gradle.userdev.UserDevPlugin
 import net.minecraftforge.gradle.userdev.jarjar.JarJarProjectExtension
 import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
@@ -62,14 +66,23 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
     configureOutputProject(config)
 
     val jarJar = the<JarJarProjectExtension>()
-    val jarJarEnabled = config.includedLibraries.isNotEmpty() || config.includedMods.isNotEmpty()
-    if (jarJarEnabled) jarJar.enable()
 
-    fun DependencyHandlerScope.pin(dependencyNotation: String) {
-        add("jarJar", dependencyNotation) {
+    fun DependencyHandlerScope.pin(dependencyNotation: String): Dependency {
+        return add("jarJar", dependencyNotation) {
             jarJar.ranged(this, "[${version},)")
         }
     }
+
+    val includeMixinExtras = project.mixinExtrasVersion?.takeIf { config.mixinsEnabled }?.also {
+        dependencies {
+            val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${it}")
+            add("compileOnly", annotationProcessor!!)
+            add("implementation", pin("io.github.llamalad7:mixinextras-forge:${it}"))
+        }
+    } != null
+
+    val jarJarEnabled = config.includedLibraries.isNotEmpty() || config.includedMods.isNotEmpty() || includeMixinExtras
+    if (jarJarEnabled) jarJar.enable()
 
     if (config.mixinsEnabled) {
         apply<MixinGradlePlugin>()
@@ -143,7 +156,7 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
 
     tasks.getByName<Jar>("jar") {
         finalizedBy("reobfJar")
-        if (jarJarEnabled) archiveClassifier.set("raw")
+        if (jarJarEnabled) archiveClassifier.set("slim")
     }
 
     if (jarJarEnabled) {
@@ -186,6 +199,14 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         config.includedMods.forEach {
             add("implementation", fg.deobf(it))
             pin(it)
+        }
+    }
+
+    if (jarJarEnabled) extensions.findByType<PublishingExtension>()?.apply {
+        publications {
+            named<MavenPublication>(PUBLICATION_NAME) {
+                artifact(tasks.getByName(UserDevPlugin.JAR_JAR_TASK_NAME))
+            }
         }
     }
 

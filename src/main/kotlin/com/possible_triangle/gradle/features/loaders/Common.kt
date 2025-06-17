@@ -33,6 +33,9 @@ fun Project.setupCommon(block: CommonExtension.() -> Unit) {
 
     dependencies {
         add("compileOnly", "org.spongepowered:mixin:0.8.5")
+        mixinExtrasVersion?.also {
+            add("compileOnly", "io.github.llamalad7:mixinextras-common:${it}")
+        }
 
         lazyDependencies("implementation") {
             config.dependsOn.forEach {

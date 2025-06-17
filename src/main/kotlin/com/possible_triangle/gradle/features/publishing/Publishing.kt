@@ -88,6 +88,8 @@ private class ModMavenPublishingExtensionImpl(
     override fun githubPackages() = repositories.githubPackages(project)
 }
 
+internal const val PUBLICATION_NAME = "maven"
+
 fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit) {
     apply<MavenPublishPlugin>()
 
@@ -99,7 +101,7 @@ fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit)
         }
 
         publications {
-            create<MavenPublication>("gpr") {
+            create<MavenPublication>(PUBLICATION_NAME) {
                 groupId = config.group.get()
                 artifactId = config.name.get()
                 version = config.artifactVersion.get()

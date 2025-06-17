@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle.features.loaders
 
+import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.minecraftforge.gradle.userdev.DependencyManagementExtension
 import net.neoforged.gradle.userdev.runtime.extension.UserDevRuntimeExtension
@@ -9,7 +10,6 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
-import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 interface LoaderExtension {
@@ -98,3 +98,5 @@ internal fun Project.detectModLoader(): ModLoader? {
         ModLoader.NEOFORGE
     }
 }
+
+internal val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version")
