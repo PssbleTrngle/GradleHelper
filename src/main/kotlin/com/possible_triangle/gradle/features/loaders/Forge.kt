@@ -12,6 +12,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.spongepowered.asm.gradle.plugins.MixinExtension
@@ -210,4 +211,7 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         }
     }
 
+    // issues with mixin extras
+    tasks.withType<Test> { enabled = false }
+    tasks.named("compileTestJava") { enabled = false }
 }

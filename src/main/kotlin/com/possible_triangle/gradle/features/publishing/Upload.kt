@@ -7,9 +7,11 @@ import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.task.RemapJarTask
 import net.minecraftforge.gradle.userdev.UserDevPlugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskContainer
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.env
@@ -138,4 +140,12 @@ internal fun Project.detectOutputJar(): RegularFileProperty = objects.fileProper
         ModLoader.FABRIC -> tasks.getByName<RemapJarTask>("remapJar")
         else -> jarTask
     }.archiveFile.get().asFile
+}
+
+internal val TaskContainer.publish get(): Task {
+    return findByName("publish") ?: register("publish") {
+        doLast {
+            print("successfully published")
+        }
+    }.get()
 }

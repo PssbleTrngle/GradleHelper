@@ -61,10 +61,12 @@ fun Project.enableMinotaur(block: ModrinthExtension.() -> Unit) {
 
         syncFile.orNull?.let {
             syncBodyFrom.set(it.asFile.readText())
-
-            tasks.named("modrinth") {
-                dependsOn(tasks.withType<TaskModrinthSyncBody>())
-            }
         }
+    }
+
+    val task = tasks.getByName("modrinth")
+    tasks.publish.dependsOn(task)
+    if(syncFile.isPresent) {
+        task.dependsOn(tasks.withType<TaskModrinthSyncBody>())
     }
 }

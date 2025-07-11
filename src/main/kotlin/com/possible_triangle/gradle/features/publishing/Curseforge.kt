@@ -34,7 +34,7 @@ fun Project.enableCursegradle(block: CurseforgeExtension.() -> Unit) {
         logger.warn("No curseforge token set, cursegradle will not be configured")
     }
 
-    tasks.register<TaskPublishCurseForge>("curseforge") {
+    val task = tasks.register<TaskPublishCurseForge>("curseforge") {
         apiToken = uploadInfo.token
 
         upload(uploadInfo.projectId, uploadInfo.file).apply {
@@ -50,4 +50,6 @@ fun Project.enableCursegradle(block: CurseforgeExtension.() -> Unit) {
             uploadInfo.embeddedDependencies.forEach { addRelation(it, Constants.RELATION_EMBEDDED) }
         }
     }
+
+    tasks.publish.dependsOn(task)
 }

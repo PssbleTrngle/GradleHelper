@@ -101,6 +101,9 @@ class GradleHelperPlugin : Plugin<Project> {
 
         tasks.withType<Jar> {
             exclude(".cache")
+            exclude("**/*.bbmodel")
+            exclude("**/*.aseprite")
+            exclude("**/*.xcf")
         }
     }
 
