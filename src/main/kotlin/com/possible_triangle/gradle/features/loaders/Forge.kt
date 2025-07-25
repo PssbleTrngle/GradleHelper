@@ -1,7 +1,8 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.lazyDependencies
-import com.possible_triangle.gradle.features.publishing.PUBLICATION_NAME
+import com.possible_triangle.gradle.features.publishing.modifyPublication
+import com.possible_triangle.gradle.features.publishing.overwriteDependencies
 import com.possible_triangle.gradle.stringProperty
 import net.minecraftforge.gradle.common.util.MinecraftExtension
 import net.minecraftforge.gradle.userdev.UserDevPlugin
@@ -9,8 +10,6 @@ import net.minecraftforge.gradle.userdev.jarjar.JarJarProjectExtension
 import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
@@ -203,12 +202,11 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         }
     }
 
-    if (jarJarEnabled) extensions.findByType<PublishingExtension>()?.apply {
-        publications {
-            named<MavenPublication>(PUBLICATION_NAME) {
-                artifact(tasks.getByName(UserDevPlugin.JAR_JAR_TASK_NAME))
-            }
+    modifyPublication {
+        if (jarJarEnabled) {
+            artifact(tasks.getByName(UserDevPlugin.JAR_JAR_TASK_NAME))
         }
+        overwriteDependencies()
     }
 
     // issues with mixin extras

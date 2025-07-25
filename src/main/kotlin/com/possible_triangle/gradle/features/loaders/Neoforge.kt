@@ -1,7 +1,8 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.lazyDependencies
-import com.possible_triangle.gradle.features.publishing.PUBLICATION_NAME
+import com.possible_triangle.gradle.features.publishing.modifyPublication
+import com.possible_triangle.gradle.features.publishing.overwriteDependencies
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.gradle.dsl.common.extensions.JarJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
@@ -9,8 +10,6 @@ import net.neoforged.gradle.userdev.UserDevPlugin
 import net.neoforged.gradle.userdev.UserDevProjectPlugin
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -151,12 +150,11 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
         }
     }
 
-    if(jarJarEnabled) extensions.findByType<PublishingExtension>()?.apply {
-        publications {
-            named<MavenPublication>(PUBLICATION_NAME) {
-                artifact(tasks.getByName(UserDevProjectPlugin.JAR_JAR_TASK_NAME))
-            }
+    modifyPublication {
+        if (jarJarEnabled) {
+            artifact(tasks.getByName(UserDevProjectPlugin.JAR_JAR_TASK_NAME))
         }
+        overwriteDependencies()
     }
 
 }

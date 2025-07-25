@@ -111,13 +111,25 @@ fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit)
                 } else {
                     from(components["java"])
                 }
-
-                pom.withXml {
-                    val node = asNode()
-                    val list = node.get("dependencies") as NodeList
-                    list.forEach { node.remove(it as Node) }
-                }
             }
         }
+    }
+}
+
+fun Project.modifyPublication(block: MavenPublication.() -> Unit) {
+    extensions.findByType<PublishingExtension>()?.apply {
+        publications {
+            named<MavenPublication>(PUBLICATION_NAME) {
+                block()
+            }
+        }
+    }
+}
+
+fun MavenPublication.overwriteDependencies() {
+    pom.withXml {
+        val node = asNode()
+        val list = node.get("dependencies") as NodeList
+        list.forEach { node.remove(it as Node) }
     }
 }
