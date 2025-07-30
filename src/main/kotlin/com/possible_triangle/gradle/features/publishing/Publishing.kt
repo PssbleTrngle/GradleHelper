@@ -71,7 +71,11 @@ interface ModMavenPublishingExtension {
     val repositories: RepositoryHandler
     fun repositories(configure: RepositoryHandler.() -> Unit)
     fun githubPackages()
+    fun removePomDependencies()
+    fun removePomDependencies(groupId: String, artifactId: String? = null, version: String? = null)
 }
+
+private data class DependencyFilter(val groupId: String, val artifactId: String?, val version: String?)
 
 private class ModMavenPublishingExtensionImpl(
     private val project: Project,
@@ -86,6 +90,19 @@ private class ModMavenPublishingExtensionImpl(
     override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
 
     override fun githubPackages() = repositories.githubPackages(project)
+
+    var removeAllDependency = false
+        private set
+
+    val dependencyFilters = arrayListOf<DependencyFilter>()
+
+    override fun removePomDependencies() {
+        removeAllDependency = true
+    }
+
+    override fun removePomDependencies(groupId: String, artifactId: String?, version: String?) {
+        dependencyFilters.add(DependencyFilter(groupId, artifactId, version))
+    }
 }
 
 internal const val PUBLICATION_NAME = "maven"
@@ -111,6 +128,12 @@ fun Project.enableMavenPublishing(block: ModMavenPublishingExtension.() -> Unit)
                 } else {
                     from(components["java"])
                 }
+
+                if (config.removeAllDependency) {
+                    removePomDependencies()
+                } else config.dependencyFilters.forEach {
+                    removePomDependencies(it)
+                }
             }
         }
     }
@@ -126,10 +149,29 @@ fun Project.modifyPublication(block: MavenPublication.() -> Unit) {
     }
 }
 
-fun MavenPublication.overwriteDependencies() {
+internal fun MavenPublication.removePomDependencies() {
+    suppressAllPomMetadataWarnings()
+    
     pom.withXml {
         val node = asNode()
         val list = node.get("dependencies") as NodeList
         list.forEach { node.remove(it as Node) }
+    }
+}
+
+private fun MavenPublication.removePomDependencies(filter: DependencyFilter) {
+    suppressAllPomMetadataWarnings()
+
+    fun Node.all(key: String) = get(key) as List<Node>? ?: emptyList()
+    fun Node.first(key: String) = all(key).firstOrNull()
+
+    pom.withXml {
+        val node = asNode().first("dependencies") ?: return@withXml
+        val dependencies = node.all("dependency")
+        dependencies
+            .filter { it.first("groupId")?.value() == filter.groupId }
+            .filter { filter.artifactId == null || (it.first("artifactId")?.value() == filter.artifactId) }
+            .filter { filter.version == null || (it.first("version")?.value() == filter.version) }
+            .forEach { node.remove(it) }
     }
 }

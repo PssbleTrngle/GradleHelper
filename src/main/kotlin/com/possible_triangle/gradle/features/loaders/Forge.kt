@@ -2,7 +2,8 @@ package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.publishing.modifyPublication
-import com.possible_triangle.gradle.features.publishing.overwriteDependencies
+import com.possible_triangle.gradle.features.publishing.removePomDependencies
+import com.possible_triangle.gradle.javaVersion
 import com.possible_triangle.gradle.stringProperty
 import net.minecraftforge.gradle.common.util.MinecraftExtension
 import net.minecraftforge.gradle.userdev.UserDevPlugin
@@ -206,10 +207,26 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         if (jarJarEnabled) {
             artifact(tasks.getByName(UserDevPlugin.JAR_JAR_TASK_NAME))
         }
-        overwriteDependencies()
+        removePomDependencies()
     }
 
     // issues with mixin extras
     tasks.withType<Test> { enabled = false }
     tasks.named("compileTestJava") { enabled = false }
+
+    if (javaVersion <= 17) {
+        configurations.all {
+            resolutionStrategy {
+                force(
+                    "org.lwjgl:lwjgl-glfw:3.3.2",
+                    "org.lwjgl:lwjgl-jemalloc:3.3.2",
+                    "org.lwjgl:lwjgl-openal:3.3.2",
+                    "org.lwjgl:lwjgl-opengl:3.3.2",
+                    "org.lwjgl:lwjgl-stb:3.3.2",
+                    "org.lwjgl:lwjgl-stb:3.3.2",
+                    "org.lwjgl:lwjgl:3.3.2"
+                )
+            }
+        }
+    }
 }

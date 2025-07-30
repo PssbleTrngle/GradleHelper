@@ -9,10 +9,11 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
 import java.time.LocalDateTime
 
+val Project.javaVersion get() = intProperty("java_version") ?: 21
+
 internal fun Project.setupJava() {
     apply<JavaPlugin>()
 
-    val javaVersion = intProperty("java_version") ?: 21
 
     configure<JavaPluginExtension> {
         toolchain {

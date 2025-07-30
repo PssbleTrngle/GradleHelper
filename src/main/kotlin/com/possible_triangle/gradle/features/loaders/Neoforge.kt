@@ -2,12 +2,11 @@ package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.publishing.modifyPublication
-import com.possible_triangle.gradle.features.publishing.overwriteDependencies
+import com.possible_triangle.gradle.features.publishing.removePomDependencies
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.gradle.dsl.common.extensions.JarJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
 import net.neoforged.gradle.userdev.UserDevPlugin
-import net.neoforged.gradle.userdev.UserDevProjectPlugin
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
@@ -151,10 +150,7 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
     }
 
     modifyPublication {
-        if (jarJarEnabled) {
-            artifact(tasks.getByName(UserDevProjectPlugin.JAR_JAR_TASK_NAME))
-        }
-        overwriteDependencies()
+        removePomDependencies()
     }
 
 }
