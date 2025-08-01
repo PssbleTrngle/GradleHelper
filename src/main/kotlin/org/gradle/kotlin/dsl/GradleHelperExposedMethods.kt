@@ -37,7 +37,7 @@ fun RepositoryHandler.modrinthMaven() = addModrinthMaven()
 
 fun RepositoryHandler.githubPackages(project: Project, block: MavenArtifactRepository.() -> Unit = {}) = addGithubPackages(project, block)
 fun RepositoryHandler.githubPackages(repository: String, block: MavenArtifactRepository.() -> Unit = {}) = addGithubPackages(repository, block)
-fun RepositoryHandler.nexus(snapshot: Boolean = false, block: MavenArtifactRepository.() -> Unit = {}) = addNexus(snapshot, block)
+fun RepositoryHandler.nexus(type: String = "public", block: MavenArtifactRepository.() -> Unit = {}) = addNexus(type, block)
 
 fun Project.enablePublishing(block: ModMavenPublishingExtension.() -> Unit = {}) = enableMavenPublishing(block)
 fun Project.uploadToCurseforge(block: CurseforgeExtension.() -> Unit = {}) = enableCursegradle(block)

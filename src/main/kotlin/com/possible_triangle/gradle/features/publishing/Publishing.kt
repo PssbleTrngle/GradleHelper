@@ -12,6 +12,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.internal.cc.base.logger
 import org.gradle.kotlin.dsl.*
 import java.net.URI
 
@@ -37,22 +38,10 @@ fun RepositoryHandler.addGithubPackages(repository: String, block: MavenArtifact
     }
 }
 
-fun RepositoryHandler.addNexus(snapshot: Boolean, block: MavenArtifactRepository.() -> Unit) {
-    val repository = if (snapshot) "maven-snapshots" else "maven-releases"
-    val token = env["NEXUS_TOKEN"]
-    val user = env["NEXUS_USER"]
-
+fun RepositoryHandler.addNexus(type: String, block: MavenArtifactRepository.() -> Unit) {
     maven {
         name = "Nexus"
-        url = URI("https://registry.somethingcatchy.net/repository/$repository/")
-
-        if (token != null || user != null) {
-            credentials {
-                username = user
-                password = token
-            }
-        }
-
+        url = URI("https://registry.somethingcatchy.net/repository/maven-$type/")
         block()
     }
 }
@@ -71,6 +60,7 @@ interface ModMavenPublishingExtension {
     val repositories: RepositoryHandler
     fun repositories(configure: RepositoryHandler.() -> Unit)
     fun githubPackages()
+    fun nexus(snapshot: Boolean = false)
     fun removePomDependencies()
     fun removePomDependencies(groupId: String, artifactId: String? = null, version: String? = null)
 }
@@ -90,6 +80,21 @@ private class ModMavenPublishingExtensionImpl(
     override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
 
     override fun githubPackages() = repositories.githubPackages(project)
+
+    override fun nexus(snapshot: Boolean) {
+        val type = if (snapshot) "snapshots" else "releases"
+        val token = env["NEXUS_TOKEN"]
+        val user = env["NEXUS_USER"]
+
+        if (token != null && user != null) repositories.nexus(type) {
+            credentials {
+                username = user
+                password = token
+            }
+        } else {
+            logger.warn("skipping nexus publishing")
+        }
+    }
 
     var removeAllDependency = false
         private set
@@ -151,7 +156,7 @@ fun Project.modifyPublication(block: MavenPublication.() -> Unit) {
 
 internal fun MavenPublication.removePomDependencies() {
     suppressAllPomMetadataWarnings()
-    
+
     pom.withXml {
         val node = asNode()
         val list = node.get("dependencies") as NodeList
