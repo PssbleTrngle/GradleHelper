@@ -43,7 +43,7 @@ fun Project.configureSpotless(enableHook: Boolean, block: SpotlessExtension.() -
     }
 
     if (enableHook) {
-        val applyTask = tasks.findByName("spotlessApply")
+        val applyTask = tasks.findByName("spotlessCheck")
         tasks.findByName("preCommit")?.dependsOn(applyTask)
     }
 }
