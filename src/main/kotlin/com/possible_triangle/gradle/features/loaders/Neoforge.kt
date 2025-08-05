@@ -1,8 +1,6 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.lazyDependencies
-import com.possible_triangle.gradle.features.publishing.modifyPublication
-import com.possible_triangle.gradle.features.publishing.removePomDependencies
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.gradle.dsl.common.extensions.JarJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
@@ -147,10 +145,6 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
             add("implementation", it)
             pin(it)
         }
-    }
-
-    modifyPublication {
-        removePomDependencies()
     }
 
 }
