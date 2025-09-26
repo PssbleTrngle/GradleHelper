@@ -1,12 +1,12 @@
-
 [versions]
-kotlin-version = "2.1.10"
+kotlin-version = "2.0.21"
 sonar-version = "6.0.1.5171"
-spotless-version = "7.0.2"
+spotless-version = "8.0.0"
 
 [libraries]
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin-version" }
+kotlin-toml = { module = "com.akuleshov7:ktoml-core", version = "0.7.0" }
 
 cursegradle = { module = "net.darkhax.curseforgegradle:CurseForgeGradle", version = "1.1.15" }
 minotaur = { module = "com.modrinth.minotaur:Minotaur", version = "2.8.7" }
@@ -21,9 +21,12 @@ sonar-scanner = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plug
 spotless = { module = "com.diffplug.spotless:com.diffplug.spotless.gradle.plugin", version.ref = "spotless-version" }
 
 junit-snapshots = { module = "io.github.origin-energy:java-snapshot-testing-junit5", version = "4.0.6" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin-version" }
+
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless-version" }
 sonar = { id = "org.sonarqube", version.ref = "sonar-version" }
 plugin-publish = { id = "com.gradle.plugin-publish", version = "1.3.1" }

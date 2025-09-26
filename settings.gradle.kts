@@ -6,4 +6,10 @@ pluginManagement {
     }
 }
 
+val dir = file("plugins")
+dir.list().forEach {
+    include(":$it")
+    project(":$it").projectDir = dir.resolve(it)
+}
+
 rootProject.name = plugin_id
