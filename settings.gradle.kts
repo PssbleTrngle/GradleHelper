@@ -12,4 +12,4 @@ dir.list().forEach {
     project(":$it").projectDir = dir.resolve(it)
 }
 
-rootProject.name = plugin_id
+rootProject.name = "Gradle Plugins"
