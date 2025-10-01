@@ -12,6 +12,7 @@ import net.minecraftforge.gradle.userdev.jarjar.JarJarProjectExtension
 import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
@@ -69,8 +70,8 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
 
     val jarJar = the<JarJarProjectExtension>()
 
-    fun DependencyHandlerScope.pin(dependencyNotation: String): Dependency {
-        return add("jarJar", dependencyNotation) {
+    fun DependencyHandlerScope.pin(dependency: ModuleDependency): Dependency {
+        return add("jarJar", dependency.copy()) {
             jarJar.ranged(this, "[${version},)")
         }
     }
@@ -79,7 +80,7 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         dependencies {
             val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${it}")
             add("compileOnly", annotationProcessor!!)
-            add("implementation", pin("io.github.llamalad7:mixinextras-forge:${it}"))
+            add("implementation", pin(create("io.github.llamalad7", "mixinextras-forge", it)))
         }
     } != null
 
@@ -194,13 +195,13 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         lazyDependencies("minecraftLibrary") {
             config.includedLibraries.forEach {
                 add(it)
-                pin(it)
+                pin(it.get())
             }
         }
 
         config.includedMods.forEach {
             add("implementation", fg.deobf(it))
-            pin(it)
+            pin(it.get())
         }
     }
 

@@ -1,33 +1,16 @@
 package com.possible_triangle.gradle
 
 import com.possible_triangle.gradle.features.defaultRepositories
+import com.possible_triangle.gradle.features.loaders.Included
+import com.possible_triangle.gradle.features.loaders.IncludedImpl
 import com.possible_triangle.gradle.features.registerHookTasks
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.SetProperty
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
-
-interface ModExtension {
-    val id: Property<String>
-    val name: Property<String>
-    val version: Property<String>
-    val author: Property<String>
-    val minecraftVersion: Property<String>
-    val releaseType: Property<String>
-    val repository: Property<String>
-    val mavenGroup: Property<String>
-
-    val includedLibraries: SetProperty<String>
-    val includedMods: SetProperty<String>
-}
-
-fun ExtensionAware.mod(block: ModExtension.() -> Unit) = extensions.configure(block)
-val Project.mod get() = the<ModExtension>()
 
 class GradleHelperPlugin : Plugin<Project> {
 
@@ -40,7 +23,7 @@ class GradleHelperPlugin : Plugin<Project> {
         project.loadEnv()
 
         val rootMod = rootProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
-        val mod = extensions.create<ModExtension>("mod")
+        val mod = extensions.create(ModExtension::class, "mod", ModExtensionImpl::class)
 
         fun <T : Any> configureDefault(default: T?, supplier: ModExtension.() -> Property<T>) {
             mod.supplier().convention(provider { rootMod?.supplier()?.orNull ?: default })
@@ -57,9 +40,6 @@ class GradleHelperPlugin : Plugin<Project> {
         configureDefault(rootProject.stringProperty("release_type")) { releaseType }
         configureDefault(rootProject.stringProperty("repository")) { repository }
         configureDefault(rootProject.stringProperty("maven_group")) { mavenGroup }
-
-        mod.includedLibraries.convention(provider { rootMod?.includedLibraries?.orNull ?: emptySet() })
-        mod.includedMods.convention(provider { rootMod?.includedMods?.orNull ?: emptySet() })
 
         repositories {
             defaultRepositories()

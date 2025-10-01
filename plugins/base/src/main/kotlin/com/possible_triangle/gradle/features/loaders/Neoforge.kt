@@ -8,6 +8,7 @@ import net.neoforged.gradle.dsl.common.runs.run.Run
 import net.neoforged.gradle.userdev.UserDevPlugin
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -67,7 +68,7 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
     val jarJarEnabled = config.includedLibraries.isNotEmpty() || config.includedMods.isNotEmpty()
     if (jarJarEnabled) jarJar.enable()
 
-    fun DependencyHandlerScope.pin(dependencyNotation: String) {
+    fun DependencyHandlerScope.pin(dependencyNotation: ModuleDependency) {
         add("jarJar", dependencyNotation) {
             jarJar.ranged(this, "[${version},)")
         }
@@ -138,13 +139,13 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
         lazyDependencies("implementation") {
             config.includedLibraries.forEach {
                 add(it)
-                pin(it)
+                pin(it.get())
             }
         }
 
         config.includedMods.forEach {
             add("implementation", it)
-            pin(it)
+            pin(it.get())
         }
     }
 

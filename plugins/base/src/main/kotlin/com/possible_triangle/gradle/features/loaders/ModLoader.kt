@@ -18,22 +18,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 interface LoaderExtension {
     fun dependOn(vararg projects: Project)
-    fun includesLibrary(vararg libraries: String)
+    val libraries: Included
 }
 
 internal sealed class LoaderExtensionImpl(private val project: Project) : LoaderExtension {
     private val _dependsOn = arrayListOf<Project>()
-    private val _includedLibraries = arrayListOf<String>()
+    override val libraries = IncludedImpl(project)
 
     val dependsOn get() = _dependsOn.toSet()
-    val includedLibraries get() = _includedLibraries.toSet() + project.mod.includedLibraries.get() + project.rootProject.mod.includedLibraries.get()
+
+    internal val includedLibraries
+        get() = libraries.get() + project.mod.libraries.get() + project.rootProject.mod.libraries.get()
 
     override fun dependOn(vararg projects: Project) {
         _dependsOn.addAll(projects)
-    }
-
-    override fun includesLibrary(vararg libraries: String) {
-        _includedLibraries.addAll(libraries)
     }
 }
 
@@ -47,7 +45,7 @@ val Project.isSubProject: Boolean get() = rootProject != project
 
 interface OutgoingProjectExtension {
     fun enableMixins()
-    fun includesMod(vararg libraries: String)
+    val mods: Included
 }
 
 internal sealed class OutgoingProjectExtensionImpl(private val project: Project) : LoaderExtensionImpl(project),
@@ -55,16 +53,13 @@ internal sealed class OutgoingProjectExtensionImpl(private val project: Project)
     var mixinsEnabled: Boolean = false
         private set
 
-    private val _includedMods = arrayListOf<String>()
+    override val mods = IncludedImpl(project)
 
-    val includedMods get() = _includedMods.toSet() + project.mod.includedMods.get() + project.rootProject.mod.includedMods.get()
+    internal val includedMods
+        get() = mods.get() + project.mod.mods.get() + project.rootProject.mod.mods.get()
 
     override fun enableMixins() {
         mixinsEnabled = true
-    }
-
-    override fun includesMod(vararg libraries: String) {
-        _includedMods.addAll(libraries)
     }
 }
 

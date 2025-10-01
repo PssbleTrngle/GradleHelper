@@ -44,12 +44,11 @@ fun Project.enablePublishing(block: ModMavenPublishingExtension.() -> Unit = {})
 fun Project.uploadToCurseforge(block: CurseforgeExtension.() -> Unit = {}) = enableCursegradle(block)
 fun Project.uploadToModrinth(block: ModrinthExtension.() -> Unit = {}) = enableMinotaur(block)
 
-private fun Any.resolveDependency() = if (this is Provider<*>)
-    get()
-else if (this is ProviderConvertible<*>)
-    asProvider().get()
-else
-    this
+private fun Any.resolveDependency() = when (this) {
+    is Provider<*> -> get()
+    is ProviderConvertible<*> -> asProvider().get()
+    else -> this
+}
 
 private fun Project.modDependency(
     type: String,
