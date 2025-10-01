@@ -67,7 +67,7 @@ class ForgeTest {
     fun `adds included libraries`() {
         val project = createProjectWithForge {
             mod {
-                includedLibraries.set(listOf("test.something:anything:1.0"))
+                libraries.include("test.something:anything:1.0")
             }
         }
 
@@ -80,7 +80,7 @@ class ForgeTest {
         val project = createProjectWithForge()
 
         project.mod {
-            includedLibraries.set(listOf("test.something:anything:1.0"))
+            libraries.include("test.something:anything:1.0")
         }
 
         project.dependencies {
@@ -95,7 +95,7 @@ class ForgeTest {
     fun `adds included mods`() {
         val project = createProjectWithForge {
             mod {
-                includedMods.set(listOf("test.something:anything:1.0"))
+                libraries.include("test.something:anything:1.0")
             }
         }
 

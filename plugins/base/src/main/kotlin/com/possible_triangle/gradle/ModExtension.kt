@@ -35,6 +35,6 @@ internal open class ModExtensionImpl(project: Project) : ModExtension {
     override val releaseType: Property<String> = project.objects.property()
     override val repository: Property<String> = project.objects.property()
     override val mavenGroup: Property<String> = project.objects.property()
-    override val libraries: Included = IncludedImpl(project)
-    override val mods: Included = IncludedImpl(project)
+    override val libraries: Included = IncludedImpl(project, project.parent?.mod?.libraries)
+    override val mods: Included = IncludedImpl(project, project.parent?.mod?.mods)
 }

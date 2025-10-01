@@ -67,7 +67,7 @@ class NeoforgeTest {
     fun `adds included libraries`() {
         val project = createProjectWithNeoforge {
             mod {
-                includedLibraries.set(listOf("test.something:anything:1.0"))
+                libraries.include("test.something:anything:1.0")
             }
         }
 
@@ -80,7 +80,7 @@ class NeoforgeTest {
         val project = createProjectWithNeoforge()
 
         project.mod {
-            includedLibraries.set(listOf("test.something:anything:1.0"))
+            libraries.include("test.something:anything:1.0")
         }
 
         project.dependencies {
@@ -95,7 +95,7 @@ class NeoforgeTest {
     fun `adds included mods`() {
         val project = createProjectWithNeoforge {
             mod {
-                includedMods.set(listOf("test.something:anything:1.0"))
+                libraries.include("test.something:anything:1.0")
             }
         }
 

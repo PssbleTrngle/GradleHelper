@@ -84,7 +84,7 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         }
     } != null
 
-    val jarJarEnabled = config.includedLibraries.isNotEmpty() || config.includedMods.isNotEmpty() || includeMixinExtras
+    val jarJarEnabled = config.libraries.get().isNotEmpty() || config.mods.get().isNotEmpty() || includeMixinExtras
     if (jarJarEnabled) jarJar.enable()
 
     if (config.mixinsEnabled) {
@@ -193,15 +193,15 @@ fun Project.setupForge(block: ForgeExtension.() -> Unit) {
         }
 
         lazyDependencies("minecraftLibrary") {
-            config.includedLibraries.forEach {
+            config.libraries.get().forEach {
                 add(it)
-                pin(it.get())
+                pin(it)
             }
         }
 
-        config.includedMods.forEach {
+        config.mods.get().forEach {
             add("implementation", fg.deobf(it))
-            pin(it.get())
+            pin(it)
         }
     }
 

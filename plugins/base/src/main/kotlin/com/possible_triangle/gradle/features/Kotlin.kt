@@ -2,9 +2,7 @@ package com.possible_triangle.gradle.features
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.repositories
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 fun Project.enableKotlin() = allprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")

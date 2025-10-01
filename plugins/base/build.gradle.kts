@@ -6,7 +6,7 @@ plugins {
 configurations.all {
     resolutionStrategy {
         force("com.google.code.gson:gson:2.11.0")
-        force("org.codehaus.groovy:groovy-all:3.0.22")
+        force("org.codehaus.groovy:groovy-all:3.0.24")
     }
 }
 
@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    api(libs.kotlin.serialization)
+
     api(libs.cursegradle)
     api(libs.minotaur)
 

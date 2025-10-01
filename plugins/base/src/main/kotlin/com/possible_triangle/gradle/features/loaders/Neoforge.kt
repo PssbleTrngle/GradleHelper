@@ -65,7 +65,7 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
     }
 
     val jarJar = the<JarJar>()
-    val jarJarEnabled = config.includedLibraries.isNotEmpty() || config.includedMods.isNotEmpty()
+    val jarJarEnabled = config.libraries.get().isNotEmpty() || config.mods.get().isNotEmpty()
     if (jarJarEnabled) jarJar.enable()
 
     fun DependencyHandlerScope.pin(dependencyNotation: ModuleDependency) {
@@ -137,15 +137,15 @@ fun Project.setupNeoforge(block: NeoforgeExtension.() -> Unit) {
         }
 
         lazyDependencies("implementation") {
-            config.includedLibraries.forEach {
+            config.libraries.get().forEach {
                 add(it)
-                pin(it.get())
+                pin(it)
             }
         }
 
-        config.includedMods.forEach {
+        config.mods.get().forEach {
             add("implementation", it)
-            pin(it.get())
+            pin(it)
         }
     }
 

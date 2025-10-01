@@ -1,9 +1,9 @@
 package com.possible_triangle.gradle.test
 
 import com.possible_triangle.gradle.GradleHelperPlugin
+import com.possible_triangle.gradle.mod
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.common
-import com.possible_triangle.gradle.mod
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -80,15 +80,15 @@ class SubprojectTest {
         project.apply<GradleHelperPlugin>()
 
         project.mod {
-            includedLibraries.add("test.something:anything:1.0")
-            includedLibraries.add("test.something:else:1.0")
+            libraries.include("test.something:anything:1.0")
+            libraries.include("test.something:else:1.0")
         }
 
-        assertEquals(2, project.mod.includedLibraries.get().size)
-        assertEquals(2, subproject.mod.includedLibraries.get().size)
+        assertEquals(2, project.mod.libraries.get().size)
+        assertEquals(2, subproject.mod.libraries.get().size)
 
         subproject.common {
-            includesLibrary("test.something:that:1.0")
+            libraries.include("test.something:that:1.0")
         }
 
         val deps = subproject.findTestDependencies("implementation")

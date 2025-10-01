@@ -23,12 +23,9 @@ interface LoaderExtension {
 
 internal sealed class LoaderExtensionImpl(private val project: Project) : LoaderExtension {
     private val _dependsOn = arrayListOf<Project>()
-    override val libraries = IncludedImpl(project)
+    override val libraries = IncludedImpl(project, project.mod.libraries)
 
     val dependsOn get() = _dependsOn.toSet()
-
-    internal val includedLibraries
-        get() = libraries.get() + project.mod.libraries.get() + project.rootProject.mod.libraries.get()
 
     override fun dependOn(vararg projects: Project) {
         _dependsOn.addAll(projects)
@@ -53,10 +50,7 @@ internal sealed class OutgoingProjectExtensionImpl(private val project: Project)
     var mixinsEnabled: Boolean = false
         private set
 
-    override val mods = IncludedImpl(project)
-
-    internal val includedMods
-        get() = mods.get() + project.mod.mods.get() + project.rootProject.mod.mods.get()
+    override val mods = IncludedImpl(project, project.mod.mods)
 
     override fun enableMixins() {
         mixinsEnabled = true

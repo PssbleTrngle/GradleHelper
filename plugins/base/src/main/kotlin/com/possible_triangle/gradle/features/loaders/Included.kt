@@ -12,10 +12,10 @@ interface Included {
     fun include(vararg libraries: Provider<out ModuleDependency>)
     fun include(vararg libraries: ProviderConvertible<out ModuleDependency>)
 
-    fun get(): Collection<Provider<out ModuleDependency>>
+    fun get(): Collection<ModuleDependency>
 }
 
-internal class IncludedImpl(private val project: Project) : Included {
+internal class IncludedImpl(private val project: Project, private val parent: Included?) : Included {
     private fun Collection<String>.asDependencies() = map {
         project.dependencies.create(it) {}
     }
@@ -38,5 +38,9 @@ internal class IncludedImpl(private val project: Project) : Included {
         _dependencies.addAll(libraries)
     }
 
-    override fun get() = _dependencies.toSet()
+    override fun get(): Collection<ModuleDependency> {
+        val resolved = _dependencies.mapTo(hashSetOf()) { it.get() }
+        parent?.let { resolved.addAll(it.get()) }
+        return resolved
+    }
 }

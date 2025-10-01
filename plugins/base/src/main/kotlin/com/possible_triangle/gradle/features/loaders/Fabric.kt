@@ -138,7 +138,7 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
                 add("net.fabricmc:fabric-language-kotlin:${it}")
             }
 
-            config.includedMods.forEach {
+            config.mods.get().forEach {
                 add(add("include", it)!!)
             }
         }
@@ -148,7 +148,7 @@ fun Project.setupFabric(block: FabricExtension.() -> Unit) {
                 add(it)
             }
 
-            config.includedLibraries.forEach {
+            config.libraries.get().forEach {
                 add(add("include", it)!!)
             }
         }

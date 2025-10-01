@@ -1,11 +1,11 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.features.lazyDependencies
+import com.possible_triangle.gradle.mod
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import com.possible_triangle.gradle.mod
 import org.spongepowered.gradle.vanilla.MinecraftExtension
 import org.spongepowered.gradle.vanilla.VanillaGradle
 
@@ -42,7 +42,7 @@ fun Project.setupCommon(block: CommonExtension.() -> Unit) {
                 add(it)
             }
 
-            config.includedLibraries.forEach {
+            config.libraries.get().forEach {
                 add(it)
             }
         }

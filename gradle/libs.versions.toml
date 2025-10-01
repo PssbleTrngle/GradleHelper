@@ -9,10 +9,10 @@ kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", v
 kotlin-toml = { module = "com.akuleshov7:ktoml-core", version = "0.7.0" }
 
 cursegradle = { module = "net.darkhax.curseforgegradle:CurseForgeGradle", version = "1.1.15" }
-minotaur = { module = "com.modrinth.minotaur:Minotaur", version = "2.8.7" }
+minotaur = { module = "com.modrinth.minotaur:Minotaur", version = "2.8.10" }
 
 vanilla-gradle = { module = "org.spongepowered:vanillagradle", version = "0.2.1-SNAPSHOT" }
-neoforge-gradle = { module = "net.neoforged.gradle:userdev", version = "7.0.184" }
+neoforge-gradle = { module = "net.neoforged.gradle:userdev", version = "7.0.192" }
 fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.10-SNAPSHOT" }
 forge-gradle = { module = "net.minecraftforge.gradle:ForgeGradle", version = "[6.0,6.2)" }
 mixin-gradle = { module = "org.spongepowered:mixingradle", version = "0.7-SNAPSHOT" }
