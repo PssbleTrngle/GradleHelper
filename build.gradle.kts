@@ -3,7 +3,7 @@ import com.gradle.publish.PublishPlugin
 plugins {
     `kotlin-dsl`
     jacoco
-    alias(libs.plugins.plugin.publish)
+    alias(libs.plugins.plugin.publish) apply (false)
     alias(libs.plugins.spotless)
     alias(libs.plugins.sonar)
 }
@@ -28,7 +28,7 @@ subprojects {
         website.set(vcsUrl)
     }
 
-    publishing {
+    configure<PublishingExtension> {
         repositories {
             mavenLocal()
             env["GRADLE_PUBLISH_KEY"]?.let {
@@ -79,4 +79,8 @@ tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
     }
+}
+
+tasks.register("publishPlugins") {
+    dependsOn(subprojects.map { it.tasks["publishPlugins"] })
 }
