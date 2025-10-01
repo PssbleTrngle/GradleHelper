@@ -1,5 +1,8 @@
+import com.gradle.publish.PublishPlugin
+
 plugins {
     `kotlin-dsl`
+    jacoco
     alias(libs.plugins.plugin.publish)
     alias(libs.plugins.spotless)
     alias(libs.plugins.sonar)
@@ -18,12 +21,7 @@ allprojects {
 val env: Map<String, String> = System.getenv()
 
 subprojects {
-    apply(
-        plugin =
-            rootProject.libs.plugins.plugin.publish
-                .get()
-                .pluginId,
-    )
+    apply<PublishPlugin>()
 
     gradlePlugin {
         vcsUrl.set("https://github.com/$repository")
@@ -43,6 +41,9 @@ subprojects {
 
     dependencies {
         api(rootProject.libs.kotlin.gradle)
+
+        testImplementation(rootProject.libs.kotlin.test)
+        testImplementation(rootProject.libs.junit.snapshots)
     }
 }
 
@@ -62,5 +63,20 @@ spotless {
 sonar {
     properties {
         property("sonar.projectKey", "gradle-helper")
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
     }
 }

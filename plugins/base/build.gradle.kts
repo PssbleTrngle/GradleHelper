@@ -1,6 +1,5 @@
 plugins {
     `kotlin-dsl`
-    jacoco
 }
 
 configurations.all {
@@ -32,9 +31,6 @@ dependencies {
 
     api(libs.sonar.scanner)
     api(libs.spotless)
-
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.junit.snapshots)
 }
 
 val plugin_id: String by extra
@@ -51,20 +47,5 @@ gradlePlugin {
                 "bundles fabric/forge/common gradle plugins and provides useful default configurations for minecraft mod developers"
             tags.set(setOf("minecraft", "forge", "fabricmc", "loom"))
         }
-    }
-}
-
-tasks.test {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(true)
     }
 }
