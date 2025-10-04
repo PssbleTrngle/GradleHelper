@@ -39,7 +39,7 @@ internal class IncludedImpl(private val project: Project, private val parent: In
     }
 
     override fun get(): Collection<ModuleDependency> {
-        val resolved = _dependencies.mapTo(hashSetOf()) { it.get() }
+        val resolved = _dependencies.mapTo(hashSetOf()) { it.get().copy() }
         parent?.let { resolved.addAll(it.get()) }
         return resolved
     }
