@@ -7,7 +7,6 @@ import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.upload.UploadExtension
 import net.fabricmc.loom.LoomGradlePlugin
-import net.fabricmc.loom.LoomRepositoryPlugin
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.api.Plugin
@@ -15,15 +14,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 
 private val Project.loom get() = the<LoomGradleExtensionAPI>()
-
-// TODO check
-private class FixedLoomPlugin : Plugin<Project> {
-    private val plugin = LoomGradlePlugin()
-    override fun apply(target: Project) {
-        plugin.apply(target)
-        target.apply<LoomRepositoryPlugin>()
-    }
-}
 
 class GradleHelperFabricPlugin : Plugin<Project> {
 
@@ -78,7 +68,7 @@ class GradleHelperFabricPlugin : Plugin<Project> {
     }
 
     private fun Project.setupFabric() {
-        apply<FixedLoomPlugin>()
+        apply<LoomGradlePlugin>()
 
         repositories {
             fabricRepositories()

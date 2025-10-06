@@ -1,7 +1,9 @@
 name: Analyze
 on:
   push:
-    branches: [main]
+    branches: [ main ]
+  pull_request:
+    types: [ opened, synchronize ]
 
 env:
   CI: true
@@ -37,8 +39,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build
-        run: ./gradlew check sonar
+      - name: Test
+        run: ./gradlew check
+
+      - name: Sonarqube
+        if: ${{ github.event_name == 'push' }}
+        run: ./gradlew sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
