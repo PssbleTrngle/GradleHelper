@@ -6,7 +6,6 @@ import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.upload.UploadExtension
-import net.neoforged.gradle.common.extensions.JarJarExtension
 import net.neoforged.gradle.dsl.common.extensions.JarJar
 import net.neoforged.gradle.dsl.common.runs.run.Run
 import net.neoforged.gradle.userdev.UserDevPlugin
@@ -22,9 +21,9 @@ import org.gradle.language.jvm.tasks.ProcessResources
 import net.neoforged.gradle.common.tasks.JarJar as JarJarTask
 
 private val Project.runs get() = extensions.getByName<NamedDomainObjectContainer<Run>>("runs")
-private val Project.jarJar get() = the<JarJarExtension>()
+private val Project.jarJar get() = the<JarJar>()
 
-fun DependencyHandlerScope.pin(jarJar: JarJarExtension, dependencyNotation: ModuleDependency) {
+fun DependencyHandlerScope.pin(jarJar: JarJar, dependencyNotation: ModuleDependency) {
     add("jarJar", dependencyNotation) {
         jarJar.ranged(this, "[${version},)")
     }
@@ -35,6 +34,9 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.apply<GradleHelperCorePlugin>()
         target.setupNeoforge()
+        target.afterEvaluate {
+            target.finalize()
+        }
     }
 
     private fun Project.finalize() {

@@ -13,7 +13,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.internal.cc.base.logger
 import org.gradle.kotlin.dsl.*
 import java.net.URI
 
@@ -96,8 +95,6 @@ internal class ModMavenPublishingExtensionImpl(
             }
 
             block()
-        } else {
-            logger.warn("skipping nexus publishing")
         }
     }
 

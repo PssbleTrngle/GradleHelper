@@ -28,7 +28,6 @@ allprojects {
 allprojects {
     configurations.all {
         resolutionStrategy {
-            force("com.google.code.gson:gson:2.11.0")
             force("org.codehaus.groovy:groovy-all:3.0.24")
         }
     }
@@ -43,6 +42,8 @@ fun pluginProjects(block: Project.() -> Unit) {
 pluginProjects {
     apply<PublishPlugin>()
     apply<KotlinDslPlugin>()
+
+    extra["pluginVersion"] = pluginVersion
 
     gradlePlugin {
         vcsUrl.set("https://github.com/$repository")
@@ -86,6 +87,7 @@ pluginProjects {
     }
 
     repositories {
+        mavenLocal()
         maven {
             url = uri("https://registry.somethingcatchy.net/repository/maven-public/")
         }
@@ -94,6 +96,7 @@ pluginProjects {
     dependencies {
         api(rootProject.libs.kotlin.gradle)
         api(rootProject.libs.kotlin.serialization)
+        implementation(rootProject.libs.gson)
 
         testImplementation(rootProject.libs.kotlin.test)
         testImplementation(project(":test"))

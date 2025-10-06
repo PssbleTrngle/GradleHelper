@@ -14,6 +14,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 
+private val Project.loom get() = the<LoomGradleExtensionAPI>()
+
 // TODO check
 private class FixedLoomPlugin : Plugin<Project> {
     private val plugin = LoomGradlePlugin()
@@ -28,6 +30,32 @@ class GradleHelperFabricPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.apply<GradleHelperCorePlugin>()
         target.setupFabric()
+        target.afterEvaluate {
+            target.configureDatagenRun()
+        }
+    }
+
+    private fun Project.configureDatagenRun() {
+        val config = the<FabricExtension>() as FabricExtensionImpl
+
+        if (config.enabledDataGen) {
+            config.requireOwner().configureDatagen()
+
+            loom.runs {
+                named("data") {
+                    client()
+                    configName = "Fabric Datagen"
+                    runDir("run/data")
+
+                    property("fabric-api.datagen")
+                    property("fabric-api.datagen.output-dir=${config.requireOwner().datagenOutput}")
+                    property("fabric-api.datagen.modid=${mod.id.get()}")
+                    property("porting_lib.datagen.existing_resources=${existingResources.first()}")
+                }
+            }
+        } else {
+            loom.runs.removeIf { it.name == "data" }
+        }
     }
 
     private fun Project.setupFabric() {
@@ -38,8 +66,6 @@ class GradleHelperFabricPlugin : Plugin<Project> {
         }
 
         val config = extensions.create<FabricExtension, FabricExtensionImpl>("fabric")
-
-        if (config.enabledDataGen) config.requireOwner().configureDatagen()
 
         configureOutputProject(config)
 
@@ -57,23 +83,15 @@ class GradleHelperFabricPlugin : Plugin<Project> {
                     configName = "Fabric Client"
                     runDir("run")
                 }
+
                 named("server") {
                     server()
                     configName = "Fabric Server"
                     runDir("run/server")
                 }
-                if (config.enabledDataGen) {
-                    create("data") {
-                        client()
-                        configName = "Fabric Datagen"
-                        runDir("run")
 
-                        property("fabric-api.datagen")
-                        property("fabric-api.datagen.output-dir=${config.requireOwner().datagenOutput}")
-                        property("fabric-api.datagen.modid=${mod.id.get()}")
-                        property("porting_lib.datagen.existing_resources=${existingResources.first()}")
-                    }
-                }
+                create("data")
+
                 forEach { run ->
                     run.ideConfigGenerated(true)
                     run.vmArgs.addAll(JVM_ARGUMENTS)

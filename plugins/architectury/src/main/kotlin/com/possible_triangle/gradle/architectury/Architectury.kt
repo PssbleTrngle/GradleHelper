@@ -3,7 +3,6 @@ package com.possible_triangle.gradle.architectury
 import com.possible_triangle.gradle.GradleHelperCorePlugin
 import com.possible_triangle.gradle.create
 import com.possible_triangle.gradle.features.lazyDependencies
-import com.possible_triangle.gradle.features.loaders.mixinExtrasVersion
 import com.possible_triangle.gradle.mod
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Plugin
@@ -27,12 +26,7 @@ class GradleHelperArchitecturyPlugin : Plugin<Project> {
 
         dependencies {
             add("minecraft", mod.minecraftVersion.map { "com.mojang:minecraft:$it" })
-            "mappings"(loom.officialMojangMappings())
-
-            add("compileOnly", "org.spongepowered:mixin:0.8.5")
-            mixinExtrasVersion?.also {
-                add("compileOnly", "io.github.llamalad7:mixinextras-common:${it}")
-            }
+            add("mappings", loom.officialMojangMappings())
 
             lazyDependencies("implementation") {
                 config.dependsOn.forEach {
@@ -42,6 +36,12 @@ class GradleHelperArchitecturyPlugin : Plugin<Project> {
                 mod.libraries.get().forEach {
                     add(it)
                 }
+            }
+        }
+
+        tasks.register("prepareWorkspace") {
+            doFirst {
+                logger.info("Somehow this task is needed")
             }
         }
     }

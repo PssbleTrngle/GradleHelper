@@ -20,7 +20,7 @@ interface ForgeExtension : LoaderExtension {
     fun enableMixins(): Unit
 }
 
-internal open class ForgeExtensionImpl(project: Project) : AbstractLoadExtensionWithDatagen(project),
+internal open class ForgeExtensionImpl(private val project: Project) : AbstractLoadExtensionWithDatagen(project),
     ForgeExtension {
     override var mappingChannel = project.objects.property("official")
     override var mappingVersion = project.objects.property(project.mod.minecraftVersion)
@@ -41,5 +41,6 @@ internal open class ForgeExtensionImpl(project: Project) : AbstractLoadExtension
 
     override fun enableMixins() {
         mixinsEnabled = true
+        project.enableMixins()
     }
 }

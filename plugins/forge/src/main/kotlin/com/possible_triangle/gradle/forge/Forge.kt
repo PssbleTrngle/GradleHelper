@@ -15,17 +15,14 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
-import org.spongepowered.asm.gradle.plugins.MixinExtension
-import org.spongepowered.asm.gradle.plugins.MixinGradlePlugin
 
 private val Project.fg get() = the<DependencyManagementExtension>()
-private val Project.jarJar get() = the<JarJarProjectExtension>()
+internal val Project.jarJar get() = the<JarJarProjectExtension>()
 
-fun DependencyHandlerScope.pin(jarJar: JarJarProjectExtension, dependency: ModuleDependency): Dependency {
+internal fun DependencyHandlerScope.pin(jarJar: JarJarProjectExtension, dependency: ModuleDependency): Dependency {
     return add("jarJar", dependency.copy()) {
         jarJar.ranged(this, "[${version},)")
     }
@@ -45,33 +42,11 @@ class GradleHelperForgePlugin : Plugin<Project> {
         val config = the<ForgeExtension>() as ForgeExtensionImpl
 
         configureDatagenRun()
+        configureMixins()
 
-        if (config.mixinsEnabled) {
-            apply<MixinGradlePlugin>()
-            configure<MixinExtension> {
-                add(mainSourceSet, "${mod.id.get()}.refmap.json")
-                config("${mod.id.get()}.mixins.json")
-            }
+        val mixinExtrasIncluded = project.includeMixinExtras()
 
-            // workaround because of https://github.com/SpongePowered/MixinGradle/issues/48
-            tasks.withType<JavaCompile> {
-                doFirst {
-                    options.compilerArgs.replaceAll { it: Any ->
-                        it.toString()
-                    }
-                }
-            }
-        }
-
-        val includeMixinExtras = project.mixinExtrasVersion?.takeIf { config.mixinsEnabled }?.also {
-            dependencies {
-                val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${it}")
-                add("compileOnly", annotationProcessor!!)
-                add("implementation", pin(jarJar, create("io.github.llamalad7", "mixinextras-forge", it)))
-            }
-        } != null
-
-        val jarJarEnabled = mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || includeMixinExtras
+        val jarJarEnabled = mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || mixinExtrasIncluded
         if (jarJarEnabled) jarJar.enable()
 
         if (jarJarEnabled) {
