@@ -35,7 +35,7 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
         target.apply<GradleHelperCorePlugin>()
         target.setupNeoforge()
         target.afterEvaluate {
-            target.finalize()
+            finalize()
         }
     }
 
@@ -112,9 +112,11 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
             }
         }
 
-        tasks.withType<ProcessResources> {
-            config.dependsOn.forEach {
-                from(it.mainSourceSet.resources)
+        afterEvaluate {
+            tasks.withType<ProcessResources> {
+                config.dependsOn.forEach {
+                    from(it.mainSourceSet.resources)
+                }
             }
         }
 

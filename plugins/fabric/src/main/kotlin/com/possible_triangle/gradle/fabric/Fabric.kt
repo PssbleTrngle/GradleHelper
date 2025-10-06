@@ -31,7 +31,8 @@ class GradleHelperFabricPlugin : Plugin<Project> {
         target.apply<GradleHelperCorePlugin>()
         target.setupFabric()
         target.afterEvaluate {
-            target.configureDatagenRun()
+            configureDatagenRun()
+            linkDependencyProjects()
         }
     }
 
@@ -58,6 +59,24 @@ class GradleHelperFabricPlugin : Plugin<Project> {
         }
     }
 
+    private fun Project.linkDependencyProjects() {
+        val config = the<FabricExtension>() as FabricExtensionImpl
+
+        mainSourceSet.apply {
+            config.dependsOn.forEach {
+                resources.srcDir(it.mainSourceSet.resources)
+            }
+        }
+
+        loom.mods {
+            named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    sourceSet(it.mainSourceSet)
+                }
+            }
+        }
+    }
+
     private fun Project.setupFabric() {
         apply<FixedLoomPlugin>()
 
@@ -76,43 +95,30 @@ class GradleHelperFabricPlugin : Plugin<Project> {
             }
         }
 
-        configure<LoomGradleExtensionAPI> {
-            runs {
-                named("client") {
-                    client()
-                    configName = "Fabric Client"
-                    runDir("run")
-                }
-
-                named("server") {
-                    server()
-                    configName = "Fabric Server"
-                    runDir("run/server")
-                }
-
-                create("data")
-
-                forEach { run ->
-                    run.ideConfigGenerated(true)
-                    run.vmArgs.addAll(JVM_ARGUMENTS)
-                }
+        loom.runs {
+            named("client") {
+                client()
+                configName = "Fabric Client"
+                runDir("run")
             }
 
-            mods {
-                create(mod.id.get()) {
-                    sourceSet(mainSourceSet)
-                    config.dependsOn.forEach {
-                        sourceSet(it.mainSourceSet)
-                    }
-                }
+            named("server") {
+                server()
+                configName = "Fabric Server"
+                runDir("run/server")
+            }
+
+            create("data")
+
+            forEach { run ->
+                run.ideConfigGenerated(true)
+                run.vmArgs.addAll(JVM_ARGUMENTS)
             }
         }
 
-        val loom = the<LoomGradleExtensionAPI>()
-
-        mainSourceSet.apply {
-            config.dependsOn.forEach {
-                resources.srcDir(it.mainSourceSet.resources)
+        loom.mods {
+            create(mod.id.get()) {
+                sourceSet(mainSourceSet)
             }
         }
 

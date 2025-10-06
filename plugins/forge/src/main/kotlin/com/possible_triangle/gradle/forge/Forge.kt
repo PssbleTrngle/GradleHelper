@@ -34,7 +34,8 @@ class GradleHelperForgePlugin : Plugin<Project> {
         target.apply<GradleHelperCorePlugin>()
         target.setupForge()
         target.afterEvaluate {
-            target.finalize()
+            finalize()
+            linkDependencyProjects()
         }
     }
 
@@ -102,6 +103,20 @@ class GradleHelperForgePlugin : Plugin<Project> {
         }
     }
 
+    private fun Project.linkDependencyProjects() {
+        val config = the<ForgeExtension>() as ForgeExtensionImpl
+
+        configure<MinecraftExtension> {
+            runs.forEach { run ->
+                run.mods.named(mod.id.get()) {
+                    config.dependsOn.forEach {
+                        source(it.mainSourceSet)
+                    }
+                }
+            }
+        }
+    }
+
     private fun Project.setupForge() {
         apply<UserDevPlugin>()
 
@@ -143,9 +158,6 @@ class GradleHelperForgePlugin : Plugin<Project> {
                 run.jvmArgs.addAll(JVM_ARGUMENTS)
                 run.mods.create(mod.id.get()) {
                     source(mainSourceSet)
-                    config.dependsOn.forEach {
-                        source(it.mainSourceSet)
-                    }
                 }
             }
         }
