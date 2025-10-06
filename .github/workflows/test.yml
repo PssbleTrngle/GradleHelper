@@ -1,4 +1,4 @@
-name: Analyze
+name: Test
 on:
   push:
     branches: [ main ]
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -26,7 +26,7 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: temurin
 
       - name: Cache SonarQube packages
