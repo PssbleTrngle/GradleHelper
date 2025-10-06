@@ -6,10 +6,14 @@ pluginManagement {
     }
 }
 
-val dir = file("plugins")
-dir.list().forEach {
-    include(":$it")
-    project(":$it").projectDir = dir.resolve(it)
+fun include(dir: File) {
+    dir.list().forEach {
+        include(":$it")
+        project(":$it").projectDir = dir.resolve(it)
+    }
 }
+
+include(file("plugins"))
+include(file("modules"))
 
 rootProject.name = "Gradle Plugins"
