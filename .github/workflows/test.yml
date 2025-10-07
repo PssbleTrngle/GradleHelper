@@ -53,5 +53,5 @@ jobs:
         if: always()
         with:
           name: test-results
-          path: "**/reports/tests/test/index.html"
+          path: "**/reports/tests/test"
           retention-days: 5
