@@ -97,12 +97,6 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
 
         val config = extensions.create<NeoforgeExtension, NeoforgeExtensionImpl>("neoforge")
 
-        listOf("implementation", "compileOnly", "runtimeOnly").forEach {
-            configurations.create("mod${it.capitalized()}") {
-                extendsFrom(configurations.getByName(it))
-            }
-        }
-
         configure<UploadExtension> {
             forEach {
                 val jarTask = tasks.getByName<Jar>("jar")
