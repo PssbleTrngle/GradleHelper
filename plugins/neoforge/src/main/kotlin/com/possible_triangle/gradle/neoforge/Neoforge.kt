@@ -98,9 +98,11 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
 
         configure<UploadExtension> {
             forEach {
-                val jarTask = tasks.getByName<Jar>("jar")
-                val jarJarTask = tasks.findByPath(UserDevProjectPlugin.JAR_JAR_TASK_NAME) as Jar?
-                file = (jarJarTask?.takeIf { it.enabled } ?: jarTask).archiveFile
+                file.set {
+                    val jarJarTask = tasks.findByPath(UserDevProjectPlugin.JAR_JAR_TASK_NAME) as Jar?
+                    val jarTask = tasks.getByName<Jar>("jar")
+                    (jarJarTask?.takeIf { it.enabled } ?: jarTask).archiveFile.get().asFile
+                }
                 modLoaders.add(ModLoader.NEOFORGE)
             }
         }

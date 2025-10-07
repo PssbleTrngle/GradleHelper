@@ -39,7 +39,7 @@ interface AbstractUploadExtension {
     fun dependencies(block: DependencyBuilder.() -> Unit)
 }
 
-internal abstract class AbstractUploadExtensionImpl(private val project: Project, private val platform: String) :
+internal abstract class AbstractUploadExtensionImpl(private val project: Project, platform: String) :
     AbstractUploadExtension {
     protected abstract fun DependencyBuilder.requireKotlin(loader: ModLoader)
 
@@ -73,7 +73,7 @@ internal abstract class AbstractUploadExtensionImpl(private val project: Project
     override val modLoaders = project.objects.listProperty<ModLoader>()
     override val version = project.objects.property(project.mod.version)
     override val versionName = project.objects.property(modLoaders.map { loaders ->
-        "${loaders.joinToString(", ") { it.name.lowercase().capitalized() }} $version"
+        "${loaders.joinToString(", ") { it.name.lowercase().capitalized() }} ${version.get()}"
     })
     override val changelog = project.objects.property(env["CHANGELOG"])
     override val releaseType = project.objects.property(project.mod.releaseType.orElse("release"))
