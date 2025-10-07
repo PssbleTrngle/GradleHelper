@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 class EnvironmentTest {
 
     private val localEnv = mapOf(
-        "A_TOKEN" to "************",
+        "A_TOKEN" to "token",
         "SOMETHING_ELSE" to "test",
         "THE_THING" to "OTHER",
         "WITH_SPACE" to "VALUE",
