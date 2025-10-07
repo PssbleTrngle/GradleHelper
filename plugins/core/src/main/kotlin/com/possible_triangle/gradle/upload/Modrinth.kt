@@ -35,7 +35,7 @@ internal class ModrinthExtensionImpl(private val project: Project) :
         }
     }
 
-    internal fun setup() {
+    override fun onSetup() {
         project.configure<MinotaurExtension> {
             token.set(this@ModrinthExtensionImpl.token)
             projectId.set(this@ModrinthExtensionImpl.projectId)

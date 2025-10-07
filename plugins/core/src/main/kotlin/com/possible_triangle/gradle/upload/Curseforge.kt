@@ -26,7 +26,7 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
         }
     }
 
-    internal fun setup() {
+    override fun onSetup() {
         val task = project.tasks.register<TaskPublishCurseForge>("curseforge") {
             onlyIf { token.isPresent }
 
