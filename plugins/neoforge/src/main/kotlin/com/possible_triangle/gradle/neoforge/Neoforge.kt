@@ -14,7 +14,6 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleDependency
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -149,11 +148,11 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
                     add(it)
                     pin(jarJar, it)
                 }
-            }
 
-            mod.mods.get().forEach {
-                add("implementation", it)
-                pin(jarJar, it)
+                mod.mods.get().forEach {
+                    add(it)
+                    pin(jarJar, it)
+                }
             }
         }
 
