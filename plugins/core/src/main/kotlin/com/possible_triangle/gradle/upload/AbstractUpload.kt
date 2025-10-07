@@ -8,15 +8,12 @@ import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.listProperty
-import org.gradle.kotlin.dsl.property
 
 interface DependencyBuilder {
     fun required(dependency: String)
@@ -41,21 +38,6 @@ interface AbstractUploadExtension {
 
     fun dependencies(block: DependencyBuilder.() -> Unit)
 }
-
-data class GatheredUploadInfo(
-    val projectId: String,
-    val token: String,
-    val file: Provider<RegularFile>,
-    val minecraftVersions: Collection<String>,
-    val version: String,
-    val versionName: String,
-    val changelog: String,
-    val releaseType: String,
-    val modLoaders: Collection<ModLoader>,
-    val requiredDependencies: Collection<String>,
-    val optionalDependencies: Collection<String>,
-    val embeddedDependencies: Collection<String>,
-)
 
 internal abstract class AbstractUploadExtensionImpl(private val project: Project, private val platform: String) :
     AbstractUploadExtension {
@@ -90,7 +72,9 @@ internal abstract class AbstractUploadExtensionImpl(private val project: Project
         project.objects.listProperty<String>().convention(project.mod.minecraftVersion.map(::setOf))
     override val modLoaders = project.objects.listProperty<ModLoader>()
     override val version = project.objects.property(project.mod.version)
-    override val versionName = project.objects.property<String>()
+    override val versionName = project.objects.property(modLoaders.map { loaders ->
+        "${loaders.joinToString(", ") { it.name.lowercase().capitalized() }} $version"
+    })
     override val changelog = project.objects.property(env["CHANGELOG"])
     override val releaseType = project.objects.property(project.mod.releaseType.orElse("release"))
 
@@ -98,34 +82,15 @@ internal abstract class AbstractUploadExtensionImpl(private val project: Project
 
     override fun dependencies(block: DependencyBuilder.() -> Unit) = dependencies.let(block)
 
-    fun build(): GatheredUploadInfo {
-        val loaders = modLoaders.getOrElse(emptyList())
+    abstract fun onSetup()
 
-        loaders.ifEmpty { throw IllegalStateException("No mod loader specified") }
-
+    internal fun setup() {
         if (includeKotlinDependency.get() && project.detectKotlin()) {
-            loaders.forEach {
+            modLoaders.get().forEach {
                 dependencies.requireKotlin(it)
             }
         }
-
-        return GatheredUploadInfo(
-            projectId = projectId.orNull
-                ?: throw IllegalStateException("$platform project ID missing. Provide using $projectIdKey gradle property or set manually"),
-            token = token.orNull
-                ?: throw IllegalStateException("$platform token missing! Provide using environmental variable $tokenKey or set manually"),
-            file = file,
-            minecraftVersions = minecraftVersions.getOrElse(emptyList())
-                .ifEmpty { throw IllegalStateException("No minecraft version specified") },
-            version = version.orNull ?: throw IllegalStateException("No version specified"),
-            versionName = versionName.orNull ?: "${loaders.joinToString(", ") { it.name.lowercase().capitalized() }} $version",
-            changelog = changelog.orNull ?: throw IllegalStateException("No changelog specified"),
-            releaseType = releaseType.get(),
-            modLoaders = loaders,
-            requiredDependencies = requiredDependencies,
-            optionalDependencies = optionalDependencies,
-            embeddedDependencies = embeddedDependencies,
-        )
+        onSetup()
     }
 
 }

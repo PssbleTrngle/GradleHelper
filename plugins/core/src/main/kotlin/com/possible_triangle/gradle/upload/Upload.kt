@@ -13,7 +13,7 @@ interface UploadExtension {
     fun forEach(block: AbstractUploadExtension.() -> Unit)
 }
 
-internal open class UploadExtensionImpl(private val project: Project) : UploadExtension {
+internal open class UploadExtensionImpl(project: Project) : UploadExtension {
     override val modrinth = ModrinthExtensionImpl(project)
     override val curseforge = CurseForgeExtensionImpl(project)
     override val maven = ModMavenPublishingExtensionImpl(project)

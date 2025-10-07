@@ -26,19 +26,19 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
         }
     }
 
-    internal fun setup() {
+    override fun onSetup() {
         val task = project.tasks.register<TaskPublishCurseForge>("curseforge") {
             onlyIf { token.isPresent }
 
-            apiToken = token
+            apiToken = token.orNull
 
-            upload(projectId, file).apply {
+            upload(projectId.get(), file.get()).apply {
                 changelogType = Constants.CHANGELOG_MARKDOWN
-                changelog = this@CurseForgeExtensionImpl.changelog
-                releaseType = this@CurseForgeExtensionImpl.releaseType
+                changelog = this@CurseForgeExtensionImpl.changelog.get()
+                releaseType = this@CurseForgeExtensionImpl.releaseType.get()
                 modLoaders.get().forEach { addModLoader(it.loaderName()) }
                 minecraftVersions.get().forEach { addGameVersion(it) }
-                displayName = versionName
+                displayName = versionName.get()
 
                 requiredDependencies.forEach { addRelation(it, Constants.RELATION_REQUIRED) }
                 optionalDependencies.forEach { addRelation(it, Constants.RELATION_OPTIONAL) }
