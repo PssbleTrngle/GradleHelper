@@ -45,6 +45,8 @@ class GradleHelperForgePlugin : Plugin<Project> {
         configureDatagenRun()
         configureMixins()
 
+        configureOutputProject(config)
+
         val mixinExtrasIncluded = project.includeMixinExtras()
 
         val jarJarEnabled = mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || mixinExtrasIncluded
@@ -126,8 +128,6 @@ class GradleHelperForgePlugin : Plugin<Project> {
             val resolved = fg.deobf(it.get())
             project.provider { resolved as ModuleDependency }
         }
-
-        configureOutputProject(config)
 
         configure<MinecraftExtension> {
             mappingChannel = config.mappingChannel

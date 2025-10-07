@@ -46,6 +46,8 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
         val jarJarEnabled = mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty()
         if (jarJarEnabled) jarJar.enable()
 
+        configureOutputProject(config)
+
         tasks.getByName<Jar>("jar") {
             if (jarJarEnabled) archiveClassifier.set("slim")
         }
@@ -94,8 +96,6 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
         apply<UserDevPlugin>()
 
         val config = extensions.create<NeoforgeExtension, NeoforgeExtensionImpl>("neoforge")
-
-        configureOutputProject(config)
 
         listOf("implementation", "compileOnly", "runtimeOnly").forEach {
             configurations.create("mod${it.capitalized()}") {

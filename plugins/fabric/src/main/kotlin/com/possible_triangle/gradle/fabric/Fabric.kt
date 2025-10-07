@@ -52,6 +52,8 @@ class GradleHelperFabricPlugin : Plugin<Project> {
     private fun Project.linkDependencyProjects() {
         val config = the<FabricExtension>() as FabricExtensionImpl
 
+        configureOutputProject(config)
+
         mainSourceSet.apply {
             config.dependsOn.forEach {
                 resources.srcDir(it.mainSourceSet.resources)
@@ -75,8 +77,6 @@ class GradleHelperFabricPlugin : Plugin<Project> {
         }
 
         val config = extensions.create<FabricExtension, FabricExtensionImpl>("fabric")
-
-        configureOutputProject(config)
 
         configure<UploadExtension> {
             forEach {
