@@ -164,10 +164,12 @@ class GradleHelperForgePlugin : Plugin<Project> {
 
         configure<UploadExtension> {
             forEach {
-                val jarTask = tasks.getByName<Jar>("jar")
-                val jarJarTask = tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as Jar?
-                file = (jarJarTask?.takeIf { it.enabled } ?: jarTask).archiveFile
                 modLoaders.add(ModLoader.FORGE)
+                file.set {
+                    val jarTask = tasks.getByName<Jar>("jar")
+                    val jarJarTask = tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as Jar?
+                    (jarJarTask?.takeIf { it.enabled } ?: jarTask).archiveFile.get().asFile
+                }
             }
         }
 
