@@ -6,7 +6,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.decodeFromString
-import org.gradle.api.initialization.resolve.DependencyResolutionManagement
+import org.gradle.api.initialization.Settings
+import org.gradle.api.initialization.dsl.VersionCatalogBuilder
 import java.io.File
 
 private val TOML = Toml(
@@ -14,9 +15,6 @@ private val TOML = Toml(
         ignoreUnknownNames = true
     )
 )
-
-@Serializable
-data class PackwizDownloadInfo(val url: String)
 
 @Serializable
 data class ModrinthUpdateInfo(
@@ -39,7 +37,6 @@ data class PackwizUpdateInfo(
 @Serializable
 data class PackwizFile(
     val name: String,
-    val download: PackwizDownloadInfo,
     val update: PackwizUpdateInfo
 )
 
@@ -52,19 +49,38 @@ data class PackwizIndex(val files: List<PackwizFileReference>)
 private fun ErrorStrategy.execute(message: String, ex: Exception? = null) {
     when (this) {
         ErrorStrategy.WARN -> LOGGER.warn(message, ex)
-        ErrorStrategy.FAIL -> RuntimeException(message, ex)
+        ErrorStrategy.FAIL -> throw RuntimeException(message, ex)
         else -> {}
     }
 }
 
 private inline fun <reified T> StringFormat.decodeFromFile(file: File): T {
-    return decodeFromString<T>(file.readText())
+    return try {
+        decodeFromString<T>(file.readText())
+    } catch (ex: Exception) {
+        throw RuntimeException("failed to deserialize $file: ${ex.message}", ex)
+    }
 }
 
-fun DependencyResolutionManagement.importPackwiz(settings: PackwizExtension) {
-    val from = settings.from.get().asFile
-    val name = settings.name.get()
-    val strategy = settings.strategy.get()
+fun Settings.importPackwiz(settings: PackwizExtension) {
+    dependencyResolutionManagement {
+        versionCatalogs.create("pack")
+    }
+
+    gradle.settingsEvaluated {
+        dependencyResolutionManagement {
+            versionCatalogs.named("pack") {
+                settings.packs.forEach {
+                    add(settings, it)
+                }
+            }
+        }
+    }
+}
+
+private fun VersionCatalogBuilder.add(settings: PackwizExtension, config: PackwizConfiguration) {
+    val strategy = config.strategy.orElse(settings.strategy).get()
+    val from = config.from.get().asFile
 
     if (!from.exists()) return strategy.execute("directory $from does not exist")
 
@@ -92,17 +108,21 @@ fun DependencyResolutionManagement.importPackwiz(settings: PackwizExtension) {
         strategy.execute(messages.joinToString("\n"))
     }
 
-    if (successful.isEmpty()) return strategy.execute("no packwiz mods found")
+    if (successful.isEmpty()) return strategy.execute("no packwiz mods found in ${config.name}")
 
-    versionCatalogs.create(name) {
-        successful.forEach { (slug, file) ->
-            file.update.modrinth?.let {
-                library("modrinth-$slug", "maven.modrinth", it.modId).version(it.version)
-            }
+    val prefix = config.name.takeUnless { it == DEFAULT_PACK_NAME }?.let { "$it-" }
 
-            file.update.curseforge?.let {
-                library("curseforge-$slug", "curse.maven", "$slug-${it.projectId}").version(it.fileId.toString())
-            }
+    successful.forEach { (slug, file) ->
+        if (config.modrinth.getOrElse(true)) file.update.modrinth?.let {
+            library(prefix + "modrinth-$slug", "maven.modrinth", it.modId).version(it.version)
+        }
+
+        if (config.curseforge.getOrElse(true)) file.update.curseforge?.let {
+            library(
+                prefix + "curseforge-$slug",
+                "curse.maven",
+                "$slug-${it.projectId}"
+            ).version(it.fileId.toString())
         }
     }
 }
