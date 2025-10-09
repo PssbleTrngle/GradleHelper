@@ -14,14 +14,17 @@ class PackwizVersionCatalogPlugin : Plugin<Settings> {
         val extension = target.extensions.create<PackwizExtension>("packwiz")
 
         extension.strategy.convention(ErrorStrategy.FAIL)
-        extension.modrinth.convention(true)
-        extension.curseforge.convention(true)
-        extension.from.convention { target.rootDir.resolve("pack") }
-        extension.name.convention("pack")
+        // extension.modrinth.convention(true)
+        // extension.curseforge.convention(true)
+        // extension.from.convention { target.rootDir.resolve("pack") }
+        // extension.name.convention("pack")
 
-        target.dependencyResolutionManagement {
-            importPackwiz(extension)
+        extension.packs.create(DEFAULT_PACK_NAME) {
+            strategy.set(ErrorStrategy.SKIP)
+            from.set { target.rootDir.resolve("pack") }
         }
+
+        target.importPackwiz(extension)
     }
 
 }

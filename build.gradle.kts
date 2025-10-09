@@ -23,9 +23,7 @@ allprojects {
         mavenCentral()
         maven { url = uri("https://plugins.gradle.org/m2/") }
     }
-}
 
-allprojects {
     configurations.all {
         resolutionStrategy {
             force("org.codehaus.groovy:groovy-all:3.0.24")

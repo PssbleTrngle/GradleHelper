@@ -185,7 +185,7 @@ class GradleHelperForgePlugin : Plugin<Project> {
             }
 
             lazyDependencies("implementation") {
-                config.kotlinForgeVersion.orNull.let {
+                config.kotlinForgeVersion.orNull?.let {
                     add("thedarkcolour:kotlinforforge:${it}")
                 }
 
