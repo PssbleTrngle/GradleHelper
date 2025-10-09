@@ -112,27 +112,29 @@ internal class ModMavenPublishingExtensionImpl(
     }
 
     internal fun setup() {
-        project.configure<PublishingExtension> {
-            repositories {
-                mavenLocal()
-            }
+        group.orNull?.let { mavenGroup ->
+            project.configure<PublishingExtension> {
+                repositories {
+                    mavenLocal()
+                }
 
-            publications {
-                create<MavenPublication>(PUBLICATION_NAME) {
-                    groupId = group.get()
-                    artifactId = this@ModMavenPublishingExtensionImpl.name.get()
-                    version = artifactVersion.get()
+                publications {
+                    create<MavenPublication>(PUBLICATION_NAME) {
+                        groupId = mavenGroup
+                        artifactId = this@ModMavenPublishingExtensionImpl.name.get()
+                        version = artifactVersion.get()
 
-                    if (project.detectKotlin()) {
-                        from(project.components["kotlin"])
-                    } else {
-                        from(project.components["java"])
-                    }
+                        if (project.detectKotlin()) {
+                            from(project.components["kotlin"])
+                        } else {
+                            from(project.components["java"])
+                        }
 
-                    if (removeAllDependency) {
-                        removePomDependencies()
-                    } else dependencyFilters.forEach {
-                        removePomDependencies(it)
+                        if (removeAllDependency) {
+                            removePomDependencies()
+                        } else dependencyFilters.forEach {
+                            removePomDependencies(it)
+                        }
                     }
                 }
             }
