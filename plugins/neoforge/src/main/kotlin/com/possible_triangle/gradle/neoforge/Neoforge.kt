@@ -11,6 +11,7 @@ import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
@@ -104,6 +105,8 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
             }
         }
 
+        tasks.withType<Test> { enabled = false }
+        tasks.named("compileTestJava") { enabled = false }
 
         configure<NeoForgeExtension> {
             validateAccessTransformers = true

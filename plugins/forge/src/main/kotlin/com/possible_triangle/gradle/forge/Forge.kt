@@ -214,7 +214,6 @@ class GradleHelperForgePlugin : Plugin<Project> {
             removePomDependencies()
         }
 
-        // issues with mixin extras
         tasks.withType<Test> { enabled = false }
         tasks.named("compileTestJava") { enabled = false }
 
