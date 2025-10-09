@@ -14,6 +14,7 @@ import net.minecraftforge.gradle.userdev.tasks.JarJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
@@ -126,7 +127,7 @@ class GradleHelperForgePlugin : Plugin<Project> {
 
         val includedMods = IncludedImpl(this, mod.mods) {
             val resolved = fg.deobf(it.get())
-            project.provider { resolved as ModuleDependency }
+            project.provider { resolved as ExternalModuleDependency }
         }
 
         configure<MinecraftExtension> {
@@ -213,7 +214,6 @@ class GradleHelperForgePlugin : Plugin<Project> {
             removePomDependencies()
         }
 
-        // issues with mixin extras
         tasks.withType<Test> { enabled = false }
         tasks.named("compileTestJava") { enabled = false }
 

@@ -6,25 +6,23 @@ import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.upload.UploadExtension
-import net.neoforged.gradle.dsl.common.extensions.JarJar
-import net.neoforged.gradle.dsl.common.runs.run.Run
-import net.neoforged.gradle.userdev.UserDevPlugin
-import net.neoforged.gradle.userdev.UserDevProjectPlugin
-import org.gradle.api.NamedDomainObjectContainer
+import net.neoforged.moddevgradle.boot.ModDevPlugin
+import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.tasks.testing.Test
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
-import net.neoforged.gradle.common.tasks.JarJar as JarJarTask
 
-private val Project.runs get() = extensions.getByName<NamedDomainObjectContainer<Run>>("runs")
-private val Project.jarJar get() = the<JarJar>()
-
-fun DependencyHandlerScope.pin(jarJar: JarJar, dependencyNotation: ModuleDependency) {
+fun DependencyHandlerScope.pin(dependencyNotation: ExternalModuleDependency) {
     add("jarJar", dependencyNotation) {
-        jarJar.ranged(this, "[${version},)")
+        version {
+            strictly("[${version},)")
+            prefer(version!!)
+        }
     }
 }
 
@@ -41,26 +39,11 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
     private fun Project.finalize() {
         val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
 
-        val jarJar = the<JarJar>()
-        val jarJarEnabled = mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty()
-        if (jarJarEnabled) jarJar.enable()
-
         configureOutputProject(config)
 
-        tasks.getByName<Jar>("jar") {
-            if (jarJarEnabled) archiveClassifier.set("slim")
-        }
-
-        if (jarJarEnabled) {
-            tasks.getByName<JarJarTask>("jarJar") {
-                from(mainSourceSet.output)
-                config.dependsOn.forEach {
-                    from(it.mainSourceSet.output)
-                }
-
-                archiveClassifier.set("")
-            }
-        }
+        //tasks.getByName<Jar>("jar") {
+        //    if (jarJarEnabled) archiveClassifier.set("slim")
+        //}
 
         configureDatagenRun()
     }
@@ -68,41 +51,48 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
     private fun Project.configureDatagenRun() {
         val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
 
-        if (config.enabledDataGen) {
-            config.requireOwner().configureDatagen()
+        configure<NeoForgeExtension> {
+            version = config.neoforgeVersion.get()
 
-            runs.named("data") {
-                workingDirectory(project.file("run/data"))
-
-                val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
-                val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
-                val dataGenArgs = listOf(
-                    "--mod",
-                    mod.id.get(),
-                    "--all",
-                    "--output",
-                    config.requireOwner().datagenOutput.path
-                ) + existingResources + existingMods
-
-                arguments(dataGenArgs)
+            mods.named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    sourceSet(it.mainSourceSet)
+                }
             }
-        } else {
-            runs.removeIf { it.name == "data" }
+
+            if (config.enabledDataGen) {
+                config.requireOwner().configureDatagen()
+
+                runs.named("data") {
+                    gameDirectory = project.file("run/data")
+
+                    val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
+                    val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
+                    val dataGenArgs = listOf(
+                        "--mod",
+                        mod.id.get(),
+                        "--all",
+                        "--output",
+                        config.requireOwner().datagenOutput.path
+                    ) + existingResources + existingMods
+
+                    programArguments.addAll(dataGenArgs)
+                }
+            } else {
+                runs.removeIf { it.name == "data" }
+            }
         }
     }
 
     private fun Project.setupNeoforge() {
-        apply<UserDevPlugin>()
+        apply<ModDevPlugin>()
 
         val config = extensions.create<NeoforgeExtension, NeoforgeExtensionImpl>("neoforge")
 
         configure<UploadExtension> {
             forEach {
-                file.set {
-                    val jarJarTask = tasks.findByPath(UserDevProjectPlugin.JAR_JAR_TASK_NAME) as Jar?
-                    val jarTask = tasks.getByName<Jar>("jar")
-                    (jarJarTask?.takeIf { it.enabled } ?: jarTask).archiveFile.get().asFile
-                }
+                val jarTask = tasks.getByName<Jar>("jar")
+                file = jarTask.archiveFile
                 modLoaders.add(ModLoader.NEOFORGE)
             }
         }
@@ -115,21 +105,37 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
             }
         }
 
-        runs.apply {
-            forEach { run ->
-                run.jvmArguments.addAll(JVM_ARGUMENTS)
+        tasks.withType<Test> { enabled = false }
+        tasks.named("compileTestJava") { enabled = false }
+
+        configure<NeoForgeExtension> {
+            validateAccessTransformers = true
+
+            mods.create(mod.id.get()) {
+                sourceSet(mainSourceSet)
             }
 
-            create("client") {
-                workingDirectory(project.file("run"))
-            }
+            runs {
+                create("client") {
+                    gameDirectory = project.file("run")
+                    client()
+                }
 
-            create("server") {
-                workingDirectory(project.file("run/server"))
-                argument("--nogui")
-            }
+                create("server") {
+                    gameDirectory = project.file("run/server")
+                    programArgument("--nogui")
+                    server()
+                }
 
-            create("data")
+                create("data") {
+                    data()
+                }
+
+                forEach { run ->
+                    run.jvmArguments.addAll(JVM_ARGUMENTS)
+                    run.ideName = "NeoForge ${run.name.capitalized()}"
+                }
+            }
         }
 
         dependencies {
@@ -148,12 +154,12 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
             lazyDependencies("implementation") {
                 mod.libraries.get().forEach {
                     add(it)
-                    pin(jarJar, it)
+                    pin(it)
                 }
 
                 mod.mods.get().forEach {
                     add(it)
-                    pin(jarJar, it)
+                    pin(it)
                 }
             }
         }
