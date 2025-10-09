@@ -1,5 +1,7 @@
 # Minecraft Gradle Helper Plugin
 
+[![Gradle Plugin Portal Version](https://img.shields.io/gradle-plugin-portal/v/com.possible-triangle.helper?logo=gradle&label=latest%20version)](https://plugins.gradle.org/plugin/com.possible-triangle.helper)
+
 This plugin is intended to simplify the gradle workflow and project boilerplate code of minecraft mod projects.
 It works for fabric, forge or even multiloader projects containing multiple subprojects.
 
@@ -7,20 +9,30 @@ It works for fabric, forge or even multiloader projects containing multiple subp
 
 Add the following to `settings.gradle` or `settings.gradle.kts`
 ```kotlin
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven { url = uri("https://maven.minecraftforge.net/") }
-        maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
-    }
+plugins {
+    id("com.possible-triangle.helper") version ("<plugin-version>")
 }
 ```
 
-The plugin only has to be applied in the root project using the plugins dsl block in the `build.gradle.kts`
+### Multi-Project setup
+The plugin should be applied in the root project using the plugins dsl block in the `build.gradle.kts`
 
 ```kotlin
 plugins {
-    id("net.somethingcatchy.gradle") version (VERSION)
+    id("com.possible-triangle.core")
+
+    // define the plugins used in subprojects to avoid classpath issues
+    id("com.possible-triangle.fabric") apply false
+    id("com.possible-triangle.neoforge") apply false
+    ...
+}
+```
+
+### Single-Project setup
+
+```kotlin
+plugins {
+    id("com.possible-triangle.neoforge")
 }
 ```
 
@@ -31,17 +43,31 @@ The default values for these will be extracted from the `gradle.properties` file
 
 ```kotlin
 mod {
-    id.set("example-mod") // default: mod_id in gradle.properties
-    name.set("Example Mod") // default: mod_name
-    version.set("1.0") // default: mod_version
-    minecraftVersion.set("1.20.1") // default: mc_version
+    id = "example-mod" // default: mod_id in gradle.properties
+    name = "Example Mod" // default: mod_name
+    version = "1.0" // default: mod_version
+    minecraftVersion = "1.20.1" // default: mc_version
+    
+    libraries.include("com.example:library:1.0.0")
+    libraries.include(libs.the.other.library)
+    mods.include("com.example:mods:1.0.0")
 }
 ```
 
-## Common / Fabric / Forge setup
+The different loader implementations have extensions that can be used to modify some loader specific values, as well as configure inter-project dependencies
 
-For single-loader projects, only one of these directives will be added in the *rootProject*. 
-For multiloader projects, these will be applied in the corresponding projects `build.gradle.kts`
+```kotlin
+forge {
+    enabledMixins()
+    forgeVersion = "..."
+    dependOn(project(":common"))
+}
+
+fabric {
+    dataGen()
+    dependOn(project(":common"))
+}
+```
 
 ## Kotlin Support
 
@@ -51,5 +77,5 @@ These mod dependencies will also be added to the source code and curseforge/modr
 
 ## Publishing
 
-The `uploadToCurseforge` and `uploadToModrinth` apply and configure the necessary plugins to upload the mod to these platforms using gradle.
+The `upload` extension configures the necessary plugins to upload the mod to modrinth, curseforge and maven platforms using gradle.
 Most of the default values are grabbed from the `mod` extension and thereby the gradle properties.

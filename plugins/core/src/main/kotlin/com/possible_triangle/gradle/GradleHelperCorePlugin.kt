@@ -1,7 +1,7 @@
 package com.possible_triangle.gradle
 
 import com.modrinth.minotaur.Minotaur
-import com.possible_triangle.gradle.features.defaultRepositories
+import com.possible_triangle.gradle.repositories.defaultRepositories
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.UploadExtensionImpl
 import net.darkhax.curseforgegradle.CurseForgeGradlePlugin

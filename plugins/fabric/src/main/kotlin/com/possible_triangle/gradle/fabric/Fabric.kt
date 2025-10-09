@@ -72,10 +72,6 @@ class GradleHelperFabricPlugin : Plugin<Project> {
     private fun Project.setupFabric() {
         apply<LoomGradlePlugin>()
 
-        repositories {
-            fabricRepositories()
-        }
-
         val config = extensions.create<FabricExtension, FabricExtensionImpl>("fabric")
 
         configure<UploadExtension> {

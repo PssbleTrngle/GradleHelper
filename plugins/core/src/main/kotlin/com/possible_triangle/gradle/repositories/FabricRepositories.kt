@@ -1,10 +1,9 @@
-package com.possible_triangle.gradle.fabric
+package com.possible_triangle.gradle.repositories
 
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import java.net.URI
 
-
-internal fun RepositoryHandler.fabricRepositories() {
+fun RepositoryHandler.mavenFabric() {
     maven {
         url = URI("https://maven.fabricmc.net/")
         content {
