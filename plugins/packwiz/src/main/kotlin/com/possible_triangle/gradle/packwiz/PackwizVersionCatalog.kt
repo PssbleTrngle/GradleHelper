@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.decodeFromString
+import org.apache.log4j.Logger
 import org.gradle.api.initialization.Settings
 import org.gradle.api.initialization.dsl.VersionCatalogBuilder
 import java.io.File
@@ -46,14 +47,6 @@ data class PackwizFileReference(val file: String, val metafile: Boolean)
 @Serializable
 data class PackwizIndex(val files: List<PackwizFileReference>)
 
-private fun ErrorStrategy.execute(message: String, ex: Exception? = null) {
-    when (this) {
-        ErrorStrategy.WARN -> LOGGER.warn(message, ex)
-        ErrorStrategy.FAIL -> throw RuntimeException(message, ex)
-        else -> {}
-    }
-}
-
 private inline fun <reified T> StringFormat.decodeFromFile(file: File): T {
     return try {
         decodeFromString<T>(file.readText())
@@ -62,67 +55,91 @@ private inline fun <reified T> StringFormat.decodeFromFile(file: File): T {
     }
 }
 
-fun Settings.importPackwiz(settings: PackwizExtension) {
-    dependencyResolutionManagement {
-        versionCatalogs.create("pack")
-    }
+class PackwizVersionCatalog(
+    private val extension: PackwizExtension,
+    private val logger: Logger,
+) {
 
-    gradle.settingsEvaluated {
-        dependencyResolutionManagement {
-            versionCatalogs.named("pack") {
-                settings.packs.forEach {
-                    add(settings, it)
+    fun importPackwiz(settings: Settings) {
+        settings.dependencyResolutionManagement {
+            versionCatalogs.create("pack")
+        }
+
+        settings.gradle.settingsEvaluated {
+            dependencyResolutionManagement {
+                versionCatalogs.named("pack") {
+                    extension.packs.forEach {
+                        add(it)
+                    }
                 }
             }
         }
     }
-}
 
-private fun VersionCatalogBuilder.add(settings: PackwizExtension, config: PackwizConfiguration) {
-    val strategy = config.strategy.orElse(settings.strategy).get()
-    val from = config.from.get().asFile
-
-    if (!from.exists()) return strategy.execute("directory $from does not exist")
-
-    val indexFile = from.resolve("index.toml")
-    if (!indexFile.exists()) return strategy.execute("index.toml in $from does not exist")
-
-    val index = try {
-        TOML.decodeFromFile<PackwizIndex>(indexFile)
-    } catch (ex: Exception) {
-        return strategy.execute("unable to decode index.toml", ex)
+    private fun ErrorStrategy.execute(message: String, ex: Exception? = null) {
+        when (this) {
+            ErrorStrategy.WARN -> logger.warn(message, ex)
+            ErrorStrategy.FAIL -> throw RuntimeException(message, ex)
+            else -> {}
+        }
     }
 
-    val mods = index.files
-        .filter { it.metafile }
-        .map { from.resolve(it.file) }
-        .associateBy { it.name.substringBefore('.') }
-        .mapValues { runCatching { TOML.decodeFromFile<PackwizFile>(it.value) } }
-
-    val failed = mods.filterValues { it.isFailure }.mapValues { it.value.exceptionOrNull()!! }
-    val successful = mods.filterValues { it.isSuccess }.mapValues { it.value.getOrThrow() }
-
-    if (failed.isNotEmpty()) {
-        val messages = listOf("${failed.size} mods metadata files could not be decoded:") +
-                failed.map { "  ${it.key}: ${it.value.message}" }
-        strategy.execute(messages.joinToString("\n"))
+    private fun PackwizExtension.logVerbose(message: String) {
+        if (verbose.get()) logger.info(message)
     }
 
-    if (successful.isEmpty()) return strategy.execute("no packwiz mods found in ${config.name}")
+    private fun VersionCatalogBuilder.add(config: PackwizConfiguration) {
+        val strategy = config.strategy.orElse(extension.strategy).get()
+        val from = config.from.get().asFile
 
-    val prefix = config.name.takeUnless { it == DEFAULT_PACK_NAME }?.let { "$it-" }
+        if (!from.exists()) return strategy.execute("directory $from does not exist")
 
-    successful.forEach { (slug, file) ->
-        if (config.modrinth.getOrElse(true)) file.update.modrinth?.let {
-            library(prefix + "modrinth-$slug", "maven.modrinth", it.modId).version(it.version)
+        extension.logVerbose("importing from $from as ${config.name}")
+
+        val indexFile = from.resolve("index.toml")
+        if (!indexFile.exists()) return strategy.execute("index.toml in $from does not exist")
+
+        val index = try {
+            TOML.decodeFromFile<PackwizIndex>(indexFile)
+        } catch (ex: Exception) {
+            return strategy.execute("unable to decode index.toml", ex)
         }
 
-        if (config.curseforge.getOrElse(true)) file.update.curseforge?.let {
-            library(
-                prefix + "curseforge-$slug",
-                "curse.maven",
-                "$slug-${it.projectId}"
-            ).version(it.fileId.toString())
+        val mods = index.files
+            .filter { it.metafile }
+            .map { from.resolve(it.file) }
+            .associateBy { it.name.substringBefore('.') }
+            .mapValues { runCatching { TOML.decodeFromFile<PackwizFile>(it.value) } }
+
+        extension.logVerbose("found ${mods.size} mod metadata files")
+
+        val failed = mods.filterValues { it.isFailure }.mapValues { it.value.exceptionOrNull()!! }
+        val successful = mods.filterValues { it.isSuccess }.mapValues { it.value.getOrThrow() }
+
+        if (failed.isNotEmpty()) {
+            val messages = listOf("${failed.size} mods metadata files could not be decoded:") +
+                    failed.map { "  ${it.key}: ${it.value.message}" }
+            strategy.execute(messages.joinToString("\n"))
+        }
+
+        if (successful.isEmpty()) return strategy.execute("no packwiz mods found in ${config.name}")
+
+        val prefix = config.name.takeUnless { it == DEFAULT_PACK_NAME }?.let { "$it-" } ?: ""
+
+        successful.forEach { (slug, file) ->
+            if (config.modrinth.getOrElse(true)) file.update.modrinth?.let {
+                extension.logVerbose("  adding $slug with prefix $prefix from modrinth")
+                library(prefix + "modrinth-$slug", "maven.modrinth", it.modId).version(it.version)
+            }
+
+            if (config.curseforge.getOrElse(true)) file.update.curseforge?.let {
+                extension.logVerbose("  adding $slug with prefix $prefix from curseforge")
+                library(
+                    prefix + "curseforge-$slug",
+                    "curse.maven",
+                    "$slug-${it.projectId}"
+                ).version(it.fileId.toString())
+            }
         }
     }
 }
