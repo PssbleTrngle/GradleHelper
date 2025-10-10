@@ -10,6 +10,7 @@ enum class ErrorStrategy {
 
 interface PackwizExtension {
     val strategy: Property<ErrorStrategy>
+    val verbose: Property<Boolean>
     val packs: NamedDomainObjectContainer<PackwizConfiguration>
 }
 
