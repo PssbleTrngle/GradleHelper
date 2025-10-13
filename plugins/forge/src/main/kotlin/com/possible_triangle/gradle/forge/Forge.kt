@@ -75,6 +75,14 @@ class GradleHelperForgePlugin : Plugin<Project> {
                 archiveClassifier.set("")
             }
         }
+
+        if (config.mixinsEnabled) {
+            tasks.withType<Jar> {
+                filesMatching("${mod.id.get()}*.mixins.json") {
+                    filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
+                }
+            }
+        }
     }
 
     private fun Project.configureDatagenRun() {
