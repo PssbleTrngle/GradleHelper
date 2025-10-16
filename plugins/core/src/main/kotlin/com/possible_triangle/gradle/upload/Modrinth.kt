@@ -56,12 +56,12 @@ internal class ModrinthExtensionImpl(private val project: Project) :
             }
         }
 
-        val task = project.tasks.getByName("modrinth")
-        task.onlyIf { token.isPresent }
-
-        project.tasks.publish.dependsOn(task)
-        if (syncFile.isPresent) {
-            task.dependsOn(project.tasks.withType<TaskModrinthSyncBody>())
+        if (token.isPresent) {
+            val task = project.tasks.getByName("modrinth")
+            project.tasks.publish.dependsOn(task)
+            if (syncFile.isPresent) {
+                task.dependsOn(project.tasks.withType<TaskModrinthSyncBody>())
+            }
         }
     }
 }

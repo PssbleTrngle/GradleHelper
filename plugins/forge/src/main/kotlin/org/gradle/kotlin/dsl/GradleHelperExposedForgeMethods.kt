@@ -24,7 +24,10 @@ private fun Project.modDependency(
     return dependencies.add(type, fg.deobf(dependencyNotation.resolveDependency(), closure))
 }
 
- fun Project.modImplementation(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+fun Project.modApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+    modDependency("api", dependencyNotation, block)
+
+fun Project.modImplementation(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
     modDependency("implementation", dependencyNotation, block)
 
  fun Project.modRuntimeOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
