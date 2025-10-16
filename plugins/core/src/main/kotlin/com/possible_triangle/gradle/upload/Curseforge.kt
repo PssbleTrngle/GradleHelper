@@ -27,10 +27,10 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
     }
 
     override fun onSetup() {
-        val task = project.tasks.register<TaskPublishCurseForge>("curseforge") {
-            onlyIf { token.isPresent }
+        if (!token.isPresent) return
 
-            apiToken = token.orNull
+        val task = project.tasks.register<TaskPublishCurseForge>("curseforge") {
+            apiToken = token.get()
 
             upload(projectId.get(), file.get()).apply {
                 changelogType = Constants.CHANGELOG_MARKDOWN
