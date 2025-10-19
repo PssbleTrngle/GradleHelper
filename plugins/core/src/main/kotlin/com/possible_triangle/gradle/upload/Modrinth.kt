@@ -10,14 +10,14 @@ import org.gradle.kotlin.dsl.withType
 import java.io.File
 import com.modrinth.minotaur.ModrinthExtension as MinotaurExtension
 
-interface ModrinthExtension : AbstractUploadExtension {
+interface ModrinthExtension : AbstractUploadExtension<SimpleDependencyBuilder> {
     fun syncBodyFrom(file: File)
     fun syncBodyFrom(file: RegularFile) = syncBodyFrom(file.asFile)
     fun syncBodyFromReadme()
 }
 
 internal class ModrinthExtensionImpl(private val project: Project) :
-    AbstractUploadExtensionImpl(project, "modrinth"), ModrinthExtension {
+    AbstractUploadExtensionImpl<SimpleDependencyBuilder>(project, "modrinth"), ModrinthExtension {
     private val syncFile: RegularFileProperty =
         project.objects.fileProperty()
     private val readmeFile = project.rootProject.file("README.md")
@@ -35,6 +35,8 @@ internal class ModrinthExtensionImpl(private val project: Project) :
         }
     }
 
+    override val dependencies = SimpleDependencyBuilder()
+
     override fun onSetup() {
         project.configure<MinotaurExtension> {
             token.set(this@ModrinthExtensionImpl.token)
@@ -47,9 +49,9 @@ internal class ModrinthExtensionImpl(private val project: Project) :
             versionType.set(this@ModrinthExtensionImpl.releaseType)
             file.set(this@ModrinthExtensionImpl.file)
 
-            requiredDependencies.forEach { required.project(it) }
-            optionalDependencies.forEach { optional.project(it) }
-            embeddedDependencies.forEach { embedded.project(it) }
+            this@ModrinthExtensionImpl.dependencies.required.forEach { required.project(it) }
+            this@ModrinthExtensionImpl.dependencies.optional.forEach { optional.project(it) }
+            this@ModrinthExtensionImpl.dependencies.embedded.forEach { embedded.project(it) }
 
             syncFile.orNull?.let {
                 syncBodyFrom.set(it.asFile.readText())

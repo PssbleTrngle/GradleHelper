@@ -15,13 +15,7 @@ import org.gradle.api.tasks.TaskContainer
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.listProperty
 
-interface DependencyBuilder {
-    fun required(dependency: String)
-    fun optional(dependency: String)
-    fun embedded(dependency: String)
-}
-
-interface AbstractUploadExtension {
+interface AbstractUploadExtension<TDependencies : DependencyBuilder> {
     val projectId: Property<String>
     val token: Property<String>
     val file: RegularFileProperty
@@ -36,33 +30,19 @@ interface AbstractUploadExtension {
 
     val includeKotlinDependency: Property<Boolean>
 
-    fun dependencies(block: DependencyBuilder.() -> Unit)
+    val dependencies: TDependencies
+    fun dependencies(block: TDependencies.() -> Unit)
 }
 
-internal abstract class AbstractUploadExtensionImpl(private val project: Project, platform: String) :
-    AbstractUploadExtension {
+internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBuilder>(
+    private val project: Project,
+    platform: String
+) :
+    AbstractUploadExtension<TDependencies> {
     protected abstract fun DependencyBuilder.requireKotlin(loader: ModLoader)
 
     private val tokenKey = "${platform.uppercase()}_TOKEN"
     private val projectIdKey = "${platform}_project_id"
-
-    protected val requiredDependencies = hashSetOf<String>()
-    protected val optionalDependencies = hashSetOf<String>()
-    protected val embeddedDependencies = hashSetOf<String>()
-
-    private val dependencies = object : DependencyBuilder {
-        override fun required(dependency: String) {
-            requiredDependencies.add(dependency)
-        }
-
-        override fun optional(dependency: String) {
-            optionalDependencies.add(dependency)
-        }
-
-        override fun embedded(dependency: String) {
-            embeddedDependencies.add(dependency)
-        }
-    }
 
     override val projectId = project.objects.property(project.stringProperty(projectIdKey))
     override val token = project.objects.property(env[tokenKey])
@@ -80,7 +60,7 @@ internal abstract class AbstractUploadExtensionImpl(private val project: Project
 
     override var includeKotlinDependency = project.objects.property(true)
 
-    override fun dependencies(block: DependencyBuilder.() -> Unit) = dependencies.let(block)
+    override fun dependencies(block: TDependencies.() -> Unit) = dependencies.let(block)
 
     abstract fun onSetup()
 
