@@ -209,8 +209,13 @@ private fun Node.all(key: String) = (get(key) as List<Node>?) ?: emptyList()
 private fun Node.first(key: String) = all(key).firstOrNull()
 
 private fun matchesOrNull(filter: String?, node: Node?): Boolean {
-    val value = node?.value() as NodeList
-    return filter != null && value.first() == filter
+    if (node == null || filter == null) return false
+    val value = when (val it = node.value()) {
+        is NodeList -> it.first()
+        is String -> it
+        else -> null
+    }
+    return value == filter
 }
 
 private fun Node.test(filter: DependencyFilter): Boolean {
