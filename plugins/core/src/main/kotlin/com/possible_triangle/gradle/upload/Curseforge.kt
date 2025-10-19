@@ -29,7 +29,7 @@ private fun ModLoader.loaderName(): String {
 
 private fun UploadArtifact.addDependencies(dependencies: Collection<CurseForgeDependency>, type: String) {
     dependencies.forEach {
-        if (it.id != null) addRelation(it, type, it.id.toString())
+        if (it.id != null) addRelation(it.slug, type, it.id.toString())
         else addRelation(it, type)
     }
 }
