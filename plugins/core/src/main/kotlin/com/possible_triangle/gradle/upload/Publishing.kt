@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle.upload
 
+import com.possible_triangle.gradle.ModExtension
 import com.possible_triangle.gradle.env
 import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.loaders.isSubProject
@@ -63,9 +64,15 @@ interface ModMavenPublishingExtension {
     fun nexus(snapshot: Boolean = false, block: MavenArtifactRepository.() -> Unit = {})
     fun removePomDependencies()
     fun removePomDependencies(groupId: String, artifactId: String? = null, version: String? = null)
+    fun disableDefaultModifications()
 }
 
-data class DependencyFilter(val groupId: String, val artifactId: String?, val version: String?)
+data class DependencyFilter(
+    val groupId: String? = null,
+    val artifactId: String? = null,
+    val version: String? = null,
+    val scope: String? = null
+)
 
 internal class ModMavenPublishingExtensionImpl(
     private val project: Project,
@@ -101,10 +108,17 @@ internal class ModMavenPublishingExtensionImpl(
     var removeAllDependency = false
         private set
 
+    var applyDefaultModifications = true
+        private set
+
     val dependencyFilters = arrayListOf<DependencyFilter>()
 
     override fun removePomDependencies() {
         removeAllDependency = true
+    }
+
+    override fun disableDefaultModifications() {
+        applyDefaultModifications = false
     }
 
     override fun removePomDependencies(groupId: String, artifactId: String?, version: String?) {
@@ -128,6 +142,10 @@ internal class ModMavenPublishingExtensionImpl(
                             from(project.components["kotlin"])
                         } else {
                             from(project.components["java"])
+                        }
+
+                        if (applyDefaultModifications) {
+                            defaultPomModifications(project.mod)
                         }
 
                         if (removeAllDependency) {
@@ -154,6 +172,29 @@ fun Project.modifyPublication(block: MavenPublication.() -> Unit) = afterEvaluat
     }
 }
 
+internal fun MavenPublication.defaultPomModifications(mod: ModExtension) {
+    removePomDependencies(DependencyFilter(scope = "runtime"))
+
+    mod.repository.orNull?.let { repository ->
+        pom.issueManagement {
+            system = "github"
+            url = "https://github.com/${repository}/issues"
+        }
+
+        pom.scm {
+            url = "https://github.com/${repository}"
+        }
+    }
+
+    mod.author.orNull?.let { author ->
+        pom.developers {
+            developer {
+                name = author
+            }
+        }
+    }
+}
+
 fun MavenPublication.removePomDependencies() {
     suppressAllPomMetadataWarnings()
 
@@ -164,19 +205,29 @@ fun MavenPublication.removePomDependencies() {
     }
 }
 
+private fun Node.all(key: String) = (get(key) as List<Node>?) ?: emptyList()
+private fun Node.first(key: String) = all(key).firstOrNull()
+
+private fun matchesOrNull(filter: String?, node: Node?): Boolean {
+    val value = node?.value() as NodeList
+    return filter != null && value.first() == filter
+}
+
+private fun Node.test(filter: DependencyFilter): Boolean {
+    return matchesOrNull(filter.groupId, first("groupId"))
+            || matchesOrNull(filter.artifactId, first("artifactId"))
+            || matchesOrNull(filter.version, first("version"))
+            || matchesOrNull(filter.scope, first("scope"))
+}
+
 fun MavenPublication.removePomDependencies(filter: DependencyFilter) {
     suppressAllPomMetadataWarnings()
-
-    fun Node.all(key: String) = get(key) as List<Node>? ?: emptyList()
-    fun Node.first(key: String) = all(key).firstOrNull()
 
     pom.withXml {
         val node = asNode().first("dependencies") ?: return@withXml
         val dependencies = node.all("dependency")
-        dependencies
-            .filter { it.first("groupId")?.value() == filter.groupId }
-            .filter { filter.artifactId == null || (it.first("artifactId")?.value() == filter.artifactId) }
-            .filter { filter.version == null || (it.first("version")?.value() == filter.version) }
-            .forEach { node.remove(it) }
+        dependencies.forEach {
+            if (it.test(filter)) node.remove(it)
+        }
     }
 }
