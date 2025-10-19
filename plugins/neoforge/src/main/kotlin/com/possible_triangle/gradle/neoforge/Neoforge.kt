@@ -142,16 +142,16 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
             add("implementation", config.neoforgeVersion.map { "net.neoforged:neoforge:${it}" })
 
             lazyDependencies("implementation") {
-                config.kotlinForgeVersion.orNull?.let {
-                    add("thedarkcolour:kotlinforforge-neoforge:${it}")
-                }
-
                 config.dependsOn.forEach {
                     add(it)
                 }
             }
 
-            lazyDependencies("implementation") {
+            lazyDependencies("api") {
+                config.kotlinForgeVersion.orNull?.let {
+                    add("thedarkcolour:kotlinforforge-neoforge:${it}")
+                }
+
                 mod.libraries.get().forEach {
                     add(it)
                     pin(it)
