@@ -10,7 +10,7 @@ interface UploadExtension {
     fun maven(block: ModMavenPublishingExtension.() -> Unit)
     fun curseforge(block: CurseForgeExtension.() -> Unit)
     fun modrinth(block: ModrinthExtension.() -> Unit)
-    fun forEach(block: AbstractUploadExtension.() -> Unit)
+    fun forEach(block: AbstractUploadExtension<*>.() -> Unit)
 }
 
 internal open class UploadExtensionImpl(project: Project) : UploadExtension {
@@ -28,7 +28,7 @@ internal open class UploadExtensionImpl(project: Project) : UploadExtension {
         modrinth.block()
     }
 
-    override fun forEach(block: AbstractUploadExtension.() -> Unit) {
+    override fun forEach(block: AbstractUploadExtension<*>.() -> Unit) {
         curseforge(block)
         modrinth(block)
     }
