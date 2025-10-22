@@ -8,6 +8,7 @@ import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.upload.UploadExtension
 import net.neoforged.moddevgradle.boot.ModDevPlugin
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
+import net.neoforged.moddevgradle.internal.utils.VersionCapabilitiesInternal
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
@@ -26,6 +27,15 @@ fun DependencyHandlerScope.pin(dependencyNotation: ExternalModuleDependency) {
     }
 }
 
+fun Project.splitDataRuns(): Boolean {
+    val version = mod.minecraftVersion.map {
+        VersionCapabilitiesInternal.ofMinecraftVersion(it)
+    }.getOrElse(
+        VersionCapabilitiesInternal.latest()
+    )
+    return version.splitDataRuns()
+}
+
 class GradleHelperNeoForgePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -41,11 +51,15 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
 
         configureOutputProject(config)
 
-        //tasks.getByName<Jar>("jar") {
-        //    if (jarJarEnabled) archiveClassifier.set("slim")
-        //}
-
         configureDatagenRun()
+
+        config.kotlinForgeVersion.orNull?.let {
+            configure<UploadExtension> {
+                forEach {
+                    if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
+                }
+            }
+        }
     }
 
     private fun Project.configureDatagenRun() {
@@ -128,7 +142,8 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
                 }
 
                 create("data") {
-                    data()
+                    if (splitDataRuns()) clientData()
+                    else data()
                 }
 
                 forEach { run ->

@@ -38,16 +38,9 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
     AbstractUploadExtensionImpl<CurseForgeDependencies>(project, "curseforge"),
     CurseForgeExtension {
 
-    override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
-        when (loader) {
-            ModLoader.FORGE, ModLoader.NEOFORGE -> required("kotlin-for-forge")
-            ModLoader.FABRIC -> required("fabric-language-kotlin")
-        }
-    }
-
     override val dependencies = CurseForgeDependencies()
 
-    override fun onSetup() {
+    override fun setup() {
         if (!token.isPresent) return
 
         val task = project.tasks.register<TaskPublishCurseForge>("curseforge") {

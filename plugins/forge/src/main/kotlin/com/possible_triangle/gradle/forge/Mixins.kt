@@ -36,7 +36,7 @@ internal fun Project.configureMixins() {
 internal fun Project.includeMixinExtras(): Boolean {
     val config = the<ForgeExtension>() as ForgeExtensionImpl
 
-    return project.mixinExtrasVersion?.takeIf { config.mixinsEnabled }?.also {
+    return project.mixinExtrasVersion.takeIf { config.mixinsEnabled }?.also {
         dependencies {
             val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${it}")
             add("compileOnly", annotationProcessor!!)

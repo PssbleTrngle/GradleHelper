@@ -4,7 +4,6 @@ import com.possible_triangle.gradle.GradleHelperCorePlugin
 import com.possible_triangle.gradle.commonMixinDependencies
 import com.possible_triangle.gradle.create
 import com.possible_triangle.gradle.features.lazyDependencies
-import com.possible_triangle.gradle.features.loaders.mixinExtrasVersion
 import com.possible_triangle.gradle.mod
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Plugin

@@ -28,16 +28,9 @@ internal class ModrinthExtensionImpl(private val project: Project) :
 
     override fun syncBodyFromReadme() = syncBodyFrom(readmeFile)
 
-    override fun DependencyBuilder.requireKotlin(loader: ModLoader) {
-        when (loader) {
-            ModLoader.FORGE, ModLoader.NEOFORGE -> required("ordsPcFz")
-            ModLoader.FABRIC -> required("Ha28R6CL")
-        }
-    }
-
     override val dependencies = SimpleDependencyBuilder()
 
-    override fun onSetup() {
+    override fun setup() {
         project.configure<MinotaurExtension> {
             token.set(this@ModrinthExtensionImpl.token)
             projectId.set(this@ModrinthExtensionImpl.projectId)
