@@ -82,4 +82,4 @@ enum class ModLoader {
 //     }
 // }
 
-val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version")
+val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version") ?: "0.4.1"

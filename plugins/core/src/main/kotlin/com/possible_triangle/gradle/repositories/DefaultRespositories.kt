@@ -41,4 +41,11 @@ internal fun RepositoryHandler.defaultRepositories() {
             includeGroup("org.spongepowered")
         }
     }
+
+    maven {
+        url = URI("https://thedarkcolour.github.io/KotlinForForge/")
+        content {
+            includeGroup("thedarkcolour")
+        }
+    }
 }

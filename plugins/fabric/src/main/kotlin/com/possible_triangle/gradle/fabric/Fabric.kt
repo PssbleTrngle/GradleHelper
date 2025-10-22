@@ -67,6 +67,14 @@ class GradleHelperFabricPlugin : Plugin<Project> {
                 }
             }
         }
+
+        config.kotlinFabricVersion.orNull?.let {
+            configure<UploadExtension> {
+                forEach {
+                    if (includeKotlinDependency.get()) dependencies.required("fabric-language-kotlin")
+                }
+            }
+        }
     }
 
     private fun Project.setupFabric() {

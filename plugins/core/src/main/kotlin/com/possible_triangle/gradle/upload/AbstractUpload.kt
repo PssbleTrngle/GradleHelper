@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle.upload
 
 import com.possible_triangle.gradle.env
-import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
@@ -35,11 +34,10 @@ interface AbstractUploadExtension<TDependencies : DependencyBuilder> {
 }
 
 internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBuilder>(
-    private val project: Project,
-    platform: String
+    project: Project,
+    platform: String,
 ) :
     AbstractUploadExtension<TDependencies> {
-    protected abstract fun DependencyBuilder.requireKotlin(loader: ModLoader)
 
     private val tokenKey = "${platform.uppercase()}_TOKEN"
     private val projectIdKey = "${platform}_project_id"
@@ -58,20 +56,11 @@ internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBu
     override val changelog = project.objects.property(env["CHANGELOG"])
     override val releaseType = project.objects.property(project.mod.releaseType.orElse("release"))
 
-    override var includeKotlinDependency = project.objects.property(true)
+    override val includeKotlinDependency = project.objects.property(true)
 
     override fun dependencies(block: TDependencies.() -> Unit) = dependencies.let(block)
 
-    abstract fun onSetup()
-
-    internal fun setup() {
-        if (includeKotlinDependency.get() && project.detectKotlin()) {
-            modLoaders.get().forEach {
-                dependencies.requireKotlin(it)
-            }
-        }
-        onSetup()
-    }
+    internal abstract fun setup()
 
 }
 

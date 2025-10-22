@@ -83,6 +83,14 @@ class GradleHelperForgePlugin : Plugin<Project> {
                 }
             }
         }
+
+        config.kotlinForgeVersion.orNull?.let {
+            configure<UploadExtension> {
+                forEach {
+                    if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
+                }
+            }
+        }
     }
 
     private fun Project.configureDatagenRun() {
