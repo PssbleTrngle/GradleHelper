@@ -41,7 +41,7 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
     override val dependencies = CurseForgeDependencies()
 
     override fun setup() {
-        if (!token.isPresent) return
+        if (!isConfigured()) return
 
         val task = project.tasks.register<TaskPublishCurseForge>("curseforge") {
             apiToken = token.get()

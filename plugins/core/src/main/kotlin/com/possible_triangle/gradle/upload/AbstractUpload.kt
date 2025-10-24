@@ -62,6 +62,10 @@ internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBu
 
     internal abstract fun setup()
 
+    internal fun isConfigured(): Boolean {
+        return token.isPresent && file.isPresent && projectId.isPresent
+    }
+
 }
 
 internal val TaskContainer.publish
