@@ -1,5 +1,3 @@
-val plugin_id: String by extra
-
 pluginManagement {
     repositories {
         gradlePluginPortal()

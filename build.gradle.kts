@@ -11,11 +11,11 @@ plugins {
 val env: Map<String, String> = System.getenv()
 
 val repository: String by extra
-val plugin_id: String by extra
+val pluginId: String by extra
 
-val major_version: String by extra
+val majorVersion: String by extra
 val patch = env["PATCH"] ?: "999"
-val pluginVersion = "$major_version.$patch"
+val pluginVersion = "$majorVersion.$patch"
 
 allprojects {
     repositories {
@@ -49,7 +49,7 @@ pluginProjects {
 
         plugins {
             create(project.name) {
-                id = "$plugin_id.${project.name}"
+                id = "$pluginId.${project.name}"
                 version = pluginVersion
                 displayName = "Gradle Helper"
                 implementationClass = "replaced in subprojects"
