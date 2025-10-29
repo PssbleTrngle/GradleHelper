@@ -15,6 +15,7 @@ val pluginId: String by extra
 
 val majorVersion: String by extra
 val patch = env["PATCH"] ?: "999"
+val snapshot = env["SNAPSHOT"] == "true"
 val pluginVersion = "$majorVersion.$patch"
 
 allprojects {
@@ -42,6 +43,7 @@ pluginProjects {
     apply<KotlinDslPlugin>()
 
     extra["pluginVersion"] = pluginVersion
+    extra["snapshot"] = snapshot
 
     gradlePlugin {
         vcsUrl.set("https://github.com/$repository")
