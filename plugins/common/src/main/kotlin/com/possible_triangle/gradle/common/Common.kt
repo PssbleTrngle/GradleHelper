@@ -33,6 +33,12 @@ class GradleHelperCommonPlugin : Plugin<Project> {
             }
         }
 
+        if (tasks.findByName("prepareWorkspace") == null) {
+            tasks.register("prepareWorkspace") {
+                // I don't know why this is necessary, but for some reason IDEA calls this task after import
+            }
+        }
+
         commonMixinDependencies()
 
         dependencies {
