@@ -121,7 +121,7 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
 
         tasks.withType<Test> { enabled = false }
         tasks.named("compileTestJava") { enabled = false }
-        tasks.named("compileTestKotlin") { enabled = false }
+        tasks.findByName("compileTestKotlin")?.enabled = false
 
         configure<NeoForgeExtension> {
             validateAccessTransformers = true
