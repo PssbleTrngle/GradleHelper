@@ -232,6 +232,7 @@ class GradleHelperForgePlugin : Plugin<Project> {
 
         tasks.withType<Test> { enabled = false }
         tasks.named("compileTestJava") { enabled = false }
+        tasks.named("compileTestKotlin") { enabled = false }
 
         if (javaVersion <= 17) {
             configurations.all {
