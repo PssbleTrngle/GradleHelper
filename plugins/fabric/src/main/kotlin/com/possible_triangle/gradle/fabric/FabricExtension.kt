@@ -3,14 +3,18 @@ package com.possible_triangle.gradle.fabric
 import com.possible_triangle.gradle.DatagenBuilder
 import com.possible_triangle.gradle.features.loaders.AbstractLoadExtensionWithDatagen
 import com.possible_triangle.gradle.features.loaders.LoaderExtension
+import com.possible_triangle.gradle.features.loaders.WithAccessWidener
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.the
+import java.io.File
 
-interface FabricExtension : LoaderExtension {
+interface FabricExtension : LoaderExtension, WithAccessWidener {
     val apiVersion: Property<String>
     val loaderVersion: Property<String>
 
@@ -21,7 +25,8 @@ interface FabricExtension : LoaderExtension {
     fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency)
 }
 
-internal open class FabricExtensionImpl(project: Project) : AbstractLoadExtensionWithDatagen(project), FabricExtension {
+internal open class FabricExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
+    FabricExtension {
     override val loaderVersion = project.objects.property(project.stringProperty("fabric_loader_version"))
     override val apiVersion = project.objects.property(project.stringProperty("fabric_api_version"))
     override val kotlinFabricVersion = project.objects.property(project.stringProperty("kotlin_fabric_version"))
@@ -40,4 +45,9 @@ internal open class FabricExtensionImpl(project: Project) : AbstractLoadExtensio
     override fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency) {
         this.mappingsSupplier = supplier
     }
+
+    override fun accessWidener(file: Provider<File>) {
+        project.the<LoomGradleExtensionAPI>().accessWidenerPath.set { file.get() }
+    }
+
 }

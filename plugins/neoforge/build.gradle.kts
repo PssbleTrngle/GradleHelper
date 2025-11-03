@@ -1,5 +1,6 @@
 dependencies {
     api(project(":core"))
+    api(project(":access"))
 
     api(libs.neoforge.gradle)
 }

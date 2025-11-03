@@ -18,6 +18,7 @@ vanilla-gradle = { module = "org.spongepowered:vanillagradle", version = "0.2.1-
 neoforge-gradle = { group = "net.neoforged", name = "moddev-gradle", version = "2.0.113" }
 fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.11-SNAPSHOT" }
 forge-gradle = { module = "net.minecraftforge.gradle:ForgeGradle", version = "[6.0,6.2)" }
+forge-srg = { module = "net.minecraftforge:srgutils", version = "0.5.10" }
 mixin-gradle = { module = "org.spongepowered:mixingradle", version = "0.7-SNAPSHOT" }
 architectury-loom = { group = "dev.architectury.loom", name = "dev.architectury.loom.gradle.plugin", version = "1.11-SNAPSHOT" }
 

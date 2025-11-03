@@ -1,15 +1,22 @@
 package com.possible_triangle.gradle.forge
 
 import com.possible_triangle.gradle.DatagenBuilder
+import com.possible_triangle.gradle.access.generateAccessTransformer
 import com.possible_triangle.gradle.features.loaders.AbstractLoadExtensionWithDatagen
 import com.possible_triangle.gradle.features.loaders.LoaderExtension
+import com.possible_triangle.gradle.features.loaders.WithAccessTransformer
+import com.possible_triangle.gradle.features.loaders.WithAccessWidener
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
+import net.minecraftforge.gradle.common.util.MinecraftExtension
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.the
+import java.io.File
 
-interface ForgeExtension : LoaderExtension {
+interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer {
     val mappingChannel: Property<String>
     val mappingVersion: Property<String>
     val forgeVersion: Property<String>
@@ -17,10 +24,10 @@ interface ForgeExtension : LoaderExtension {
     val kotlinForgeVersion: Property<String>
 
     fun dataGen(factory: DatagenBuilder.() -> Unit = {})
-    fun enableMixins(): Unit
+    fun enableMixins()
 }
 
-internal open class ForgeExtensionImpl(private val project: Project) : AbstractLoadExtensionWithDatagen(project),
+internal open class ForgeExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
     ForgeExtension {
     override var mappingChannel = project.objects.property("official")
     override var mappingVersion = project.objects.property(project.mod.minecraftVersion)
@@ -43,4 +50,14 @@ internal open class ForgeExtensionImpl(private val project: Project) : AbstractL
         mixinsEnabled = true
         project.enableMixins()
     }
+
+    override fun accessTransformer(file: Provider<File>) {
+        project.the<MinecraftExtension>().accessTransformer(file)
+    }
+
+    override fun accessWidener(file: Provider<File>) {
+        val output = project.generateAccessTransformer(file)
+        accessTransformer(output)
+    }
+
 }

@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     api(project(":core"))
+    api(project(":access"))
 
     api(libs.forge.gradle)
     api(libs.mixin.gradle)

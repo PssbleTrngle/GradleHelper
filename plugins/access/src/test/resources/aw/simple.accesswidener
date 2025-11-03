@@ -1,0 +1,5 @@
+accessWidener  v1 named
+
+accessible  class com/example/TestClass
+accessible method com/example/TestClass   methodName V()
+mutable   field com/example/TestClass fieldName V
