@@ -2,13 +2,16 @@ package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.DatagenBuilder
 import com.possible_triangle.gradle.defaultDataGenProject
+import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -27,15 +30,51 @@ abstract class AbstractLoaderExtension() : LoaderExtension {
     }
 }
 
-abstract class AbstractLoadExtensionWithDatagen(project: Project) : AbstractLoaderExtension(), DatagenBuilder {
+interface WithDataGen {
+    fun dataGen(factory: DatagenBuilder.() -> Unit = {})
+}
+
+abstract class AbstractLoadExtensionWithDatagen(project: Project) : AbstractLoaderExtension(), DatagenBuilder,
+    WithDataGen {
+
+    abstract val project: Project
 
     private val _existingMods = mutableSetOf<String>()
     val existingMods: Set<String> get() = _existingMods
 
     final override var owner: Project? = project.defaultDataGenProject
 
+    var enabledDataGen: Boolean = false
+        private set
+
+    var datagenSourceSet = project.objects.property(project.mainSourceSet)
+
     final override fun existing(vararg mods: String) {
         this._existingMods.addAll(mods)
+    }
+
+    final override fun sourceSet(sourceSet: Provider<SourceSet>) {
+        datagenSourceSet.set(sourceSet)
+    }
+
+    final override fun splitSourceSet(name: String) {
+        val split = project.the<SourceSetContainer>().register(name) {
+            compileClasspath += project.mainSourceSet.compileClasspath
+            compileClasspath += project.mainSourceSet.output
+            runtimeClasspath += project.mainSourceSet.runtimeClasspath
+            runtimeClasspath += project.mainSourceSet.output
+        }
+
+        project.tasks.named<Jar>("sourcesJar") {
+            from(split.map { it.allSource })
+        }
+
+        sourceSet(split)
+    }
+
+    final override fun dataGen(factory: DatagenBuilder.() -> Unit) {
+        enabledDataGen = true
+        factory(this)
     }
 }
 

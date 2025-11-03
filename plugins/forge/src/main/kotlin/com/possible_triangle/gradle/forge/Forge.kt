@@ -29,6 +29,11 @@ internal fun DependencyHandlerScope.pin(jarJar: JarJarProjectExtension, dependen
     }
 }
 
+private fun Project.ideaModule(sourceSet: String = "main") = rootProject.name.replace(" ", "_").let { rootName ->
+    if (isSubProject) "${rootName}.${project.name}.$sourceSet"
+    else "${rootName}.$sourceSet"
+}
+
 class GradleHelperForgePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -115,6 +120,14 @@ class GradleHelperForgePlugin : Plugin<Project> {
                     ) + existingResources + existingMods
 
                     args(dataGenArgs)
+
+                    config.datagenSourceSet.orNull?.let {
+                        mods.named(mod.id.get()) {
+                            source(it)
+                        }
+
+                        ideaModule(project.ideaModule(it.name))
+                    }
                 }
             } else {
                 runs.removeIf { it.name == "data" }
@@ -150,11 +163,6 @@ class GradleHelperForgePlugin : Plugin<Project> {
             mappingChannel = config.mappingChannel
             mappingVersion = config.mappingVersion
 
-            val ideaModule = rootProject.name.replace(" ", "_").let { rootName ->
-                if (isSubProject) "${rootName}.${project.name}.main"
-                else "${rootName}.main"
-            }
-
             runs.create("data")
 
             runs.create("client") {
@@ -168,7 +176,7 @@ class GradleHelperForgePlugin : Plugin<Project> {
             }
 
             runs.forEach { run ->
-                run.ideaModule(ideaModule)
+                run.ideaModule(ideaModule())
                 run.property("forge.logging.console.level", "debug")
                 run.property("mixin.env.remapRefMap", "true")
                 run.property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")

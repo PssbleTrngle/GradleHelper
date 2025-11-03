@@ -72,6 +72,10 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
                 config.dependsOn.forEach {
                     sourceSet(it.mainSourceSet)
                 }
+
+                config.datagenSourceSet.orNull?.let {
+                    sourceSet(it)
+                }
             }
 
             if (config.enabledDataGen) {
@@ -91,6 +95,10 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
                     ) + existingResources + existingMods
 
                     programArguments.addAll(dataGenArgs)
+
+                    config.datagenSourceSet.orNull?.let {
+                        sourceSet.set(sourceSet)
+                    }
                 }
             } else {
                 runs.removeIf { it.name == "data" }

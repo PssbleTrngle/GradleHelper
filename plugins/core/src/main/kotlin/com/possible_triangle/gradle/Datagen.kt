@@ -3,6 +3,8 @@ package com.possible_triangle.gradle
 import com.possible_triangle.gradle.features.loaders.isSubProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.SourceSet
 
 val JVM_ARGUMENTS = listOf("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
 
@@ -19,6 +21,8 @@ val Project.existingResources
 interface DatagenBuilder {
     var owner: Project?
     fun existing(vararg mods: String)
+    fun splitSourceSet(name: String = "data")
+    fun sourceSet(sourceSet: Provider<SourceSet>)
 }
 
 fun DatagenBuilder.requireOwner() = requireNotNull(owner) {

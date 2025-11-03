@@ -1,11 +1,7 @@
 package com.possible_triangle.gradle.forge
 
-import com.possible_triangle.gradle.DatagenBuilder
 import com.possible_triangle.gradle.access.generateAccessTransformer
-import com.possible_triangle.gradle.features.loaders.AbstractLoadExtensionWithDatagen
-import com.possible_triangle.gradle.features.loaders.LoaderExtension
-import com.possible_triangle.gradle.features.loaders.WithAccessTransformer
-import com.possible_triangle.gradle.features.loaders.WithAccessWidener
+import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
@@ -16,14 +12,13 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
 import java.io.File
 
-interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer {
+interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen {
     val mappingChannel: Property<String>
     val mappingVersion: Property<String>
     val forgeVersion: Property<String>
 
     val kotlinForgeVersion: Property<String>
 
-    fun dataGen(factory: DatagenBuilder.() -> Unit = {})
     fun enableMixins()
 }
 
@@ -34,14 +29,6 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
     override var forgeVersion = project.objects.property(project.stringProperty("forge_version"))
 
     override var kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
-
-    var enabledDataGen: Boolean = false
-        private set
-
-    override fun dataGen(factory: DatagenBuilder.() -> Unit) {
-        enabledDataGen = true
-        factory(this)
-    }
 
     var mixinsEnabled: Boolean = false
         private set
