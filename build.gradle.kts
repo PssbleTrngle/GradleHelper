@@ -14,8 +14,8 @@ val repository: String by extra
 val pluginId: String by extra
 
 val majorVersion: String by extra
-val patch = env["PATCH"] ?: "999"
 val snapshot = env["SNAPSHOT"] == "true"
+val patch = if (snapshot) env["PATCH"] ?: "999" else "0"
 val pluginVersion = "$majorVersion.$patch"
 
 allprojects {
