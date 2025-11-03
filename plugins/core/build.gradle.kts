@@ -1,4 +1,6 @@
 dependencies {
+    api(project(":publishing"))
+
     api(libs.cursegradle)
     api(libs.minotaur)
 

@@ -3,9 +3,9 @@ package com.possible_triangle.gradle.forge
 import com.possible_triangle.gradle.*
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.*
+import com.possible_triangle.gradle.publishing.removePomDependencies
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.modifyPublication
-import com.possible_triangle.gradle.upload.removePomDependencies
 import net.minecraftforge.gradle.common.util.MinecraftExtension
 import net.minecraftforge.gradle.userdev.DependencyManagementExtension
 import net.minecraftforge.gradle.userdev.UserDevPlugin
