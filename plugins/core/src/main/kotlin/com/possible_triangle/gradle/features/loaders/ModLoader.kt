@@ -2,7 +2,6 @@ package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.DatagenBuilder
 import com.possible_triangle.gradle.defaultDataGenProject
-import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
@@ -10,10 +9,7 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 interface LoaderExtension {
@@ -47,7 +43,7 @@ abstract class AbstractLoadExtensionWithDatagen(project: Project) : AbstractLoad
     var enabledDataGen: Boolean = false
         private set
 
-    var datagenSourceSet = project.objects.property(project.mainSourceSet)
+    var datagenSourceSet = project.objects.property<SourceSet>()
 
     final override fun existing(vararg mods: String) {
         this._existingMods.addAll(mods)
