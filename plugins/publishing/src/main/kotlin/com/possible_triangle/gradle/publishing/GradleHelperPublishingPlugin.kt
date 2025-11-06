@@ -1,6 +1,5 @@
 package com.possible_triangle.gradle.publishing
 
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -9,12 +8,17 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 
 private fun Project.isArchitecturyForge(): Boolean {
-    val extension = the<LoomGradleExtensionAPI>()
-    return extension.isForge
+    try {
+        val extensionClass = javaClass.classLoader.loadClass("net.fabricmc.loom.api.LoomGradleExtensionAPI")
+        val extension = extensions.findByType(extensionClass)
+        val isForge = extensionClass.getMethod("isForge")
+        return isForge.invoke(extension) as Boolean;
+    } catch (ex: Exception) {
+        throw RuntimeException("unable to load architectury loom extension", ex)
+    }
 }
 
 private fun Project.isForge(): Boolean {

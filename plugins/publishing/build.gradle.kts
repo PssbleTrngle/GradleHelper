@@ -1,7 +1,3 @@
-dependencies {
-    implementation(libs.architectury.loom)
-}
-
 gradlePlugin {
     plugins {
         named(project.name) {
