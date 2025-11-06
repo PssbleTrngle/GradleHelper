@@ -12,9 +12,8 @@ import org.gradle.kotlin.dsl.withType
 
 private fun Project.isArchitecturyForge(): Boolean {
     try {
-        val extensionClass = javaClass.classLoader.loadClass("net.fabricmc.loom.api.LoomGradleExtensionAPI")
-        val extension = extensions.findByType(extensionClass)
-        val isForge = extensionClass.getMethod("isForge")
+        val extension = extensions.getByName("loom")
+        val isForge = extension.javaClass.getMethod("isForge")
         return isForge.invoke(extension) as Boolean;
     } catch (ex: Exception) {
         throw RuntimeException("unable to load architectury loom extension", ex)
@@ -23,7 +22,7 @@ private fun Project.isArchitecturyForge(): Boolean {
 
 private fun Project.isForge(): Boolean {
     if (plugins.findPlugin("net.minecraftforge.gradle") != null) return true
-    if (plugins.findPlugin("architectury-plugin") != null) return isArchitecturyForge()
+    if (plugins.findPlugin("dev.architectury.loom") != null) return isArchitecturyForge()
     return false
 }
 
