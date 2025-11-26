@@ -97,7 +97,7 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
                     programArguments.addAll(dataGenArgs)
 
                     config.datagenSourceSet.orNull?.let {
-                        sourceSet.set(sourceSet)
+                        sourceSet.set(it)
                     }
                 }
             } else {

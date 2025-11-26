@@ -6,6 +6,7 @@ import com.possible_triangle.gradle.features.loaders.LoaderExtension
 import com.possible_triangle.gradle.features.loaders.WithAccessTransformer
 import com.possible_triangle.gradle.features.loaders.WithAccessWidener
 import com.possible_triangle.gradle.features.loaders.WithDataGen
+import com.possible_triangle.gradle.features.loaders.WithInterfaceInjections
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
@@ -15,7 +16,8 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
 import java.io.File
 
-interface NeoforgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen {
+interface NeoforgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen,
+    WithInterfaceInjections {
     val neoforgeVersion: Property<String>
 
     val kotlinForgeVersion: Property<String>
@@ -34,6 +36,10 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
     override fun accessWidener(file: Provider<File>) {
         val output = project.generateAccessTransformer(file)
         accessTransformer(output)
+    }
+
+    override fun injectInterfaces(file: Provider<File>) {
+        project.the<NeoForgeExtension>().interfaceInjectionData.from(file)
     }
 
 }
