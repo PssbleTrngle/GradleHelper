@@ -10,18 +10,40 @@ data class DependencyConsumer<T>(
     val required: (T) -> Unit,
     val optional: (T) -> Unit,
     val embedded: (T) -> Unit,
-)
+) {
+    companion object {
+        fun <T> empty() = DependencyConsumer<T>(
+            required = {},
+            optional = {},
+            embedded = {},
+        )
+    }
+
+    operator fun plus(other: DependencyConsumer<T>) = DependencyConsumer<T>(
+        required = {
+            this.required(it)
+            other.required(it)
+        },
+        optional = {
+            this.optional(it)
+            other.optional(it)
+        },
+        embedded = {
+            this.embedded(it)
+            other.embedded(it)
+        },
+    )
+}
 
 abstract class AbstractDependencyBuilder<T> : DependencyBuilder {
     private val required = hashSetOf<T>()
     private val optional = hashSetOf<T>()
     private val embedded = hashSetOf<T>()
 
-    private var consumer: DependencyConsumer<T>? = null
+    private var consumer: DependencyConsumer<T> = DependencyConsumer.empty()
 
     fun consume(consumer: DependencyConsumer<T>) {
-        if (this.consumer != null) error("dependencies have already been consumed")
-        this.consumer = consumer
+        this.consumer += consumer
         required.forEach(consumer.required)
         embedded.forEach(consumer.embedded)
         optional.forEach(consumer.optional)
@@ -30,21 +52,18 @@ abstract class AbstractDependencyBuilder<T> : DependencyBuilder {
     protected abstract fun resolve(dependency: String): T
 
     protected fun required(dependency: T) {
-        consumer?.required?.invoke(dependency) ?: run {
-            required.add(dependency)
-        }
+        required.add(dependency)
+        consumer.required(dependency)
     }
 
     protected fun optional(dependency: T) {
-        consumer?.optional?.invoke(dependency) ?: run {
-            optional.add(dependency)
-        }
+        optional.add(dependency)
+        consumer.optional(dependency)
     }
 
     protected fun embedded(dependency: T) {
-        consumer?.embedded?.invoke(dependency) ?: run {
-            embedded.add(dependency)
-        }
+        embedded.add(dependency)
+        consumer.embedded(dependency)
     }
 
     override fun required(dependency: String) = required(resolve(dependency))
