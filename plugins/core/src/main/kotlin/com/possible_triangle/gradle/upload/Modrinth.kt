@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.upload
 
 import com.modrinth.minotaur.TaskModrinthSyncBody
+import net.darkhax.curseforgegradle.Constants
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
@@ -41,9 +42,13 @@ internal class ModrinthExtensionImpl(private val project: Project) :
             versionType.set(this@ModrinthExtensionImpl.releaseType)
             file.set(this@ModrinthExtensionImpl.file)
 
-            this@ModrinthExtensionImpl.dependencies.required.forEach { required.project(it) }
-            this@ModrinthExtensionImpl.dependencies.optional.forEach { optional.project(it) }
-            this@ModrinthExtensionImpl.dependencies.embedded.forEach { embedded.project(it) }
+            this@ModrinthExtensionImpl.dependencies.consume(
+                DependencyConsumer(
+                    required = { required.project(it) },
+                    optional = { optional.project(it) },
+                    embedded = { embedded.project(it) },
+                )
+            )
 
             syncFile.orNull?.let {
                 syncBodyFrom.set(it.asFile.readText())

@@ -6,23 +6,45 @@ interface DependencyBuilder {
     fun embedded(dependency: String)
 }
 
+data class DependencyConsumer<T>(
+    val required: (T) -> Unit,
+    val optional: (T) -> Unit,
+    val embedded: (T) -> Unit,
+)
+
 abstract class AbstractDependencyBuilder<T> : DependencyBuilder {
-    internal val required = hashSetOf<T>()
-    internal val optional = hashSetOf<T>()
-    internal val embedded = hashSetOf<T>()
+    private val required = hashSetOf<T>()
+    private val optional = hashSetOf<T>()
+    private val embedded = hashSetOf<T>()
+
+    private var consumer: DependencyConsumer<T>? = null
+
+    fun consume(consumer: DependencyConsumer<T>) {
+        if (this.consumer != null) error("dependencies have already been consumed")
+        this.consumer = consumer
+        required.forEach(consumer.required)
+        embedded.forEach(consumer.embedded)
+        optional.forEach(consumer.optional)
+    }
 
     protected abstract fun resolve(dependency: String): T
 
     protected fun required(dependency: T) {
-        required.add(dependency)
+        consumer?.required?.invoke(dependency) ?: run {
+            required.add(dependency)
+        }
     }
 
     protected fun optional(dependency: T) {
-        optional.add(dependency)
+        consumer?.optional?.invoke(dependency) ?: run {
+            optional.add(dependency)
+        }
     }
 
     protected fun embedded(dependency: T) {
-        embedded.add(dependency)
+        consumer?.embedded?.invoke(dependency) ?: run {
+            embedded.add(dependency)
+        }
     }
 
     override fun required(dependency: String) = required(resolve(dependency))

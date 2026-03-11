@@ -27,11 +27,9 @@ private fun ModLoader.loaderName(): String {
     }
 }
 
-private fun UploadArtifact.addDependencies(dependencies: Collection<CurseForgeDependency>, type: String) {
-    dependencies.forEach {
-        if (it.id != null) addRelation(it.slug, type, it.id.toString())
-        else addRelation(it.slug, type)
-    }
+private fun UploadArtifact.addDependency(it: CurseForgeDependency, type: String) {
+    if (it.id != null) addRelation(it.slug, type, it.id.toString())
+    else addRelation(it.slug, type)
 }
 
 internal class CurseForgeExtensionImpl(private val project: Project) :
@@ -54,9 +52,13 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
                 minecraftVersions.get().forEach { addGameVersion(it) }
                 displayName = versionName.get()
 
-                addDependencies(dependencies.required, Constants.RELATION_REQUIRED)
-                addDependencies(dependencies.optional, Constants.RELATION_OPTIONAL)
-                addDependencies(dependencies.embedded, Constants.RELATION_EMBEDDED)
+                dependencies.consume(
+                    DependencyConsumer(
+                        required = { addDependency(it, Constants.RELATION_REQUIRED) },
+                        optional = { addDependency(it, Constants.RELATION_OPTIONAL) },
+                        embedded = { addDependency(it, Constants.RELATION_EMBEDDED) },
+                    )
+                )
             }
         }
 
