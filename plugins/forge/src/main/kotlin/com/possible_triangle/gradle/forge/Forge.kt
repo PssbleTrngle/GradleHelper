@@ -6,26 +6,23 @@ import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.publishing.removePomDependencies
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.modifyPublication
-import net.minecraftforge.gradle.common.util.MinecraftExtension
-import net.minecraftforge.gradle.userdev.DependencyManagementExtension
-import net.minecraftforge.gradle.userdev.UserDevPlugin
-import net.minecraftforge.gradle.userdev.jarjar.JarJarProjectExtension
-import net.minecraftforge.gradle.userdev.tasks.JarJar
+import net.minecraftforge.gradle.MinecraftExtensionForProject
+import net.minecraftforge.jarjar.gradle.JarJar
+import net.minecraftforge.jarjar.gradle.JarJarExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 
-private val Project.fg get() = the<DependencyManagementExtension>()
-internal val Project.jarJar get() = the<JarJarProjectExtension>()
+internal val Project.mc get() = the<MinecraftExtensionForProject>()
+internal val Project.jarJar get() = the<JarJarExtension>()
 
-internal fun DependencyHandlerScope.pin(jarJar: JarJarProjectExtension, dependency: ModuleDependency): Dependency {
+internal fun DependencyHandlerScope.pin(jarJar: JarJarExtension, dependency: ModuleDependency): Dependency {
     return add("jarJar", dependency.copy()) {
-        jarJar.ranged(this, "[${version},)")
+        // TODO check
     }
 }
 
@@ -56,17 +53,20 @@ class GradleHelperForgePlugin : Plugin<Project> {
         val mixinExtrasIncluded = project.includeMixinExtras()
 
         val jarJarEnabled = mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || mixinExtrasIncluded
-        if (jarJarEnabled) jarJar.enable()
-
         if (jarJarEnabled) {
-            modifyPublication {
-                artifact(tasks.getByName(UserDevPlugin.JAR_JAR_TASK_NAME))
+            jarJar.register {
+                archiveClassifier = null
             }
         }
 
-        tasks.getByName<Jar>("jar") {
-            finalizedBy("reobfJar")
-            if (jarJarEnabled) archiveClassifier.set("slim")
+        if (jarJarEnabled) {
+            modifyPublication {
+                artifact(tasks.getByName("jarJar"))
+            }
+
+            tasks.getByName<Jar>("jar") {
+                archiveClassifier.set("slim")
+            }
         }
 
         if (jarJarEnabled) {
@@ -75,9 +75,6 @@ class GradleHelperForgePlugin : Plugin<Project> {
                 config.dependsOn.forEach {
                     from(it.mainSourceSet.output)
                 }
-
-                finalizedBy("reobfJarJar")
-                archiveClassifier.set("")
             }
         }
 
@@ -101,13 +98,13 @@ class GradleHelperForgePlugin : Plugin<Project> {
     private fun Project.configureDatagenRun() {
         val config = the<ForgeExtension>() as ForgeExtensionImpl
 
-        configure<MinecraftExtension> {
+        mc.apply {
             if (config.enabledDataGen) {
                 config.requireOwner().configureDatagen()
 
                 runs.named("data") {
-                    workingDirectory(project.file("run/data"))
-                    taskName("Data")
+                    workingDir.convention(project.layout.projectDirectory.dir("run/data"))
+                    // TODO check taskName("Data")
 
                     val existingResources = existingResources.flatMap { listOf("--existing", it) }
                     val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
@@ -138,48 +135,49 @@ class GradleHelperForgePlugin : Plugin<Project> {
     private fun Project.linkDependencyProjects() {
         val config = the<ForgeExtension>() as ForgeExtensionImpl
 
-        configure<MinecraftExtension> {
-            runs.forEach { run ->
-                run.mods.named(mod.id.get()) {
-                    config.dependsOn.forEach {
-                        source(it.mainSourceSet)
-                    }
+        mc.runs.forEach { run ->
+            run.mods.named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    source(it.mainSourceSet)
                 }
             }
         }
     }
 
     private fun Project.setupForge() {
-        apply<UserDevPlugin>()
+        apply(plugin = "net.minecraftforge.gradle")
+        apply(plugin = "net.minecraftforge.renamer")
+        apply(plugin = "net.minecraftforge.jarjar")
 
         val config = extensions.create<ForgeExtension, ForgeExtensionImpl>("forge")
 
+        jarJar.register()
+
         val includedMods = IncludedImpl(this, mod.mods) {
-            val resolved = fg.deobf(it.get())
-            project.provider { resolved as ExternalModuleDependency }
+            val resolved = mc.dependency(it.get())
+            resolved.asProvider()
         }
 
-        configure<MinecraftExtension> {
-            mappingChannel = config.mappingChannel
-            mappingVersion = config.mappingVersion
+        configure<MinecraftExtensionForProject> {
+            mappings(config.mappingChannel.get(), config.mappingVersion.get())
 
             runs.create("data")
 
             runs.create("client") {
-                workingDirectory(project.file("run"))
-                taskName("Client")
+                workingDir.convention(project.layout.projectDirectory.dir("run"))
+                // TODO check taskName("Client")
             }
 
             runs.create("server") {
-                workingDirectory(project.file("run/server"))
-                taskName("Server")
+                workingDir.convention(project.layout.projectDirectory.dir("run/server"))
+                // TODO check taskName("Server")
             }
 
             runs.forEach { run ->
-                run.ideaModule(ideaModule())
-                run.property("forge.logging.console.level", "debug")
-                run.property("mixin.env.remapRefMap", "true")
-                run.property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
+                // TODO check run.ideaModule(ideaModule())
+                run.systemProperty("forge.logging.console.level", "debug")
+                run.systemProperty("mixin.env.remapRefMap", "true")
+                run.systemProperty("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
                 run.jvmArgs.addAll(JVM_ARGUMENTS)
                 run.mods.create(mod.id.get()) {
                     source(mainSourceSet)
@@ -192,20 +190,20 @@ class GradleHelperForgePlugin : Plugin<Project> {
                 modLoaders.add(ModLoader.FORGE)
                 file.set {
                     val jarTask = tasks.getByName<Jar>("jar")
-                    val jarJarTask = tasks.findByPath(UserDevPlugin.JAR_JAR_TASK_NAME) as Jar?
+                    val jarJarTask = tasks.findByPath("jarJar") as Jar?
                     (jarJarTask?.takeIf { it.enabled } ?: jarTask).archiveFile.get().asFile
                 }
             }
         }
 
         dependencies {
-            add("minecraft", mod.minecraftVersion.flatMap { mcVersion ->
-                config.forgeVersion.map { "net.minecraftforge:forge:${mcVersion}-${it}" }
-            })
+            lazyDependencies("implementation") {
+                add(mc.dependency("net.minecraftforge:forge:${(mod.minecraftVersion.get())}-${(config.forgeVersion.get())}"))
+            }
 
             lazyDependencies("annotationProcessor") {
                 if (config.mixinsEnabled) {
-                    add("org.spongepowered:mixin:0.8.5:processor")
+                    add("org.spongepowered:mixin:0.8.7:processor")
                 }
             }
 
@@ -219,14 +217,12 @@ class GradleHelperForgePlugin : Plugin<Project> {
                 }
             }
 
-            lazyDependencies("minecraftLibrary") {
+            lazyDependencies("implementation") {
                 mod.libraries.get().forEach {
                     add(it)
                     pin(jarJar, it)
                 }
-            }
 
-            lazyDependencies("implementation") {
                 includedMods.get().forEach {
                     add(it)
                     pin(jarJar, it)
@@ -243,6 +239,7 @@ class GradleHelperForgePlugin : Plugin<Project> {
         tasks.findByName("compileTestKotlin")?.enabled = false
 
         if (javaVersion <= 17) {
+            // TODO check
             configurations.all {
                 resolutionStrategy {
                     force(

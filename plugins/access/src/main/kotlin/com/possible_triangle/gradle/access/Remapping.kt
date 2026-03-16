@@ -1,10 +1,7 @@
 package com.possible_triangle.gradle.access
 
-import net.minecraftforge.gradle.mcp.tasks.GenerateSRG
-import net.minecraftforge.srgutils.IMappingFile
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.kotlin.dsl.getByName
 
 interface Remapper {
     fun remapClass(value: String): String
@@ -28,6 +25,8 @@ interface Remapper {
     }
 }
 
+// TODO check
+/*
 fun Project.forgeMappings(): Remapper {
     val downloadMappings = tasks.getByName<GenerateSRG>("createMcpToSrg")
 
@@ -54,10 +53,11 @@ fun Project.forgeMappings(): Remapper {
         override val task get() = downloadMappings
     }
 }
+ */
 
 fun Project.detectMappings(): Remapper {
-    if (plugins.findPlugin("net.minecraftforge.gradle") != null) {
-        return forgeMappings()
+    if (plugins.findPlugin("net.minecraftforge.renamer") != null) {
+        // return forgeMappings()
     }
 
     return Remapper.empty()

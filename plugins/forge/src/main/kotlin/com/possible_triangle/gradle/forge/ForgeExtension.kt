@@ -5,11 +5,9 @@ import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
-import net.minecraftforge.gradle.common.util.MinecraftExtension
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.the
 import java.io.File
 
 interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen {
@@ -35,11 +33,10 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
 
     override fun enableMixins() {
         mixinsEnabled = true
-        project.enableMixins()
     }
 
     override fun accessTransformer(file: Provider<File>) {
-        project.the<MinecraftExtension>().accessTransformer(file)
+        project.mc.accessTransformer.from(file)
     }
 
     override fun accessWidener(file: Provider<File>) {

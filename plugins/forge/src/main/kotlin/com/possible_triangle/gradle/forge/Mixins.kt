@@ -1,27 +1,28 @@
 package com.possible_triangle.gradle.forge
 
-import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.features.loaders.mixinExtrasVersion
 import com.possible_triangle.gradle.mod
+import net.minecraftforge.renamer.gradle.RenamerExtension
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
-import org.spongepowered.asm.gradle.plugins.MixinExtension
-import org.spongepowered.asm.gradle.plugins.MixinGradlePlugin
-
-internal fun Project.enableMixins() {
-    apply<MixinGradlePlugin>()
-}
 
 internal fun Project.configureMixins() {
     val config = the<ForgeExtension>() as ForgeExtensionImpl
 
     if (config.mixinsEnabled) {
-        configure<MixinExtension> {
-            add(mainSourceSet, "${mod.id.get()}.refmap.json")
-            config("${mod.id.get()}.mixins.json")
+        configure<RenamerExtension>() {
+            enableMixinRefmaps {
+                config("${mod.id.get()}.refmap.json")
+            }
+
+            classes(tasks.getByName<Jar>("jar")) {
+                mappings(mixin.generatedMappings)
+            }
         }
 
+        // TODO check
         // workaround because of https://github.com/SpongePowered/MixinGradle/issues/48
         tasks.withType<JavaCompile> {
             doFirst {

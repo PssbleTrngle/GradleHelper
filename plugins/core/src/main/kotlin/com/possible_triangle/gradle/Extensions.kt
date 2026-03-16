@@ -5,7 +5,7 @@ import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.provider.Provider
 import  org.gradle.kotlin.dsl.property
 
-inline fun <reified TInterface, reified TImplementation : TInterface> ExtensionContainer.create(name: String): TImplementation {
+inline fun <reified TInterface : Any, reified TImplementation : TInterface> ExtensionContainer.create(name: String): TImplementation {
     return create(TInterface::class.java, name, TImplementation::class.java) as TImplementation
 }
 

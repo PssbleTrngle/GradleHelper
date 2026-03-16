@@ -4,6 +4,7 @@ import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.provider.ProviderConvertible
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.extra
 import org.gradle.testfixtures.ProjectBuilder
@@ -21,9 +22,10 @@ fun Project.loadProperties(from: String = "gradle.properties") {
     }
 }
 
-inline fun <reified T : Plugin<*>> createProject(noinline block: ProjectBuilder.() -> Unit = {}) = createProjectWithoutPlugin(block).also {
-    it.apply<T>()
-}
+inline fun <reified T : Plugin<*>> createProject(noinline block: ProjectBuilder.() -> Unit = {}) =
+    createProjectWithoutPlugin(block).also {
+        it.apply<T>()
+    }
 
 fun createProjectWithoutPlugin(block: ProjectBuilder.() -> Unit = {}): Project {
     val project = ProjectBuilder.builder()
@@ -38,7 +40,7 @@ fun createProjectWithoutPlugin(block: ProjectBuilder.() -> Unit = {}): Project {
 fun ProjectBuilder.withProjectDir(name: String) =
     withProjectDir(File("../../modules/test/src/main/resources/projects").resolve(name))
 
-fun Project.findTestDependencies(type: String, group: String = "test.something"): DomainObjectSet<Dependency> {
+fun Project.findTestDependencies(type: String, group: String = "test.something"): Collection<Dependency> {
     val configuration = configurations.getByName(type)
     return configuration.incoming.dependencies.matching {
         it.group == group

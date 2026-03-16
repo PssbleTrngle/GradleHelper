@@ -6,8 +6,7 @@ dependencies {
     api(project(":core"))
     api(project(":access"))
 
-    api(libs.forge.gradle)
-    api(libs.mixin.gradle)
+    api(libs.bundles.forge)
     api(libs.kotlin.serialization.json)
 }
 

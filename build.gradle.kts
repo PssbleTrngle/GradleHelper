@@ -40,7 +40,7 @@ fun pluginProjects(block: Project.() -> Unit) {
 
 pluginProjects {
     apply<PublishPlugin>()
-    apply<KotlinDslPlugin>()
+    apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
     extra["pluginVersion"] = pluginVersion
     extra["snapshot"] = snapshot
@@ -88,6 +88,7 @@ pluginProjects {
 
     repositories {
         mavenLocal()
+        mavenCentral()
         maven {
             url = uri("https://registry.somethingcatchy.net/repository/maven-public/")
         }

@@ -1,5 +1,5 @@
 dependencies {
-    implementation(libs.forge.gradle)
+    implementation(libs.forge.renamer)
     implementation(libs.forge.srg)
 }
 

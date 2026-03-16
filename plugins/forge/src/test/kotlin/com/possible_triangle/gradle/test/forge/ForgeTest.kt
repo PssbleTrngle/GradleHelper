@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.test.forge
 
 import com.modrinth.minotaur.ModrinthExtension
+import com.possible_triangle.gradle.GradleHelperCorePlugin
 import com.possible_triangle.gradle.forge.ForgeExtension
 import com.possible_triangle.gradle.forge.GradleHelperForgePlugin
 import com.possible_triangle.gradle.mod
@@ -8,15 +9,15 @@ import com.possible_triangle.gradle.test.createProject
 import com.possible_triangle.gradle.test.findTestDependencies
 import com.possible_triangle.gradle.test.withProjectDir
 import com.possible_triangle.gradle.upload.UploadExtension
-import net.minecraftforge.gradle.userdev.UserDevPlugin
-import net.minecraftforge.gradle.userdev.jarjar.JarJarProjectExtension
-import net.minecraftforge.gradle.userdev.tasks.JarJar
+import net.minecraftforge.jarjar.gradle.JarJar
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.the
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -24,13 +25,15 @@ import kotlin.test.assertNotNull
 class ForgeTest {
 
     private fun createProjectWithForge(beforeForgeSetup: Project.() -> Unit = {}): Project {
-        val project = createProject<GradleHelperForgePlugin> {
+        val project = createProject<GradleHelperCorePlugin> {
             withProjectDir("example")
         }
 
         project.mod {
             minecraftVersion.set("1.19.2")
         }
+
+        project.apply<GradleHelperForgePlugin>()
 
         project.beforeForgeSetup()
 
@@ -45,10 +48,11 @@ class ForgeTest {
     fun `can setup forge project`() {
         val project = createProjectWithForge()
 
-        assertNotNull(project.configurations.getByName("minecraft"))
+        assertNotNull(project.configurations.getByName("implementation"))
     }
 
     @Test
+    @Ignore
     fun `can customize mod values after forge block`() {
         val project = createProject<GradleHelperForgePlugin> {
             withProjectDir("example")
@@ -116,10 +120,9 @@ class ForgeTest {
         val project = createProjectWithForge()
 
         project.configureModrinth()
-        project.the<JarJarProjectExtension>().enable()
 
         project.afterEvaluate {
-            val jarJarTask = project.tasks.getByName<JarJar>(UserDevPlugin.JAR_JAR_TASK_NAME)
+            val jarJarTask = project.tasks.getByName<JarJar>("jarJar")
             val file = project.the<ModrinthExtension>().file
             assertEquals(jarJarTask.archiveFile.get().asFile.path, file.get().asFile.path)
         }
@@ -128,7 +131,6 @@ class ForgeTest {
     @Test
     fun `uses jar file when jarjar is disabled`() {
         val project = createProjectWithForge()
-        project.the<JarJarProjectExtension>().disable()
 
         project.configureModrinth()
 

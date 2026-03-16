@@ -1,26 +1,28 @@
 [versions]
-kotlin-version = "2.0.21"
-sonar-version = "6.0.1.5171"
-spotless-version = "8.0.0"
+kotlin-version = "2.2.21"
+sonar-version = "7.2.3.7755"
+spotless-version = "8.3.0"
 
 [libraries]
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin-version" }
-kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.8.1" }
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.9.0" }
 kotlin-toml = { module = "com.akuleshov7:ktoml-core", version = "0.7.0" }
 
 gson = { group = "com.google.code.gson", name = "gson", version = "2.11.0" }
 
 cursegradle = { module = "com.possible-triangle:CurseForgeGradle", version = "1.2.5" }
-minotaur = { module = "com.modrinth.minotaur:Minotaur", version = "2.8.10" }
+minotaur = { module = "com.modrinth.minotaur:Minotaur", version = "2.9.0" }
 
 vanilla-gradle = { module = "org.spongepowered:vanillagradle", version = "0.2.1-SNAPSHOT" }
-neoforge-gradle = { group = "net.neoforged", name = "moddev-gradle", version = "2.0.113" }
-fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.11-SNAPSHOT" }
-forge-gradle = { module = "net.minecraftforge.gradle:ForgeGradle", version = "[6.0,6.2)" }
+neoforge-gradle = { group = "net.neoforged", name = "moddev-gradle", version = "2.0.140" }
+fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.15-SNAPSHOT" }
+forge-gradle = { module = "net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin", version = "7.0.15" }
+forge-jarjar = { module = "net.minecraftforge.jarjar:net.minecraftforge.jarjar.gradle.plugin", version = "0.2.3" }
+forge-renamer = { module = "net.minecraftforge.renamer:net.minecraftforge.renamer.gradle.plugin", version = "1.0.7" }
 forge-srg = { module = "net.minecraftforge:srgutils", version = "0.5.10" }
 mixin-gradle = { module = "org.spongepowered:mixingradle", version = "0.7-SNAPSHOT" }
-architectury-loom = { group = "dev.architectury.loom", name = "dev.architectury.loom.gradle.plugin", version = "1.11-SNAPSHOT" }
+architectury-loom = { group = "dev.architectury.loom", name = "dev.architectury.loom.gradle.plugin", version = "1.13-SNAPSHOT" }
 
 sonar-scanner = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonar-version" }
 spotless = { module = "com.diffplug.spotless:com.diffplug.spotless.gradle.plugin", version.ref = "spotless-version" }
@@ -28,10 +30,13 @@ spotless = { module = "com.diffplug.spotless:com.diffplug.spotless.gradle.plugin
 junit-snapshots = { module = "io.github.origin-energy:java-snapshot-testing-junit5", version = "4.0.6" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin-version" }
 
+[bundles]
+forge = ["forge-gradle", "forge-jarjar", "forge-renamer"]
+
 [plugins]
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
+kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version = "6.5.5" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless-version" }
 sonar = { id = "org.sonarqube", version.ref = "sonar-version" }
-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.0.0" }
+plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.0" }
 blossom = { id = "net.kyori.blossom", version = "2.1.0" }
