@@ -3,6 +3,7 @@ package com.possible_triangle.gradle.access
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -42,6 +43,10 @@ fun Project.generateAccessTransformer(from: Provider<File>): Provider<File> {
             rename { "accesstransformer.cfg" }
             into("META-INF")
         }
+    }
+
+    tasks.withType<JavaCompile> {
+        dependsOn(transformAccessWidener)
     }
 
     return output

@@ -52,18 +52,21 @@ abstract class AbstractDependencyBuilder<T> : DependencyBuilder {
     protected abstract fun resolve(dependency: String): T
 
     protected fun required(dependency: T) {
-        required.add(dependency)
-        consumer.required(dependency)
+        if (required.add(dependency)) {
+            consumer.required(dependency)
+        }
     }
 
     protected fun optional(dependency: T) {
-        optional.add(dependency)
-        consumer.optional(dependency)
+        if (optional.add(dependency)) {
+            consumer.optional(dependency)
+        }
     }
 
     protected fun embedded(dependency: T) {
-        embedded.add(dependency)
-        consumer.embedded(dependency)
+        if (embedded.add(dependency)) {
+            consumer.embedded(dependency)
+        }
     }
 
     override fun required(dependency: String) = required(resolve(dependency))
