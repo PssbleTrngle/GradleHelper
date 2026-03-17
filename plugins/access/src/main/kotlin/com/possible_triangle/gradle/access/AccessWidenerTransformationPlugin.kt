@@ -21,7 +21,7 @@ private fun Project.generatedAccessTransformer() =
         file
     }
 
-fun Project.generateAccessTransformer(from: Provider<File>, block: Task.() -> Unit = {}): Provider<File> {
+fun Project.generateAccessTransformer(from: Provider<File>): Provider<File> {
     val output = generatedAccessTransformer()
 
     val transformAccessWidener = tasks.register(TRANSFORM_TASK) {
@@ -35,8 +35,6 @@ fun Project.generateAccessTransformer(from: Provider<File>, block: Task.() -> Un
             val transformed = accessWidener.toAccessTransformer(remapper)
             output.get().writeText(transformed)
         }
-
-        block()
     }
 
     @Suppress("UnstableApiUsage")
