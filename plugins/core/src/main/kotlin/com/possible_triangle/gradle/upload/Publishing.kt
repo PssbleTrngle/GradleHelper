@@ -169,6 +169,8 @@ internal fun MavenPublication.defaultPomModifications(mod: ModExtension) {
     removeRuntimeDependencies()
 
     mod.repository.orNull?.let { repository ->
+        pom.url = "https://github.com/${repository}"
+
         pom.issueManagement {
             system = "github"
             url = "https://github.com/${repository}/issues"
@@ -176,6 +178,8 @@ internal fun MavenPublication.defaultPomModifications(mod: ModExtension) {
 
         pom.scm {
             url = "https://github.com/${repository}"
+            connection = "scm:git:git://github.com/${repository}.git"
+            developerConnection = "scm:git:git://github.com/${repository}.git"
         }
     }
 
