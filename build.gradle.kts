@@ -38,6 +38,9 @@ fun pluginProjects(block: Project.() -> Unit) {
         .forEach { it.block() }
 }
 
+val repositoryUrl = "https://github.com/$repository"
+val cloneUrl = "scm:git:git://github.com/$repository.git"
+
 pluginProjects {
     apply<PublishPlugin>()
     apply(plugin = "org.gradle.kotlin.kotlin-dsl")
@@ -46,8 +49,8 @@ pluginProjects {
     extra["snapshot"] = snapshot
 
     gradlePlugin {
-        vcsUrl.set("https://github.com/$repository")
-        website.set(vcsUrl)
+        vcsUrl.set(repositoryUrl)
+        website.set(repositoryUrl)
 
         plugins {
             create(project.name) {
@@ -81,6 +84,30 @@ pluginProjects {
             if (env["GRADLE_PUBLISH_KEY"] != null) {
                 gradlePluginPortal {
                     name = "gradle-plugin-portal"
+                }
+            }
+        }
+
+        publications.withType<MavenPublication> {
+            pom.url = repositoryUrl
+
+            pom.scm {
+                url = repositoryUrl
+                connection = cloneUrl
+                developerConnection = cloneUrl
+            }
+
+            pom.developers {
+                developer {
+                    name = "possible_triangle"
+                    url = "https://github.com/PssbleTrngle"
+                }
+            }
+
+            pom.licenses {
+                license {
+                    name = "MIT License"
+                    url = "https://www.opensource.org/licenses/mit-license.php"
                 }
             }
         }
