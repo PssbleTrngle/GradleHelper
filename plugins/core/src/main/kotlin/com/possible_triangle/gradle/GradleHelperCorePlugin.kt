@@ -67,6 +67,7 @@ class GradleHelperCorePlugin : Plugin<Project> {
                     mod.id.map { modId -> "${modId}*.mixins.json" }.orNull,
                 )
             ) {
+                val mcVersionRange = mod.minecraftVersion.map { "[$it,)" }
                 expand(
                     mapOf(
                         "version" to mod.version.orNull,
@@ -75,6 +76,10 @@ class GradleHelperCorePlugin : Plugin<Project> {
                         "mod_id" to mod.id.orNull,
                         "mod_author" to mod.author.orNull,
                         "repository" to mod.repository.orNull,
+                        "minecraft_version" to mod.minecraftVersion.orNull,
+                        "mc_version" to mod.minecraftVersion.orNull,
+                        "minecraft_version_range" to mcVersionRange,
+                        "mc_version_range" to mcVersionRange,
                     ).filterValues { it != null }
                 )
             }
