@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.withType
@@ -21,7 +22,7 @@ private fun Project.generatedAccessTransformer() =
         file
     }
 
-fun Project.generateAccessTransformer(from: Provider<File>): Provider<File> {
+fun Project.generateAccessTransformer(from: Provider<File>): Pair<Provider<File>, TaskProvider<Task>> {
     val output = generatedAccessTransformer()
 
     val transformAccessWidener = tasks.register(TRANSFORM_TASK) {
@@ -50,7 +51,7 @@ fun Project.generateAccessTransformer(from: Provider<File>): Provider<File> {
         dependsOn(transformAccessWidener)
     }
 
-    return output
+    return output to transformAccessWidener
 }
 
 @Suppress("unused")
