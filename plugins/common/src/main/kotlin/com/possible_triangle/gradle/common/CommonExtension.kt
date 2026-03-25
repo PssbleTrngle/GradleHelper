@@ -30,7 +30,9 @@ internal open class CommonExtensionImpl(override val project: Project) : Abstrac
 
     override fun accessWidener(file: Provider<File>) {
         val output = project.generateAccessTransformer(file)
-        project.tasks.getByName("createMinecraftArtifacts").inputs.file(output)
+        project.afterEvaluate {
+            project.tasks.getByName("createMinecraftArtifacts").inputs.file(output)
+        }
         accessTransformer(output)
     }
 

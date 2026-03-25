@@ -37,6 +37,9 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
 
     override fun accessWidener(file: Provider<File>) {
         val output = project.generateAccessTransformer(file)
+        project.afterEvaluate {
+            project.tasks.getByName("createMinecraftArtifacts").inputs.file(output)
+        }
         accessTransformer(output)
     }
 
