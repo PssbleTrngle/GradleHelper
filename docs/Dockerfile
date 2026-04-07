@@ -13,7 +13,7 @@ ENV REPO_URL=$repo_url
 ARG site_url
 ENV SITE_URL=$site_url
 
-ARG version
+ARG edit_url
 ENV EDIT_URL=$edit_url
 
 COPY docs/src src
