@@ -10,7 +10,7 @@ theme:
   palette:
     scheme: slate
     primary: deep orange
-    accent: deep orange
+    accent: amber
 
   logo: assets/icon.svg
   favicon: assets/icon.svg
@@ -63,7 +63,7 @@ plugins:
   - social:
       enabled: !ENV [CI, false]
 
-# extra_css:
-#   - styles/extra.css
+extra_css:
+  - styles/extra.css
 # extra_javascript:
 #   - scripts/favicon.js

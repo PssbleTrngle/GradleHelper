@@ -5,6 +5,12 @@ While it is not required, the `com.possible-triangle.helper` settings plugin is 
 This plugin automatically adds some plugin repositories (1), for example for NeoForge, Forge, Parchment, SpongePoweded and Architectury.
 { .annotate }
 
+```kotlin title="settings.gradle.kts
+plugins {
+    id("com.possible-triangle.helper") version ("1.2")
+}
+```
+
 1.  proxied through [registry.somethingcatchy.net](https://registry.somethingcatchy.net/#browse/browse:maven-public)
 
 While all the subprojects are published using a semantic version with a patch segment, the `helper` plugin only has a major & minor versions.
@@ -28,4 +34,4 @@ Depending on the setup, you can apply a loader plugin like `com.possible-triangl
 or only the `com.possible-triangle.core` plugin and the loader plugins in the sub-projects.
 
 It is recommended to also referene the plugins used in sub-projects with `apply (false)`, in order to prevent class-loading issues.
-You can see an example of that in the [multiloader](multiloader) page.
+You can see an example of that in the [multiloader](/multiloader) page.

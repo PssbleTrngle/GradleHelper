@@ -6,22 +6,22 @@ There are some forge-only values, which fallback to gradle properties
 
 <div class="annotate" markdown>
 
-| Property               | Default Value                            |
-| ---------------------- | ---------------------------------------- |
-| mappingChannel         | `"official"`                             |
-| mappingVersion         | `mod.minecraftVersion`                   |
+| Property               | Default Value                               |
+| ---------------------- | ------------------------------------------- |
+| mappingChannel         | `"official"`                                |
+| mappingVersion         | `mod.minecraftVersion`                      |
 | forgeVersion           | _gradle.properties_: `forge_version`        |
 | kotlinForgeVersion (1) | _gradle.properties_: `kotlin_forge_version` |
 
 </div>
 
-1.  read more about [kotlin support](kotlin)
+1.  read more about [kotlin support](/kotlin)
 
-## Access Tranformers
+## Access Transformers
 
 The `forge` extension provides several ways to enable access transformers for the subproject.
 
-It is also possible to use [Access Wideners](fabric#access-wideners), which will be transformed by the plugin into a remapped access transformer (1).
+It is also possible to use [Access Wideners](mod-loaders/fabric#access-wideners), which will be transformed by the plugin into a remapped access transformer (1).
 { .annotate }
 
 1.  for debugging purposes the generated access transformer can be found under `build/generated/accesstransformer.cfg`
@@ -68,6 +68,8 @@ forge {
    enableMixins()
 }
 ```
+
+It is not necessary to manually specify a `refMap` value for any mixin file, the plugin will generate and write the value to the output file itself.
 
 ## Datagen
 

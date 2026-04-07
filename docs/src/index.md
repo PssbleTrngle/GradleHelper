@@ -12,18 +12,18 @@ It is divided into several sub-plugins, that can be used in various configuratio
 
     You can view the [example repository](https://github.com/PssbleTrngle/TestMod) to see various different setups on the different branches. These are also automatically tested every week to verify that all plugins are still working.
 
-You can reference any of the branches in the [example repository](https://github.com/PssbleTrngle/TestMod) or follow the steps defined in [setup](setup).
+You can reference any of the branches in the [example repository](https://github.com/PssbleTrngle/TestMod) or follow the steps defined in [setup](/setup).
 
 <div class="grid cards" markdown>
 
--   [Core Plugin](general)
+-   [Core Plugin](/general)
 
     ***
 
     `com.possible-triangle.core`
 
     This plugin is bundled into all loader plugins. 
-    For single-loader projects it does not need to be explicitly defined, only when [working with subprojects](multiloader).
+    For single-loader projects it does not need to be explicitly defined, only when [working with subprojects](/multiloader).
     
     It applies a lot of the overarching functionality, like configuring java & mod properties.
 
@@ -32,11 +32,11 @@ You can reference any of the branches in the [example repository](https://github
 ## Mod Loaders
 
 In single-loader projects, on of these are the only ones that need to be applied.
-For [multi-loader projects](multiloader) projects, a combination of these can be used in various subprojects.
+For [multi-loader projects](/multiloader) projects, a combination of these can be used in various subprojects.
 
 <div class="grid cards annotate" markdown>
 
--   [Common](common)
+-   [Common](mod-loaders/common#common)
 
     ***
     
@@ -45,7 +45,7 @@ For [multi-loader projects](multiloader) projects, a combination of these can be
     using the NeoForge [ModDevGradle](https://projects.neoforged.net/neoforged/ModDevGradle) 
     and [NeoForm](https://projects.neoforged.net/neoforged/neoform)
 
--   [Architectury](architectury)
+-   [Architectury](mod-loaders/common#architectury)
 
     ***
     
@@ -58,7 +58,7 @@ For [multi-loader projects](multiloader) projects, a combination of these can be
 
     _required if a dependendies `common` module also uses architectury loom_
 
--   [Vanilla](vanilla)
+-   [Vanilla](mod-loaders/common#vanilla)
 
     ***
     
@@ -68,7 +68,7 @@ For [multi-loader projects](multiloader) projects, a combination of these can be
 
     _for common module on <=1.20.1 before NeoForge was a thing_
 
--   [NeoForge](neoforge)
+-   [NeoForge](/mod-loaders/neoforge)
 
     ***
     
@@ -76,7 +76,7 @@ For [multi-loader projects](multiloader) projects, a combination of these can be
     
     using the NeoForge [ModDevGradle](https://projects.neoforged.net/neoforged/ModDevGradle)
 
--   [Forge](forge)
+-   [Forge](/mod-loaders/forge)
 
     ***
     
@@ -87,7 +87,7 @@ For [multi-loader projects](multiloader) projects, a combination of these can be
     
     1.  using version __6__
 
--   [Fabric](fabric)
+-   [Fabric](/mod-loaders/fabric)
 
     ***
     
@@ -104,7 +104,7 @@ For [multi-loader projects](multiloader) projects, a combination of these can be
 
 <div class="grid cards" markdown>
 
--   [Packwiz](packwiz)
+-   [Packwiz](/sugar/packwiz)
 
     ***
     
@@ -114,7 +114,7 @@ For [multi-loader projects](multiloader) projects, a combination of these can be
 
     Allows [Packwiz](https://packwiz.infra.link/) packs to be imported as gradle dependencies.
 
--   [Access](access)
+-   Access
 
     ***
     
