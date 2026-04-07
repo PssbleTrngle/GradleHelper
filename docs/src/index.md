@@ -1,5 +1,8 @@
 # Plugins Overview
 
+!!! example "Experimental"
+     this version is still experimental and not yet working completely!
+
 These are a collection of gradle plugins that are meant to make minecraft mod development easier, by
 
 1. providing sane and easy to configure defaults
