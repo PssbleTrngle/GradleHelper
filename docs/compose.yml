@@ -1,0 +1,10 @@
+name: gradle-helper-docs
+
+services:
+  app:
+    image: squidfunk/mkdocs-material:latest
+    container_name: gradle-helper-docs
+    volumes:
+      - ./:/docs
+    ports:
+      - 8000:8000
