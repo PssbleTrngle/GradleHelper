@@ -12,16 +12,18 @@ It is divided into several sub-plugins, that can be used in various configuratio
 
     You can view the [example repository](https://github.com/PssbleTrngle/TestMod) to see various different setups on the different branches. These are also automatically tested every week to verify that all plugins are still working.
 
+You can reference any of the branches in the [example repository](https://github.com/PssbleTrngle/TestMod) or follow the steps defined in [setup](setup).
+
 <div class="grid cards" markdown>
 
--   __Core Plugin__
+-   [Core Plugin](general)
 
     ***
 
     `com.possible-triangle.core`
 
     This plugin is bundled into all loader plugins. 
-    It rarely ever needs to be explicitly defined, unless for [rare cases with subprojects](multiloader).
+    For single-loader projects it does not need to be explicitly defined, only when [working with subprojects](multiloader).
     
     It applies a lot of the overarching functionality, like configuring java & mod properties.
 

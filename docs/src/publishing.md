@@ -6,7 +6,7 @@ within the `upload` extension, there are a few helper methods to configure repos
 
 Everything is also published to `mavenLocal` by default, there is no need to do the specifically.
 
-```kotlin
+```kotlin title="build.gradle.kts"
 upload {
    // publishes to https://registry.somethingcatchy.net
    // uses the NEXUS_USER and NEXUS_TOKEN variables
@@ -55,7 +55,7 @@ To overwrite specific values, like the _version name_, the _changelog_ or define
 
 To plugin will automatically choose the correct jar artifact. That could be the normal one, or the one including [Jar-In-Jar](https://docs.minecraftforge.net/en/fg-6.x/dependencies/jarinjar/) dependencies, if any are configured.
 
-```kotlin
+```kotlin title="build.gradle.kts"
 upload {
     // if possible, always prefer "forEach" to configure both modrinth & curseforge at the same time
     curseforge {

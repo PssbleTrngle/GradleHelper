@@ -14,7 +14,7 @@ ARG site_url
 ENV SITE_URL=$site_url
 
 ARG version
-ENV API_VERSION=$version
+ENV EDIT_URL=$edit_url
 
 COPY docs/src src
 COPY docs/mkdocs.yml .

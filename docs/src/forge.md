@@ -30,7 +30,7 @@ It is also possible to use [Access Wideners](fabric#access-wideners), which will
 
     This functionality is still a bit experimental. While it should always work, even in clean environments, sometimes the access transformer is not generated in time for the IDE sync. That means, that after running `clean`, or when cloning a fresh repository using this, you may need to sync gradle twice.
 
-```kotlin
+```kotlin title="build.gradle.kts"
 forge {
    // default path at <project-path>/src/main/resources/META-INF/accesstransformer.cfg
    accessTransformer()
@@ -45,7 +45,7 @@ forge {
 
 ## Jar-In-Jar
 
-Mods & Libraries [included using the mod extension](core#including-libraries), will be bundled using forge's [Jar-In-Jar](https://docs.minecraftforge.net/en/fg-6.x/dependencies/jarinjar/) system.
+Mods & Libraries [included using the mod extension](general#including-libraries), will be bundled using forge's [Jar-In-Jar](https://docs.minecraftforge.net/en/fg-6.x/dependencies/jarinjar/) system.
 
 The `jarJar` extension will automatically be enabled if any mods or libraries are marked as being included.
 
@@ -63,7 +63,7 @@ Forge is the only loader where mixin support needs to be enabled specifically.
 This will automatically include the neccessary compile & runtime dependencies,
 including and bundling [Mixin Extras](https://github.com/LlamaLad7/MixinExtras).
 
-```kotlin
+```kotlin title="build.gradle.kts"
 forge {
    enableMixins()
 }
@@ -72,4 +72,4 @@ forge {
 ## Datagen
 
 Like other loaders, it can be configured using the `dataGen` method on the `forge` extension.
-Everything else follows the same [standard API](core#datagen) as the other loaders.
+Everything else follows the same [standard API](general#datagen) as the other loaders.
