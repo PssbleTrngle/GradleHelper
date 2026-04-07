@@ -2,9 +2,11 @@ name: Release
 on:
   workflow_dispatch:
   release:
-    types: [ published ]
+    types: [published]
   push:
-    branches: [ "v[0-9]+.[0-9]+" ]
+    branches: ["v[0-9]+.[0-9]+"]
+    paths-ignore:
+      - "docs/**"
 
 env:
   CI: true
@@ -29,6 +31,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
 
       - name: Build & Publish
         run: ./gradlew build publishPlugins

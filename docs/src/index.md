@@ -1,0 +1,136 @@
+# Plugins Overview
+
+These are a collection of gradle plugins that are meant to make minecraft mod development easier, by
+
+1. providing sane and easy to configure defaults
+2. abstracting away the individual loaders gradle plugin configuration
+3. bundling helpful tools like [Minotaur](https://github.com/modrinth/minotaur "Used to publish to modrinth"), [CurseForgeGradle](https://github.com/Darkhax/CurseForgeGradle "used to publish to curseforge") or [Spotless](https://github.com/diffplug/spotless "used to format code")
+
+It is divided into several sub-plugins, that can be used in various configurations in multi-loader projects, or simple single-loader projects.
+
+!!! info
+
+    You can view the [example repository](https://github.com/PssbleTrngle/TestMod) to see various different setups on the different branches. These are also automatically tested every week to verify that all plugins are still working.
+
+<div class="grid cards" markdown>
+
+-   __Core Plugin__
+
+    ***
+
+    `com.possible-triangle.core`
+
+    This plugin is bundled into all loader plugins. 
+    It rarely ever needs to be explicitly defined, unless for [rare cases with subprojects](multiloader).
+    
+    It applies a lot of the overarching functionality, like configuring java & mod properties.
+
+</div>
+
+## Mod Loaders
+
+In single-loader projects, on of these are the only ones that need to be applied.
+For [multi-loader projects](multiloader) projects, a combination of these can be used in various subprojects.
+
+<div class="grid cards annotate" markdown>
+
+-   [Common](common)
+
+    ***
+    
+    `com.possible-triangle.common`
+
+    using the NeoForge [ModDevGradle](https://projects.neoforged.net/neoforged/ModDevGradle) 
+    and [NeoForm](https://projects.neoforged.net/neoforged/neoform)
+
+-   [Architectury](architectury)
+
+    ***
+    
+    `com.possible-triangle.architectury`
+
+    using [Architectury Loom](https://docs.architectury.dev/loom/introduction) (1)
+    { .annotate }
+
+    1.  using version __1.11__
+
+    _required if a dependendies `common` module also uses architectury loom_
+
+-   [Vanilla](vanilla)
+
+    ***
+    
+    `com.possible-triangle.vanilla`
+
+    using [VanillaGradle](https://github.com/SpongePowered/VanillaGradle)
+
+    _for common module on <=1.20.1 before NeoForge was a thing_
+
+-   [NeoForge](neoforge)
+
+    ***
+    
+    `com.possible-triangle.neoforge`
+    
+    using the NeoForge [ModDevGradle](https://projects.neoforged.net/neoforged/ModDevGradle)
+
+-   [Forge](forge)
+
+    ***
+    
+    `com.possible-triangle.forge`
+
+    using [ForgeGradle](https://github.com/MinecraftForge/ForgeGradle) (1)
+    { .annotate }
+    
+    1.  using version __6__
+
+-   [Fabric](fabric)
+
+    ***
+    
+    `com.possible-triangle.fabric`
+    
+    using [Fabric Loom](https://docs.fabricmc.net/develop/loom/) (1)
+    { .annotate }
+
+    1.  using version __1.11__
+
+</div>
+
+## Utility plugins
+
+<div class="grid cards" markdown>
+
+-   [Packwiz](packwiz)
+
+    ***
+    
+    `com.possible-triangle.packwiz`
+
+    Standalone Settings Plugin.
+
+    Allows [Packwiz](https://packwiz.infra.link/) packs to be imported as gradle dependencies.
+
+-   [Access](access)
+
+    ***
+    
+    `com.possible-triangle.access`
+
+    Bundled within `neoforge` and `forge`, but can be used standalone.
+
+    Transforms [Access Wideners](https://docs.fabricmc.net/develop/class-tweakers/access-widening)
+    into [Access Transformers](https://docs.neoforged.net/docs/advanced/accesstransformers/)
+
+-   [Publishing](publishing#maven)
+
+    ***
+
+    `com.possible-triangle.publishing`
+    
+    Bundled within `core`, but can be used standalone.
+
+    Contains helper methods to modify maven artifact metadata to work better for mod development.
+
+</div>
