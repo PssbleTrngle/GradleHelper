@@ -8,7 +8,7 @@ These include the maven of Minecraft (1), SpongePowered (2) and KotlinForForge (
 
 If you want to include mods from [CurseForge](https://www.cursemaven.com/) or [Modrinth](https://support.modrinth.com/en/articles/8801191-modrinth-maven), you can use these helper methods.
 
-These are also used by the [Packwiz](packwiz) plugin.
+These are also used by the [Packwiz](/sugar/packwiz) plugin.
 
 ```kotlin title="build.gradle.kts"
 repositories {
