@@ -20,7 +20,7 @@ The latter will be transformed into an access transformer, as [described in the 
 
 ## Architectury
 
-The `com.possible-triangle.architectury` uses [Architectury Loom](https://docs.architectury.dev/loom/introduction), specifically version 1.11.
+The `com.possible-triangle.architectury` uses [Architectury Loom](https://docs.architectury.dev/loom/introduction), specifically version 1.13.
 
 The `common` extension implements all `accessWidener` methods that are present in the [fabric plugin](/mod-loaders/fabric).
 

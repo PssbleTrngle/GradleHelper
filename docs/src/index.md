@@ -57,7 +57,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     using [Architectury Loom](https://docs.architectury.dev/loom/introduction) (1)
     { .annotate }
 
-    1.  using version __1.11__
+    1.  using version __1.13__
 
     _required if a dependendies `common` module also uses architectury loom_
 
@@ -88,7 +88,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     using [ForgeGradle](https://github.com/MinecraftForge/ForgeGradle) (1)
     { .annotate }
     
-    1.  using version __6__
+    1.  using version __7__
 
 -   [Fabric](/mod-loaders/fabric)
 
@@ -99,7 +99,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     using [Fabric Loom](https://docs.fabricmc.net/develop/loom/) (1)
     { .annotate }
 
-    1.  using version __1.11__
+    1.  using version __1.15__
 
 </div>
 
