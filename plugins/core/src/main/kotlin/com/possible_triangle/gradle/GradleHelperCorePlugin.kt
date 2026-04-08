@@ -38,6 +38,7 @@ class GradleHelperCorePlugin : Plugin<Project> {
         configureDefault(coreProject.stringProperty("mod_name")) { name }
         configureDefault(modVersion) { version }
         configureDefault(coreProject.stringProperty("mod_author")) { author }
+        configureDefault(coreProject.stringProperty("mod_description")) { description }
         configureDefault(mcVersion) { minecraftVersion }
         configureDefault(coreProject.stringProperty("release_type")) { releaseType }
         configureDefault(coreProject.stringProperty("repository")) { repository }
@@ -67,21 +68,7 @@ class GradleHelperCorePlugin : Plugin<Project> {
                     mod.id.map { modId -> "${modId}*.mixins.json" }.orNull,
                 )
             ) {
-                val mcVersionRange = mod.minecraftVersion.map { "[$it,)" }
-                expand(
-                    mapOf(
-                        "version" to mod.version.orNull,
-                        "mod_version" to mod.version.orNull,
-                        "mod_name" to mod.name.orNull,
-                        "mod_id" to mod.id.orNull,
-                        "mod_author" to mod.author.orNull,
-                        "repository" to mod.repository.orNull,
-                        "minecraft_version" to mod.minecraftVersion.orNull,
-                        "mc_version" to mod.minecraftVersion.orNull,
-                        "minecraft_version_range" to mcVersionRange,
-                        "mc_version_range" to mcVersionRange,
-                    ).filterValues { it != null }
-                )
+                expand(mod.resolveProperties())
             }
         }
 
