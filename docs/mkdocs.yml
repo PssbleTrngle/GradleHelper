@@ -68,3 +68,6 @@ extra_css:
   - styles/extra.css
 # extra_javascript:
 #   - scripts/favicon.js
+
+watch:
+  - overrides
