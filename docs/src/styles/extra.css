@@ -1,3 +1,25 @@
 html {
   scroll-behavior: smooth;
 }
+
+.hole {
+  background-image: url("/assets/hole.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 70dvh;
+
+  display: grid;
+  place-content: center;
+
+  text-align: center;
+
+  h1,
+  h2 {
+    margin: 0em;
+  }
+
+  h1 {
+    font-size: 5em;
+  }
+}
