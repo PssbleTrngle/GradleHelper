@@ -47,4 +47,4 @@ jobs:
           token: ${{ secrets.DISPATCH_TOKEN }}
           repository: ${{ github.actor }}/TestMod
           event-type: trigger-releases
-          client-payload: '{"version": "${{ github.ref_name }}"'
+          client-payload: '{"version": "${{ github.ref_name }}"}'
