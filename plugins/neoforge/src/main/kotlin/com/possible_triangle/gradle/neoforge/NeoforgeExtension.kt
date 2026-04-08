@@ -1,19 +1,16 @@
 package com.possible_triangle.gradle.neoforge
 
 import com.possible_triangle.gradle.access.generateAccessTransformer
-import com.possible_triangle.gradle.features.loaders.AbstractLoadExtensionWithDatagen
-import com.possible_triangle.gradle.features.loaders.LoaderExtension
-import com.possible_triangle.gradle.features.loaders.WithAccessTransformer
-import com.possible_triangle.gradle.features.loaders.WithAccessWidener
-import com.possible_triangle.gradle.features.loaders.WithDataGen
-import com.possible_triangle.gradle.features.loaders.WithInterfaceInjections
+import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
+import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 import java.io.File
 
 interface NeoforgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen,
@@ -34,7 +31,10 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
     }
 
     override fun accessWidener(file: Provider<File>) {
-        val output = project.generateAccessTransformer(file)
+        val (output, task) = project.generateAccessTransformer(file)
+        project.tasks.withType<CreateMinecraftArtifacts> {
+            dependsOn(task)
+        }
         accessTransformer(output)
     }
 
