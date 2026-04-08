@@ -5,13 +5,13 @@ While it is not required, the `com.possible-triangle.helper` settings plugin is 
 This plugin automatically adds some plugin repositories (1), for example for NeoForge, Forge, Parchment, SpongePoweded and Architectury.
 { .annotate }
 
-```kotlin title="settings.gradle.kts
+1.  proxied through [registry.somethingcatchy.net](https://registry.somethingcatchy.net/#browse/browse:maven-public)
+
+```kotlin title="settings.gradle.kts"
 plugins {
     id("com.possible-triangle.helper") version ("1.2")
 }
 ```
-
-1.  proxied through [registry.somethingcatchy.net](https://registry.somethingcatchy.net/#browse/browse:maven-public)
 
 While all the subprojects are published using a semantic version with a patch segment, the `helper` plugin only has a major & minor versions.
 All other `com.possible-triangle.*` plugins can be specified without a version, and will automatically use the `1.2.+` resolution.
