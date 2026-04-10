@@ -85,11 +85,8 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     
     `com.possible-triangle.forge`
 
-    using [ForgeGradle](https://github.com/MinecraftForge/ForgeGradle) (1)
-    { .annotate }
+    using NeoForge's [Legacy Forge Plugin](https://github.com/neoforged/ModDevGradle/blob/main/LEGACY.md)
     
-    1.  using version __7__
-
 -   [Fabric](/mod-loaders/fabric)
 
     ***

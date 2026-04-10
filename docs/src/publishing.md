@@ -27,7 +27,7 @@ upload {
 There are some modifications that are applied to the artifact's metadata:
 
 - disables [module metadata](https://docs.gradle.org/current/userguide/publishing_gradle_module_metadata.html) generation. This is an additional file that will be preferred over the POM, but is known to cause issues within mod development setups.
-- _for forge projects_: remove POM dependencies completely, as they are not working transitivily at all in ForgeGradle 7
+- _for forge projects_: remove POM dependencies completely, as they are not working transitivily at all in ForgeGradle 6
 - _for non-forge projects_: remove _runtime_ dependencies. These are usually things like [JEI](https://modrinth.com/mod/jei) that are only used for testing in the dev environment and should not be included transitively by other mods. The [table below](#dependency-types) visualizes the different types of dependencies
 
 The `com.possible-triangle.publishing` plugin, that is resposible for these modifications also exposes the helper method `MavenPublication.removePomDependencies`, which can be used to additionally exclude certain dependencies from the __POM__ by _group_, _artifact id_, _scope_ (1), or _version_
