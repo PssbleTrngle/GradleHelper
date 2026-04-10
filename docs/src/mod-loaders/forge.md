@@ -74,4 +74,4 @@ It is not necessary to manually specify a `refMap` value for any mixin file, the
 ## Datagen
 
 Like other loaders, it can be configured using the `dataGen` method on the `forge` extension.
-Everything else follows the same [standard API](general#datagen) as the other loaders.
+Everything else follows the same [standard API](/general#datagen) as the other loaders.

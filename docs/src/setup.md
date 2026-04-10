@@ -26,7 +26,7 @@ This means you will get update improvements whenever a new patch is releases, bu
 ## Configure Properties
 
 There is a variety of mod properties these plugins need in order to work.
-You can find a [table of them here](general#mod-properties).
+You can find a [table of them here](/general#mod-properties).
 
 ## Applying Loader Plugins
 
