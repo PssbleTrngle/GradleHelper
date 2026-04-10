@@ -12,7 +12,7 @@ This can be useful when working with a [multi-loader](/multiloader) setup.
 
 One caveat of being a settings plugin is that the patch version also has to be hard-coded.
 
-![Gradle Plugin Portal Version](https://img.shields.io/gradle-plugin-portal/v/com.possible-triangle.packwiz?label=com.possible-triangle.packwiz&color=ff6e42&filter=1.2.*)
+![Gradle Plugin Portal Version](https://img.shields.io/gradle-plugin-portal/v/com.possible-triangle.packwiz?label=com.possible-triangle.packwiz&color=ff6e42&filter=1.3.*)
 
 Presuming there is a complete packwiz pack in the default folder `pack`, including the `pack.toml` & `index.toml` file, the following describes a simple setup importing it in gradle.
 
