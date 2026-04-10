@@ -36,6 +36,7 @@ interface ModExtension {
 interface AdditionalProperties {
     fun add(key: String, value: String)
     fun add(key: String, value: Provider<String>)
+    fun toMap(): Map<String, Provider<String>>
 }
 
 internal open class ModExtensionImpl(project: Project) : ModExtension {
@@ -50,20 +51,24 @@ internal open class ModExtensionImpl(project: Project) : ModExtension {
     override val mavenGroup: Property<String> = project.objects.property()
     override val libraries: Included = IncludedImpl(project, project.parent?.mod?.libraries)
     override val mods: Included = IncludedImpl(project, project.parent?.mod?.mods)
-    override val additional: AdditionalPropertiesImpl = AdditionalPropertiesImpl(project)
+    override val additional: AdditionalPropertiesImpl =
+        AdditionalPropertiesImpl(project, project.parent?.mod?.additional)
 }
 
-internal class AdditionalPropertiesImpl(private val project: Project) : AdditionalProperties {
-    internal val values = mutableMapOf<String, Provider<String>>()
+internal class AdditionalPropertiesImpl(private val project: Project, private val parent: AdditionalProperties?) :
+    AdditionalProperties {
+    private val values = mutableMapOf<String, Provider<String>>()
 
     override fun add(key: String, value: String) = add(key, project.provider { value })
 
     override fun add(key: String, value: Provider<String>) {
         values[key] = value
     }
+
+    override fun toMap() = (parent?.toMap() ?: emptyMap()) + values.toMap()
 }
 
-internal fun ModExtensionImpl.resolveProperties(): Map<String, String> {
+internal fun ModExtension.resolveProperties(): Map<String, String> {
     val mcVersionRange = minecraftVersion.map { "[$it,)" }
 
     val providers = mapOf(
@@ -78,7 +83,7 @@ internal fun ModExtensionImpl.resolveProperties(): Map<String, String> {
         "mc_version" to minecraftVersion,
         "minecraft_version_range" to mcVersionRange,
         "mc_version_range" to mcVersionRange,
-    ) + additional.values
+    ) + additional.toMap()
 
     return providers
         .filterValues { it.isPresent }
