@@ -1,0 +1,205 @@
+package com.possible_triangle.gradle.forge
+
+import com.possible_triangle.gradle.*
+import com.possible_triangle.gradle.features.lazyDependencies
+import com.possible_triangle.gradle.features.loaders.*
+import com.possible_triangle.gradle.publishing.removePomDependencies
+import com.possible_triangle.gradle.upload.UploadExtension
+import com.possible_triangle.gradle.upload.modifyPublication
+import net.neoforged.moddevgradle.boot.LegacyForgeModDevPlugin
+import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.tasks.testing.Test
+import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import org.gradle.language.jvm.tasks.ProcessResources
+import kotlin.collections.forEach
+
+internal fun DependencyHandlerScope.pin(dependencyNotation: ExternalModuleDependency): ExternalModuleDependency {
+    return add("jarJar", dependencyNotation) {
+        version {
+            strictly("[${version},)")
+            prefer(version!!)
+        }
+    }
+}
+
+class GradleHelperForgePlugin : Plugin<Project> {
+
+    override fun apply(target: Project) {
+        target.apply<GradleHelperCorePlugin>()
+        target.setupForge()
+        target.afterEvaluate {
+            finalize()
+        }
+    }
+
+    private fun Project.finalize() {
+        val config = the<ForgeExtension>() as ForgeExtensionImpl
+
+        configureDatagenRun()
+        configureMixins()
+
+        configureOutputProject(config)
+
+        val mixinExtrasVersion = project.mixinExtrasVersion()
+
+        val jarJarEnabled =
+            mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || mixinExtrasVersion != null
+        if (jarJarEnabled) {
+            mixinExtrasVersion?.let {
+                includeMixinExtras(it)
+            }
+        }
+
+        afterEvaluate {
+            tasks.withType<ProcessResources> {
+                config.dependsOn.forEach {
+                    from(it.mainSourceSet.resources)
+                }
+            }
+        }
+
+        if (config.mixinsEnabled) {
+            // TODO check if necessary?
+            // also add "MixinConfigs" manually to manifest
+            tasks.withType<Jar> {
+                filesMatching("${mod.id.get()}*.mixins.json") {
+                    filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
+                }
+            }
+        }
+
+        config.kotlinForgeVersion.orNull?.let {
+            configure<UploadExtension> {
+                forEach {
+                    if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
+                }
+            }
+        }
+    }
+
+    private fun Project.configureDatagenRun() {
+        val config = the<ForgeExtension>() as ForgeExtensionImpl
+
+        configure<LegacyForgeExtension> {
+            if (config.enabledDataGen) {
+                config.requireOwner().configureDatagen()
+
+                runs.named("data") {
+                    gameDirectory = project.file("run/data")
+
+                    val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
+                    val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
+                    val dataGenArgs = listOf(
+                        "--mod",
+                        mod.id.get(),
+                        "--all",
+                        "--output",
+                        config.requireOwner().datagenOutput.path
+                    ) + existingResources + existingMods
+
+                    programArguments.addAll(dataGenArgs)
+
+                    config.datagenSourceSet.orNull?.let {
+                        sourceSet.set(it)
+                    }
+                }
+            } else {
+                runs.removeIf { it.name == "data" }
+            }
+        }
+    }
+
+    private fun Project.setupForge() {
+        apply<LegacyForgeModDevPlugin>()
+
+        val config = extensions.create<ForgeExtension, ForgeExtensionImpl>("forge")
+
+        configure<LegacyForgeExtension> {
+            version = "${mod.minecraftVersion.get()}-${config.forgeVersion.get()}"
+
+            validateAccessTransformers = true
+
+            mods.create(mod.id.get()) {
+                sourceSet(mainSourceSet)
+            }
+
+            runs {
+                create("client") {
+                    gameDirectory = project.file("run")
+                    client()
+                }
+
+                create("server") {
+                    gameDirectory = project.file("run/server")
+                    programArgument("--nogui")
+                    server()
+                }
+
+                create("data") {
+                    data()
+                }
+
+                forEach { run ->
+                    run.jvmArguments.addAll(JVM_ARGUMENTS)
+                    run.ideName = "NeoForge ${run.name.capitalized()}"
+                }
+            }
+        }
+
+        configure<UploadExtension> {
+            forEach {
+                modLoaders.add(ModLoader.FORGE)
+                val jarTask = tasks.getByName<Jar>("jar")
+                file.set(jarTask.archiveFile)
+            }
+        }
+
+        dependencies {
+            lazyDependencies("annotationProcessor") {
+                if (config.mixinsEnabled) {
+                    add("org.spongepowered:mixin:0.8.7:processor")
+                }
+            }
+
+            lazyDependencies("implementation") {
+                config.dependsOn.forEach {
+                    add(it)
+                }
+            }
+
+            lazyDependencies("api") {
+                mod.libraries.get().forEach {
+                    add(it)
+                    pin(it)
+                }
+            }
+
+            run {
+                config.kotlinForgeVersion.orNull?.let {
+                    add("modApi", "thedarkcolour:kotlinforforge:${it}")
+                }
+
+                mod.mods.get().forEach {
+                    add("modApi", it)
+                    pin(it)
+                }
+            }
+        }
+
+        modifyPublication {
+            removePomDependencies()
+        }
+
+        tasks.withType<Test> { enabled = false }
+        tasks.named("compileTestJava") { enabled = false }
+        tasks.findByName("compileTestKotlin")?.enabled = false
+    }
+}
