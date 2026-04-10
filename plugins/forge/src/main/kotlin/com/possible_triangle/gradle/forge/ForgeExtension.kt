@@ -40,7 +40,7 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
     }
 
     override fun accessWidener(file: Provider<File>) {
-        val output = project.generateAccessTransformer(file)
+        val (output) = project.generateAccessTransformer(file)
         accessTransformer(output)
     }
 

@@ -34,14 +34,15 @@ internal fun Project.configureMixins() {
     }
 }
 
-internal fun Project.includeMixinExtras(): Boolean {
+internal fun Project.mixinExtrasVersion(): String? {
     val config = the<ForgeExtension>() as ForgeExtensionImpl
+    return project.mixinExtrasVersion.takeIf { config.mixinsEnabled };
+}
 
-    return project.mixinExtrasVersion.takeIf { config.mixinsEnabled }?.also {
-        dependencies {
-            val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${it}")
-            add("compileOnly", annotationProcessor!!)
-            add("implementation", pin(jarJar, create("io.github.llamalad7", "mixinextras-forge", it)))
-        }
-    } != null
+internal fun Project.includeMixinExtras(version: String) {
+    dependencies {
+        val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${version}")
+        add("compileOnly", annotationProcessor!!)
+        add("implementation", pin(jarJar, create("io.github.llamalad7", "mixinextras-forge", version)))
+    }
 }

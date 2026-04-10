@@ -50,12 +50,17 @@ class GradleHelperForgePlugin : Plugin<Project> {
 
         configureOutputProject(config)
 
-        val mixinExtrasIncluded = project.includeMixinExtras()
+        val mixinExtrasVersion = project.mixinExtrasVersion()
 
-        val jarJarEnabled = mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || mixinExtrasIncluded
+        val jarJarEnabled =
+            mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || mixinExtrasVersion != null
         if (jarJarEnabled) {
             jarJar.register {
                 archiveClassifier = null
+            }
+
+            mixinExtrasVersion?.let {
+                includeMixinExtras(it)
             }
         }
 
@@ -150,8 +155,6 @@ class GradleHelperForgePlugin : Plugin<Project> {
         apply(plugin = "net.minecraftforge.jarjar")
 
         val config = extensions.create<ForgeExtension, ForgeExtensionImpl>("forge")
-
-        jarJar.register()
 
         val includedMods = IncludedImpl(this, mod.mods) {
             val resolved = mc.dependency(it.get())
