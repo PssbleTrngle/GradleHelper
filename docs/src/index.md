@@ -39,7 +39,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
 
 <div class="grid cards annotate" markdown>
 
--   [Common](mod-loaders/common#common)
+-   [Common](/mod-loaders/common#common)
 
     ***
     
@@ -48,7 +48,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     using the NeoForge [ModDevGradle](https://projects.neoforged.net/neoforged/ModDevGradle) 
     and [NeoForm](https://projects.neoforged.net/neoforged/neoform)
 
--   [Architectury](mod-loaders/common#architectury)
+-   [Architectury](/mod-loaders/common#architectury)
 
     ***
     
@@ -61,7 +61,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
 
     _required if a dependendies `common` module also uses architectury loom_
 
--   [Vanilla](mod-loaders/common#vanilla)
+-   [Vanilla](/mod-loaders/common#vanilla)
 
     ***
     
@@ -128,7 +128,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     Transforms [Access Wideners](https://docs.fabricmc.net/develop/class-tweakers/access-widening)
     into [Access Transformers](https://docs.neoforged.net/docs/advanced/accesstransformers/)
 
--   [Publishing](publishing#maven)
+-   [Publishing](/publishing#maven)
 
     ***
 

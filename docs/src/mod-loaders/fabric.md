@@ -34,6 +34,6 @@ neoforge {
 ## Datagen
 
 Like other loaders, it can be configured using the `dataGen` method on the `fabric` extension.
-Everything else follows the same [standard API](general#datagen) as the other loaders.
+Everything else follows the same [standard API](/general#datagen) as the other loaders.
 
 Existing mods are also added as system properties to allow usage of [Porting Lib's](https://github.com/Fabricators-of-Create/Porting-Lib) `ExistingFileHelper`.

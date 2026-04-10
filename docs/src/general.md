@@ -21,6 +21,7 @@ Some of these values can be referenced in mod metadata files, namingly `mods.tom
 | mod.name             | _gradle.properties_: `mod_name`                                        | _string_                               | `${mod_name}`          |
 | mod.version          | _environment_: `RELEASE_VERSION` or _gradle.properties_: `mod_version` | _string_                               | `${mod_version}`       |
 | mod.author           | _gradle.properties_: `mod_author`                                      | _string_                               | `${mod_author}`        |
+| mod.description      | _gradle.properties_: `mod_description`                                 | _string_                               | `${mod_description}`   |
 | mod.minecraftVersion | _gradle.properties_: `minecraft_version` or `mc_version`               | _string_                               | `${minecraft_version}` |
 | mod.releaseType      | _gradle.properties_: `release_type`                                    | should be `release`, `beta` or `alpha` | -                      |
 | mod.repository       | _gradle.properties_: `repository`                                      | owner/repository                       | `${repository}`        |
@@ -31,6 +32,21 @@ There are also a number of additional template expressions available:
 | Template                     | Value           | Example     |
 | ---------------------------- | --------------- | ----------- |
 | `${minecraft_version_range}` | `[mc_version,)` | `[1.20.1,)` |
+
+You can also define additional values that should be replaced in these files:
+
+```kotlin title="build.gradle.kts"
+mod {
+    additional.add("some_key", "some_value")
+    additional.add("other_key", provider { "other_value" })
+}
+```
+
+```toml title="neoforge.mods.toml"
+[[mods]]
+modId = "${mod_id}"
+itemIcon = "${some_key}"
+```
 
 ## Including Libraries
 

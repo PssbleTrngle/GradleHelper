@@ -19,7 +19,7 @@ There are some neoforge-only values, which fallback to gradle properties
 
 The `neoforge` extension provides several ways to enable access transformers for the subproject.
 
-It is also possible to use [Access Wideners](mod-loaders/fabric#access-wideners), which will be transformed by the plugin into a access transformer (1).
+It is also possible to use [Access Wideners](/mod-loaders/fabric#access-wideners), which will be transformed by the plugin into a access transformer (1).
 { .annotate }
 
 1.  for debugging purposes the generated access transformer can be found under `build/generated/accesstransformer.cfg`
@@ -43,9 +43,9 @@ neoforge {
 
 ## Jar-In-Jar
 
-Mods & Libraries [included using the mod extension](general#including-libraries), will be bundled using neoforge's [Jar-In-Jar](https://docs.neoforged.net/toolchain/docs/dependencies/jarinjar/) system.
+Mods & Libraries [included using the mod extension](/general#including-libraries), will be bundled using neoforge's [Jar-In-Jar](https://docs.neoforged.net/toolchain/docs/dependencies/jarinjar/) system.
 
 ## Datagen
 
 Like other loaders, it can be configured using the `dataGen` method on the `neoforge` extension.
-Everything else follows the same [standard API](general#datagen) as the other loaders.
+Everything else follows the same [standard API](/general#datagen) as the other loaders.
