@@ -29,7 +29,7 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
     NeoforgeExtension {
     override val neoforgeVersion = project.objects.property(project.stringProperty("neoforge_version"))
 
-    override var kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
+    override val kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
 
     override fun accessTransformer(file: Provider<File>) {
         project.the<NeoForgeExtension>().setAccessTransformers(file)

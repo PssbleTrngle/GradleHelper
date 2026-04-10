@@ -48,14 +48,8 @@ class GradleHelperForgePlugin : Plugin<Project> {
 
         configureOutputProject(config)
 
-        val mixinExtrasVersion = project.mixinExtrasVersion()
-
-        val jarJarEnabled =
-            mod.libraries.get().isNotEmpty() || mod.mods.get().isNotEmpty() || mixinExtrasVersion != null
-        if (jarJarEnabled) {
-            mixinExtrasVersion?.let {
-                includeMixinExtras(it)
-            }
+        project.mixinExtrasVersion()?.let {
+            includeMixinExtras(it)
         }
 
         afterEvaluate {
@@ -176,20 +170,8 @@ class GradleHelperForgePlugin : Plugin<Project> {
             }
 
             lazyDependencies("api") {
-                mod.libraries.get().forEach {
-                    add(it)
-                    pin(it)
-                }
-            }
-
-            run {
                 config.kotlinForgeVersion.orNull?.let {
-                    add("modApi", "thedarkcolour:kotlinforforge:${it}")
-                }
-
-                mod.mods.get().forEach {
-                    add("modApi", it)
-                    pin(it)
+                    add("thedarkcolour:kotlinforforge:${it}")
                 }
             }
         }
