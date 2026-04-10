@@ -175,16 +175,6 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
                 config.kotlinForgeVersion.orNull?.let {
                     add("thedarkcolour:kotlinforforge-neoforge:${it}")
                 }
-
-                mod.libraries.get().forEach {
-                    add(it)
-                    pin(it)
-                }
-
-                mod.mods.get().forEach {
-                    add(it)
-                    pin(it)
-                }
             }
         }
 

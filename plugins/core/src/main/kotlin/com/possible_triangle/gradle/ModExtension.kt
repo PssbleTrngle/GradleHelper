@@ -1,7 +1,5 @@
 package com.possible_triangle.gradle
 
-import com.possible_triangle.gradle.features.loaders.Included
-import com.possible_triangle.gradle.features.loaders.IncludedImpl
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
@@ -27,9 +25,6 @@ interface ModExtension {
     val repository: Property<String>
     val mavenGroup: Property<String>
 
-    val libraries: Included
-    val mods: Included
-
     val additional: AdditionalProperties
 }
 
@@ -49,8 +44,6 @@ internal open class ModExtensionImpl(project: Project) : ModExtension {
     override val releaseType: Property<String> = project.objects.property()
     override val repository: Property<String> = project.objects.property()
     override val mavenGroup: Property<String> = project.objects.property()
-    override val libraries: Included = IncludedImpl(project, project.parent?.mod?.libraries)
-    override val mods: Included = IncludedImpl(project, project.parent?.mod?.mods)
     override val additional: AdditionalPropertiesImpl =
         AdditionalPropertiesImpl(project, project.parent?.mod?.additional)
 }

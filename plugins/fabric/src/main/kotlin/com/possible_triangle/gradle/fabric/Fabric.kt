@@ -134,10 +134,6 @@ class GradleHelperFabricPlugin : Plugin<Project> {
                 config.kotlinFabricVersion.orNull?.let {
                     add("net.fabricmc:fabric-language-kotlin:${it}")
                 }
-
-                mod.mods.get().forEach {
-                    add(add("include", it)!!)
-                }
             }
 
             lazyDependencies("implementation") {
@@ -145,13 +141,6 @@ class GradleHelperFabricPlugin : Plugin<Project> {
                     add(it)
                 }
             }
-
-            lazyDependencies("api") {
-                mod.libraries.get().forEach {
-                    add(add("include", it)!!)
-                }
-            }
-
         }
     }
 }

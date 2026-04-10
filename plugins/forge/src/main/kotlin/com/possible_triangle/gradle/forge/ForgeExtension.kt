@@ -13,7 +13,7 @@ import org.gradle.kotlin.dsl.the
 import java.io.File
 
 interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen {
-    val forgeVersion: Property<String>
+    val forgeVersion: Provider<String>
 
     val kotlinForgeVersion: Property<String>
 
@@ -22,9 +22,9 @@ interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransfo
 
 internal open class ForgeExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
     ForgeExtension {
-    override var forgeVersion = project.objects.property(project.stringProperty("forge_version"))
+    override val forgeVersion = project.provider { project.stringProperty("forge_version") }
 
-    override var kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
+    override val kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
 
     var mixinsEnabled: Boolean = false
         private set
@@ -34,7 +34,7 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
     }
 
     override fun accessTransformer(file: Provider<File>) {
-        project.the<LegacyForgeExtension>().setAccessTransformers (file)
+        project.the<LegacyForgeExtension>().setAccessTransformers(file)
     }
 
     override fun accessWidener(file: Provider<File>) {
