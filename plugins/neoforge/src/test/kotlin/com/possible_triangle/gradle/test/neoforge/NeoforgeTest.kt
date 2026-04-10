@@ -63,7 +63,7 @@ class NeoforgeTest {
             }
         }
 
-        val deps = project.findTestDependencies("implementation")
+        val deps = project.findTestDependencies("api")
         assertEquals(1, deps.size)
     }
 
@@ -76,10 +76,10 @@ class NeoforgeTest {
         }
 
         project.dependencies {
-            add("implementation", "test.something:other-thing:2.43")
+            add("api", "test.something:other-thing:2.43")
         }
 
-        val deps = project.findTestDependencies("implementation")
+        val deps = project.findTestDependencies("api")
         assertEquals(2, deps.size)
     }
 
@@ -91,7 +91,7 @@ class NeoforgeTest {
             }
         }
 
-        val deps = project.findTestDependencies("implementation")
+        val deps = project.findTestDependencies("api")
         assertEquals(1, deps.size)
     }
 

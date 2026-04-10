@@ -39,7 +39,7 @@ fun DependencyHandlerScope.resolveDependency(dependencyNotation: Any): ExternalM
     if (dependencyNotation is ExternalModuleDependency) return dependencyNotation.copy()
     if (dependencyNotation is String) return resolveDependency(create(dependencyNotation) {})
     if (dependencyNotation is Provider<*>)
-        return resolveDependency((dependencyNotation as Provider<ExternalModuleDependency>).get())
+        return resolveDependency(dependencyNotation.get())
     if (dependencyNotation is ProviderConvertible<*>)
         return resolveDependency(dependencyNotation.asProvider())
 
