@@ -46,10 +46,6 @@ class GradleHelperCommonPlugin : Plugin<Project> {
                 config.dependsOn.forEach {
                     add(it)
                 }
-
-                mod.libraries.get().forEach {
-                    add(it)
-                }
             }
         }
     }

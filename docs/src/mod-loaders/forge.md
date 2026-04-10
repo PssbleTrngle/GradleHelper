@@ -1,16 +1,13 @@
-The `com.possible-triangle.forge` plugin is an abstract layer around [ForgeGradle](https://github.com/MinecraftForge/ForgeGradle), specifically version 7.
+The `com.possible-triangle.forge` plugin is an abstract layer around NeoForge's [Legacy Forge Plugin](https://github.com/neoforged/ModDevGradle/blob/main/LEGACY.md).
 
 Like the other loader plugins, it tries to align with a common API interface, to make migration & sharing between them easier.
 
-There are some forge-only values, which fallback to gradle properties
+There is one forge-only values, which fallback to a gradle property
 
 <div class="annotate" markdown>
 
 | Property               | Default Value                               |
 | ---------------------- | ------------------------------------------- |
-| mappingChannel         | `"official"`                                |
-| mappingVersion         | `mod.minecraftVersion`                      |
-| forgeVersion           | _gradle.properties_: `forge_version`        |
 | kotlinForgeVersion (1) | _gradle.properties_: `kotlin_forge_version` |
 
 </div>

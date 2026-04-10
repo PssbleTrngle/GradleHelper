@@ -1,10 +1,14 @@
 package com.possible_triangle.gradle.features
 
+import org.gradle.api.IllegalDependencyNotation
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import java.net.URI
 
@@ -29,4 +33,15 @@ fun Project.lazyDependencies(type: String, block: LazyDependencyBuilder.() -> Un
             }
         }
     }
+}
+
+fun DependencyHandlerScope.resolveDependency(dependencyNotation: Any): ExternalModuleDependency {
+    if (dependencyNotation is ExternalModuleDependency) return dependencyNotation.copy()
+    if (dependencyNotation is String) return resolveDependency(create(dependencyNotation) {})
+    if (dependencyNotation is Provider<*>)
+        return resolveDependency(dependencyNotation.get())
+    if (dependencyNotation is ProviderConvertible<*>)
+        return resolveDependency(dependencyNotation.asProvider())
+
+    throw IllegalDependencyNotation("${dependencyNotation::class.qualifiedName} is not a valid dependency notation type")
 }

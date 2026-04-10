@@ -1,8 +1,3 @@
-dependencies {
-    implementation(libs.forge.renamer)
-    implementation(libs.forge.srg)
-}
-
 gradlePlugin {
     plugins {
         named(project.name) {

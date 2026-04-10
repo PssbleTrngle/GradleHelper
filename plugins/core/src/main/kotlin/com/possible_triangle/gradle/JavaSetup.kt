@@ -35,6 +35,7 @@ internal fun Project.configureJarTasks() {
         val now = LocalDateTime.now().toString()
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        // TODO fix to work with LICENSE.md & .txt
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${modName.get()}" }
         }

@@ -6,11 +6,9 @@ import com.possible_triangle.gradle.neoforge.NeoforgeExtension
 import com.possible_triangle.gradle.test.createProject
 import com.possible_triangle.gradle.test.findTestDependencies
 import com.possible_triangle.gradle.test.withProjectDir
-import com.possible_triangle.gradle.upload.UploadExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.the
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -58,51 +56,14 @@ class NeoforgeTest {
     }
 
     @Test
-    fun `adds included libraries`() {
-        val project = createProjectWithNeoforge {
-            mod {
-                libraries.include("test.something:anything:1.0")
-            }
-        }
-
-        val deps = project.findTestDependencies("implementation")
-        assertEquals(1, deps.size)
-    }
-
-    @Test
     fun `adds included libraries added after neoforge setup`() {
         val project = createProjectWithNeoforge()
 
-        project.mod {
-            libraries.include("test.something:anything:1.0")
-        }
-
         project.dependencies {
-            add("implementation", "test.something:other-thing:2.43")
+            add("api", "test.something:other-thing:2.43")
         }
 
-        val deps = project.findTestDependencies("implementation")
-        assertEquals(2, deps.size)
-    }
-
-    @Test
-    fun `adds included mods`() {
-        val project = createProjectWithNeoforge {
-            mod {
-                libraries.include("test.something:anything:1.0")
-            }
-        }
-
-        val deps = project.findTestDependencies("implementation")
+        val deps = project.findTestDependencies("api")
         assertEquals(1, deps.size)
     }
-
-    private fun Project.configureModrinth() {
-        the<UploadExtension>().modrinth {
-            token.set("token")
-            projectId.set("id")
-            changelog.set("changelog")
-        }
-    }
-
 }

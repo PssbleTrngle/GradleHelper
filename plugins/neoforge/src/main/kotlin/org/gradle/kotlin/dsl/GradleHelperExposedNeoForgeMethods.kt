@@ -1,10 +1,13 @@
 package org.gradle.kotlin.dsl
 
+import com.possible_triangle.gradle.features.resolveDependency
+import com.possible_triangle.gradle.neoforge.pin
+import groovy.lang.Closure
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
 
-private fun Project.modDependency(
+private fun DependencyHandlerScope.modDependency(
     type: String,
     dependencyNotation: Any,
     block: ModuleDependency.() -> Unit,
@@ -13,14 +16,27 @@ private fun Project.modDependency(
     return dependencies.add(type, dependencyNotation, closure)
 }
 
-fun Project.modApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+fun DependencyHandlerScope.modApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
     modDependency("api", dependencyNotation, block)
 
-fun Project.modImplementation(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+fun DependencyHandlerScope.modImplementation(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
     modDependency("implementation", dependencyNotation, block)
 
- fun Project.modRuntimeOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+fun DependencyHandlerScope.modRuntimeOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
     modDependency("runtimeOnly", dependencyNotation, block)
 
- fun Project.modCompileOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+fun DependencyHandlerScope.modCompileOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
     modDependency("compileOnly", dependencyNotation, block)
+
+fun DependencyHandlerScope.modCompileOnlyApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+    modDependency("modCompileOnlyApi", dependencyNotation, block)
+
+fun DependencyHandlerScope.modInclude(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) {
+    modDependency("api", dependencyNotation, block)
+    pin(resolveDependency(dependencyNotation))
+}
+
+fun DependencyHandlerScope.apiInclude(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) {
+    modDependency("api", dependencyNotation, block)
+    pin(resolveDependency(dependencyNotation))
+}
