@@ -52,20 +52,20 @@ itemIcon = "${some_key}"
 
 Different mod loaders provide different options allowing a developer to bundle libraries or other mods within them.
 
-All loader plugins provide a common API to specify these included dependencies.
+All loader plugins provide a common API to specify these included dependencies using two new fake (1) dependency configurations.
+{ .annotate }
 
-Included mods and libraries defined in the root project are inherited in the sub-projects.
-This can be helpful for libraries that are loader-agnostic.
+1.  these look like they are actual configurations, but are just inline methods
 
 ```kotlin title="neoforge/build.gradle.kts"
-mod {
+dependencies {
    // bundle mods
-    mods.include("com.tterrag.registrate_fabric:Registrate:$registrate_version")
+    modInclude("com.tterrag.registrate_fabric:Registrate:$registrate_version")
     // also works with version catalogs
-    mods.include(libs.registrate.neoforge)
+    modInclude(libs.registrate.neoforge)
 
     // or non-mod libraries
-    libraries.include("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    apiInclude("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
 }
 ```
 
