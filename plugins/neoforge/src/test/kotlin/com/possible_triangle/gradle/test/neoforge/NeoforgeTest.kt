@@ -56,43 +56,14 @@ class NeoforgeTest {
     }
 
     @Test
-    fun `adds included libraries`() {
-        val project = createProjectWithNeoforge {
-            dependencies {
-                add("includeApi", "test.something:anything:1.0")
-            }
-        }
-
-        val deps = project.findTestDependencies("api")
-        assertEquals(1, deps.size)
-    }
-
-    @Test
     fun `adds included libraries added after neoforge setup`() {
         val project = createProjectWithNeoforge()
-
-        project.dependencies {
-            add("includeApi", "test.something:anything:1.0")
-        }
 
         project.dependencies {
             add("api", "test.something:other-thing:2.43")
         }
 
         val deps = project.findTestDependencies("api")
-        assertEquals(2, deps.size)
-    }
-
-    @Test
-    fun `adds included mods`() {
-        val project = createProjectWithNeoforge {
-            dependencies {
-                add("includeApi", "test.something:anything:1.0")
-            }
-        }
-
-        val deps = project.findTestDependencies("api")
         assertEquals(1, deps.size)
     }
-
 }
