@@ -5,10 +5,8 @@ import com.possible_triangle.gradle.features.loaders.mixinExtrasVersion
 import com.possible_triangle.gradle.mod
 import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
 import org.gradle.api.Project
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
-import org.gradle.kotlin.dsl.named
 
 internal fun Project.configureMixins() {
     val config = the<ForgeExtension>() as ForgeExtensionImpl
@@ -26,16 +24,6 @@ internal fun Project.configureMixins() {
                     "MixinConfigss" to "${mod.id.get()}.mixins.json",
                 )
             )
-        }
-
-        // TODO check
-        // workaround because of https://github.com/SpongePowered/MixinGradle/issues/48
-        tasks.withType<JavaCompile> {
-            doFirst {
-                options.compilerArgs.replaceAll { it: Any ->
-                    it.toString()
-                }
-            }
         }
     }
 }
