@@ -35,8 +35,10 @@ internal fun Project.configureJarTasks() {
         val now = LocalDateTime.now().toString()
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        from(rootProject.file("LICENSE")) {
-            rename { "${it}_${modName.get()}" }
+        listOf(".md", ".txt", "").forEach { ext ->
+            from(rootProject.file("LICENSE${ext}")) {
+                rename { "${it}_${modName.get()}${ext}" }
+            }
         }
 
         manifest {
