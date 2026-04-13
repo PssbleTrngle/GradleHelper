@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.plugin.publish) apply (false)
     alias(libs.plugins.spotless)
     alias(libs.plugins.sonar)
+    idea
 }
 
 val env: Map<String, String> = System.getenv()
@@ -167,5 +168,11 @@ tasks.jacocoTestReport {
 tasks.register("publishPlugins") {
     pluginProjects {
         dependsOn(tasks["publishPlugins"])
+    }
+}
+
+idea {
+    module {
+        excludeDirs.add(file("docs"))
     }
 }
