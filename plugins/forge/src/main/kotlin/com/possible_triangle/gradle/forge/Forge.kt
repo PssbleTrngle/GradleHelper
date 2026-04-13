@@ -2,7 +2,10 @@ package com.possible_triangle.gradle.forge
 
 import com.possible_triangle.gradle.*
 import com.possible_triangle.gradle.features.lazyDependencies
-import com.possible_triangle.gradle.features.loaders.*
+import com.possible_triangle.gradle.features.loaders.ModLoader
+import com.possible_triangle.gradle.features.loaders.configureOutputProject
+import com.possible_triangle.gradle.features.loaders.mainSourceSet
+import com.possible_triangle.gradle.features.loaders.registerLoaderSpecifics
 import com.possible_triangle.gradle.publishing.removePomDependencies
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.modifyPublication
@@ -10,29 +13,16 @@ import net.neoforged.moddevgradle.boot.LegacyForgeModDevPlugin
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
-import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
-import kotlin.collections.forEach
-
-internal fun DependencyHandlerScope.pin(dependencyNotation: ExternalModuleDependency): ExternalModuleDependency {
-    return add("jarJar", dependencyNotation) {
-        version {
-            strictly("[${version},)")
-            prefer(version!!)
-        }
-    }
-}
 
 class GradleHelperForgePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
+        registerLoaderSpecifics(target, ForgeLoaderSpecifics)
         target.apply<GradleHelperCorePlugin>()
         target.setupForge()
         target.afterEvaluate {

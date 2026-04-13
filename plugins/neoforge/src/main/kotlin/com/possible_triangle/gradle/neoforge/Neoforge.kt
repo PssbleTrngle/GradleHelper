@@ -5,27 +5,18 @@ import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
+import com.possible_triangle.gradle.features.loaders.registerLoaderSpecifics
 import com.possible_triangle.gradle.upload.UploadExtension
 import net.neoforged.moddevgradle.boot.ModDevPlugin
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.moddevgradle.internal.utils.VersionCapabilitiesInternal
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
-
-fun DependencyHandlerScope.pin(dependencyNotation: ExternalModuleDependency) {
-    add("jarJar", dependencyNotation) {
-        version {
-            strictly("[${version},)")
-            prefer(version!!)
-        }
-    }
-}
 
 fun Project.splitDataRuns(): Boolean {
     val version = mod.minecraftVersion.map {
@@ -39,6 +30,8 @@ fun Project.splitDataRuns(): Boolean {
 class GradleHelperNeoForgePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
+        registerLoaderSpecifics(target, NeoForgeLoaderSpecifics)
+
         target.apply<GradleHelperCorePlugin>()
         target.setupNeoforge()
         target.afterEvaluate {

@@ -5,6 +5,7 @@ import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
+import com.possible_triangle.gradle.features.loaders.registerLoaderSpecifics
 import com.possible_triangle.gradle.upload.UploadExtension
 import net.fabricmc.loom.LoomGradlePlugin
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
@@ -18,6 +19,7 @@ private val Project.loom get() = the<LoomGradleExtensionAPI>()
 class GradleHelperFabricPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
+        registerLoaderSpecifics(target, FabricLoaderSpecifics)
         target.apply<GradleHelperCorePlugin>()
         target.setupFabric()
         target.afterEvaluate {

@@ -5,9 +5,13 @@ import com.possible_triangle.gradle.ProjectEnvironment
 import com.possible_triangle.gradle.features.configureSonarQube
 import com.possible_triangle.gradle.features.configureSpotless
 import com.possible_triangle.gradle.features.enableKotlin
+import com.possible_triangle.gradle.features.loaders.addIncluded
+import com.possible_triangle.gradle.features.loaders.addModDependency
+import com.possible_triangle.gradle.features.resolveDependency
 import com.possible_triangle.gradle.upload.addGithubPackages
 import com.possible_triangle.gradle.upload.addNexus
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.sonarqube.gradle.SonarProperties
@@ -30,3 +34,30 @@ fun Project.enableSonarQube(block: SonarProperties.() -> Unit = {}) = configureS
 
 fun Project.enableSpotless(block: SpotlessExtension.() -> Unit = {}) =
     configureSpotless(block)
+
+fun DependencyHandlerScope.modApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+    addModDependency("api", resolveDependency(dependencyNotation), block)
+
+fun DependencyHandlerScope.modImplementation(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+    addModDependency("implementation", resolveDependency(dependencyNotation), block)
+
+fun DependencyHandlerScope.modRuntimeOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+    addModDependency("runtimeOnly", resolveDependency(dependencyNotation), block)
+
+fun DependencyHandlerScope.modCompileOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+    addModDependency("compileOnly", resolveDependency(dependencyNotation), block)
+
+fun DependencyHandlerScope.modCompileOnlyApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
+    addModDependency("compileOnlyApi", resolveDependency(dependencyNotation), block)
+
+fun DependencyHandlerScope.modInclude(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) {
+    val dependency = resolveDependency(dependencyNotation)
+    addModDependency("api", dependency, block)
+    addIncluded(dependency)
+}
+
+fun DependencyHandlerScope.apiInclude(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) {
+    val dependency = resolveDependency(dependencyNotation)
+    add("api", dependency, block)
+    addIncluded(dependency)
+}
