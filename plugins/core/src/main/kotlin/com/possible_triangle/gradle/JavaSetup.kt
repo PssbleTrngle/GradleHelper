@@ -37,7 +37,7 @@ internal fun Project.configureJarTasks() {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         listOf(".md", ".txt", "").forEach { ext ->
             from(rootProject.file("LICENSE${ext}")) {
-                rename { "${it}_${modName.get()}${ext}" }
+                rename { "LICENSE_${modName.get()}${ext}" }
             }
         }
 
