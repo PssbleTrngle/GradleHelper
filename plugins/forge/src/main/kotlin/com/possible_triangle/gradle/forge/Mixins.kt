@@ -30,7 +30,7 @@ internal fun Project.configureMixins() {
 
 internal fun Project.mixinExtrasVersion(): String? {
     val config = the<ForgeExtension>() as ForgeExtensionImpl
-    return project.mixinExtrasVersion.takeIf { config.mixinsEnabled };
+    return project.mixinExtrasVersion.takeIf { config.mixinsEnabled }
 }
 
 internal fun Project.includeMixinExtras(version: String) {
