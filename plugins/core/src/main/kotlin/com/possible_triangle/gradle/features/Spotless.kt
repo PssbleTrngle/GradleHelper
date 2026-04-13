@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
-fun Project.configureSpotless(enableHook: Boolean, block: SpotlessExtension.() -> Unit) {
+fun Project.configureSpotless(block: SpotlessExtension.() -> Unit) {
     allprojects {
         apply<SpotlessPlugin>()
 
@@ -40,10 +40,5 @@ fun Project.configureSpotless(enableHook: Boolean, block: SpotlessExtension.() -
 
             block()
         }
-    }
-
-    if (enableHook) {
-        val applyTask = tasks.getByName("spotlessCheck")
-        tasks.findByName("preCommit")?.dependsOn(applyTask)
     }
 }
