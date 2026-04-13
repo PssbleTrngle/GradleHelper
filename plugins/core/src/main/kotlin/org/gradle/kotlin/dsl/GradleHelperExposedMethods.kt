@@ -28,5 +28,5 @@ fun RepositoryHandler.nexus(type: String = "public", block: MavenArtifactReposit
 
 fun Project.enableSonarQube(block: SonarProperties.() -> Unit = {}) = configureSonarQube(block)
 
-fun Project.enableSpotless(enableHook: Boolean = true, block: SpotlessExtension.() -> Unit = {}) =
-    configureSpotless(enableHook, block)
+fun Project.enableSpotless(block: SpotlessExtension.() -> Unit = {}) =
+    configureSpotless(block)
