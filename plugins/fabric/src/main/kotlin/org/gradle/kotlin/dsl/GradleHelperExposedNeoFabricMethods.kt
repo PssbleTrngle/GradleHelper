@@ -13,7 +13,7 @@ private fun DependencyHandlerScope.modDependency(
 }
 
 fun DependencyHandlerScope.modInclude(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) {
-    modDependency("api", dependencyNotation, block)
+    modDependency("modApi", dependencyNotation, block)
     modDependency("include", dependencyNotation, block)
 }
 
