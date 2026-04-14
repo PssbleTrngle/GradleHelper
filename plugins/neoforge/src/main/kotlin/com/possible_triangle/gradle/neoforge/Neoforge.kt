@@ -2,15 +2,14 @@ package com.possible_triangle.gradle.neoforge
 
 import com.possible_triangle.gradle.*
 import com.possible_triangle.gradle.features.lazyDependencies
+import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
-import com.possible_triangle.gradle.features.loaders.registerLoaderSpecifics
 import com.possible_triangle.gradle.upload.UploadExtension
 import net.neoforged.moddevgradle.boot.ModDevPlugin
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.moddevgradle.internal.utils.VersionCapabilitiesInternal
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.extensions.stdlib.capitalized
@@ -27,19 +26,9 @@ fun Project.splitDataRuns(): Boolean {
     return version.splitDataRuns()
 }
 
-class GradleHelperNeoForgePlugin : Plugin<Project> {
+class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
 
-    override fun apply(target: Project) {
-        registerLoaderSpecifics(target, NeoForgeLoaderSpecifics)
-
-        target.apply<GradleHelperCorePlugin>()
-        target.setupNeoforge()
-        target.afterEvaluate {
-            finalize()
-        }
-    }
-
-    private fun Project.finalize() {
+    override fun Project.finalize() {
         val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
 
         configureOutputProject(config)
@@ -99,7 +88,7 @@ class GradleHelperNeoForgePlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.setupNeoforge() {
+    override fun Project.setup() {
         apply<ModDevPlugin>()
 
         val config = extensions.create<NeoforgeExtension, NeoforgeExtensionImpl>("neoforge")

@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.forge
 
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
+import com.possible_triangle.gradle.features.loaders.TransparentLoaderSpecifics
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.DependencyHandlerScope
@@ -13,7 +14,9 @@ internal object ForgeLoaderSpecifics : LoaderSpecifics {
         configuration: String,
         dependencyNotation: ExternalModuleDependency,
         block: ExternalModuleDependency.() -> Unit
-    ) = dependencies.add("mod${configuration.capitalized()}", dependencyNotation, block)
+    ) = TransparentLoaderSpecifics.addModDependency(
+        dependencies, configuration, dependencyNotation, block
+    )
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,

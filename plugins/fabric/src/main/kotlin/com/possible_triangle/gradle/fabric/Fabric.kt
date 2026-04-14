@@ -2,30 +2,24 @@ package com.possible_triangle.gradle.fabric
 
 import com.possible_triangle.gradle.*
 import com.possible_triangle.gradle.features.lazyDependencies
+import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
-import com.possible_triangle.gradle.features.loaders.registerLoaderSpecifics
 import com.possible_triangle.gradle.upload.UploadExtension
 import net.fabricmc.loom.LoomGradlePlugin
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 
 private val Project.loom get() = the<LoomGradleExtensionAPI>()
 
-class GradleHelperFabricPlugin : Plugin<Project> {
+class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
 
-    override fun apply(target: Project) {
-        registerLoaderSpecifics(target, FabricLoaderSpecifics)
-        target.apply<GradleHelperCorePlugin>()
-        target.setupFabric()
-        target.afterEvaluate {
-            configureDatagenRun()
-            linkDependencyProjects()
-        }
+    override fun Project.finalize() {
+        configureDatagenRun()
+        linkDependencyProjects()
     }
 
     private fun Project.configureDatagenRun() {
@@ -79,7 +73,7 @@ class GradleHelperFabricPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.setupFabric() {
+    override fun Project.setup() {
         apply<LoomGradlePlugin>()
 
         val config = extensions.create<FabricExtension, FabricExtensionImpl>("fabric")

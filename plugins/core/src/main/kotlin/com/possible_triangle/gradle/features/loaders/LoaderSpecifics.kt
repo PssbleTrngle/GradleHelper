@@ -2,7 +2,9 @@ package com.possible_triangle.gradle.features.loaders
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.extra
 
 interface LoaderSpecifics {
@@ -19,11 +21,27 @@ interface LoaderSpecifics {
     ): ExternalModuleDependency
 }
 
+object TransparentLoaderSpecifics : LoaderSpecifics {
+    override fun addModDependency(
+        dependencies: DependencyHandlerScope,
+        configuration: String,
+        dependencyNotation: ExternalModuleDependency,
+        block: ExternalModuleDependency.() -> Unit
+    ) = dependencies.add("mod${configuration.capitalized()}", dependencyNotation, block)
+
+    override fun addIncluded(
+        dependencies: DependencyHandlerScope,
+        dependencyNotation: ExternalModuleDependency
+    ): ExternalModuleDependency {
+        error("it's not supported to include bundled libraries for this loader")
+    }
+}
+
 private const val LOADER_SPECIFICS_KEY = "loaderSpecifics"
 
-fun registerLoaderSpecifics(project: Project, value: LoaderSpecifics) {
-    project.extra[LOADER_SPECIFICS_KEY] = value
-    project.dependencies.extra[LOADER_SPECIFICS_KEY] = value
+internal fun Project.registerLoaderSpecifics(value: LoaderSpecifics) {
+    extra[LOADER_SPECIFICS_KEY] = value
+    dependencies.extra[LOADER_SPECIFICS_KEY] = value
 }
 
 internal val Project.loaderSpecifics: LoaderSpecifics
