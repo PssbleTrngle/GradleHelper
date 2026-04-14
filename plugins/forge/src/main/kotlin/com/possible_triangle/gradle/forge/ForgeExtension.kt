@@ -6,10 +6,12 @@ import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
+import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 import java.io.File
 
 interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen {
@@ -38,7 +40,10 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
     }
 
     override fun accessWidener(file: Provider<File>) {
-        val (output) = project.generateAccessTransformer(file)
+        val (output, task) = project.generateAccessTransformer(file)
+        project.tasks.withType<CreateMinecraftArtifacts> {
+            dependsOn(task)
+        }
         accessTransformer(output)
     }
 
