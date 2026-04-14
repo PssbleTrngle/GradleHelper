@@ -109,10 +109,6 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
             }
         }
 
-        tasks.withType<Test> { enabled = false }
-        tasks.named("compileTestJava") { enabled = false }
-        tasks.findByName("compileTestKotlin")?.enabled = false
-
         configure<NeoForgeExtension> {
             validateAccessTransformers = true
 

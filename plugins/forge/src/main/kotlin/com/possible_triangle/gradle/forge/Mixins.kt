@@ -21,15 +21,6 @@ internal fun Project.configureMixins() {
             add(mainSourceSet, "${mod.id.get()}.refmap.json")
             config("${mod.id.get()}.mixins.json")
         }
-
-        tasks.named<Jar>("jar") {
-            // TODO gather configs somehow?
-            manifest.attributes(
-                mapOf(
-                    "MixinConfigss" to "${mod.id.get()}.mixins.json",
-                )
-            )
-        }
     }
 }
 

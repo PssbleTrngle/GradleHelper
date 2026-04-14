@@ -10,6 +10,7 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.tasks.GenerateModuleMetadata
+import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
@@ -85,6 +86,11 @@ class GradleHelperCorePlugin : Plugin<Project> {
             exclude("**/*.aseprite")
             exclude("**/*.xcf")
         }
+
+        // disable tests, these sometimes break builds because no test sources are found
+        tasks.withType<Test> { enabled = false }
+        tasks.named("compileTestJava") { enabled = false }
+        tasks.findByName("compileTestKotlin")?.enabled = false
     }
 
     private fun Project.configureUpload() {

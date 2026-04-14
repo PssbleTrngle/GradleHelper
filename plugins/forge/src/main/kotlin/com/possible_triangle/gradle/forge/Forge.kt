@@ -41,13 +41,11 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
         }
 
         if (config.mixinsEnabled) {
-            // TODO check if necessary?
-            // also add "MixinConfigs" manually to manifest
-            tasks.withType<Jar> {
-                filesMatching("${mod.id.get()}*.mixins.json") {
-                    filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
-                }
-            }
+             tasks.withType<Jar> {
+                 filesMatching("${mod.id.get()}*.mixins.json") {
+                     filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
+                 }
+             }
         }
 
         config.kotlinForgeVersion.orNull?.let {
@@ -159,9 +157,5 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
         modifyPublication {
             removePomDependencies()
         }
-
-        tasks.withType<Test> { enabled = false }
-        tasks.named("compileTestJava") { enabled = false }
-        tasks.findByName("compileTestKotlin")?.enabled = false
     }
 }

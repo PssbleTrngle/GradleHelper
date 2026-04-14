@@ -1,19 +1,17 @@
 package com.possible_triangle.gradle.forge
 
-import kotlinx.serialization.json.Json
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import org.apache.tools.ant.filters.BaseFilterReader
 import java.io.Reader
 
 class AddMixinRefmap(input: Reader) : BaseFilterReader(input) {
 
+    val gson = GsonBuilder().setPrettyPrinting().create()
+
     private lateinit var out: String
     private lateinit var name: String
     private var index = 0
-
-    private val json = Json {
-        ignoreUnknownKeys = true
-        prettyPrint = true
-    }
 
     fun setName(name: String) {
         this.name = name
@@ -21,9 +19,13 @@ class AddMixinRefmap(input: Reader) : BaseFilterReader(input) {
 
     private fun initialize() {
         if (this::out.isInitialized) return
-        val config = json.decodeFromString<MixinConfig>(readFully())
-        val modified = config.copy(refmap = config.refmap ?: name)
-        out = json.encodeToString(modified)
+        val config = gson.fromJson(readFully(), JsonObject::class.java)
+
+        if (!config.has("refmap")) {
+            config.addProperty("refmap", name)
+        }
+
+        out = gson.toJson(config)
     }
 
     override fun read(): Int {
