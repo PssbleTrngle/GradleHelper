@@ -12,7 +12,6 @@ import com.possible_triangle.gradle.upload.modifyPublication
 import net.neoforged.moddevgradle.boot.LegacyForgeModDevPlugin
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import org.gradle.api.Project
-import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*

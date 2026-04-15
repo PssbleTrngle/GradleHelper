@@ -1,3 +1,11 @@
+dependencies {
+    implementation(libs.forge.srg)
+    implementation(libs.forge.gradle)
+
+    implementation(libs.forge.legacy.gradle)
+    implementation(libs.neoforge.srg)
+}
+
 gradlePlugin {
     plugins {
         named(project.name) {

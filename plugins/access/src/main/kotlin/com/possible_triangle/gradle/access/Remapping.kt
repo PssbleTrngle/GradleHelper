@@ -1,5 +1,7 @@
 package com.possible_triangle.gradle.access
 
+import com.possible_triangle.gradle.access.mappings.forgeGradleMappings
+import com.possible_triangle.gradle.access.mappings.forgeLegacyMappings
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -7,10 +9,12 @@ interface Remapper {
     fun remapClass(value: String): String
     fun remapField(className: String, field: String): String
     fun remapMethod(className: String, method: String, descriptor: String): String
-    val task: Task?
+
+    fun configureTask(task: Task) {
+    }
 
     companion object {
-        fun empty(task: Task? = null) = object : Remapper {
+        fun empty(block: Task.() -> Unit = {}) = object : Remapper {
             override fun remapClass(value: String) = value
             override fun remapField(className: String, field: String) = field
 
@@ -20,44 +24,18 @@ interface Remapper {
                 descriptor: String
             ) = method + descriptor
 
-            override val task = task
+            override fun configureTask(task: Task) = task.block()
         }
     }
 }
-
-// TODO check
-/*
-fun Project.forgeMappings(): Remapper {
-    val downloadMappings = tasks.getByName<GenerateSRG>("createMcpToSrg")
-
-    val mappings by lazy {
-        val from = downloadMappings.output.get().asFile
-        logger.info("Loading MCP Names from ${from.absoluteFile}")
-        IMappingFile.load(from)
-    }
-
-    return object : Remapper {
-        override fun remapClass(value: String): String {
-            return mappings.remapClass(value)
-        }
-
-        override fun remapField(className: String, field: String): String {
-            return mappings.getClass(className).remapField(field)
-        }
-
-        override fun remapMethod(className: String, method: String, descriptor: String): String {
-            return mappings.getClass(className).remapMethod(method, descriptor) +
-                    mappings.remapDescriptor(descriptor)
-        }
-
-        override val task get() = downloadMappings
-    }
-}
- */
 
 fun Project.detectMappings(): Remapper {
-    if (plugins.findPlugin("net.minecraftforge.renamer") != null) {
-        // return forgeMappings()
+    if (plugins.findPlugin("net.minecraftforge.gradle") != null) {
+        return forgeGradleMappings()
+    }
+
+    if (plugins.findPlugin("net.neoforged.moddev.legacyforge") != null) {
+        return forgeLegacyMappings()
     }
 
     return Remapper.empty()

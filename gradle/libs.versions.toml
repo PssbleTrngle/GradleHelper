@@ -16,20 +16,24 @@ cursegradle = { module = "com.possible-triangle:CurseForgeGradle", version = "1.
 minotaur = { module = "com.modrinth.minotaur:Minotaur", version = "2.9.0" }
 
 vanilla-gradle = { module = "org.spongepowered:vanillagradle", version = "0.2.1-SNAPSHOT" }
+
 neoforge-gradle = { group = "net.neoforged", name = "moddev-gradle", version.ref = "neoforge-version" }
 forge-legacy-gradle = { group = "net.neoforged.moddev.legacyforge", name = "net.neoforged.moddev.legacyforge.gradle.plugin", version.ref = "neoforge-version" }
+neoforge-srg = { group = "net.neoforged", name = "srgutils", version = "1.0.11" }
+
+forge-gradle = { module = "net.minecraftforge.gradle:ForgeGradle", version = "[6.0,6.2)" }
+forge-srg = { module = "net.minecraftforge:srgutils", version = "0.5.10" }
+
 fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.15-SNAPSHOT" }
-mixin-gradle = { module = "org.spongepowered:mixingradle", version = "0.7-SNAPSHOT" }
+
 architectury-loom = { group = "dev.architectury.loom", name = "dev.architectury.loom.gradle.plugin", version = "1.13-SNAPSHOT" }
 
 sonar-scanner = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonar-version" }
 spotless = { module = "com.diffplug.spotless:com.diffplug.spotless.gradle.plugin", version.ref = "spotless-version" }
 
-junit-snapshots = { module = "io.github.origin-energy:java-snapshot-testing-junit5", version = "4.0.6" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin-version" }
 
 [plugins]
-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version = "6.5.5" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless-version" }
 sonar = { id = "org.sonarqube", version.ref = "sonar-version" }
