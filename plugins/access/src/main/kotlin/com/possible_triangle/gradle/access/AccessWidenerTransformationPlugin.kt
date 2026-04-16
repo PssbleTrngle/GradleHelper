@@ -25,8 +25,8 @@ private fun Project.generatedAccessTransformer() =
 fun Project.generateAccessTransformer(from: Provider<File>): Pair<Provider<File>, TaskProvider<Task>> {
     val output = generatedAccessTransformer()
 
+    val remapper = detectMappings()
     val transformAccessWidener = tasks.register(TRANSFORM_TASK) {
-        val remapper = detectMappings()
         remapper.configureTask(this)
         outputs.file(output)
         inputs.file(from)
