@@ -21,6 +21,15 @@ internal fun Project.configureMixins() {
             add(mainSourceSet, "${mod.id.get()}.refmap.json")
             config("${mod.id.get()}.mixins.json")
         }
+
+        tasks.named<Jar>("jar") {
+            val configs = the<MixinExtension>().configs.get()
+            manifest.attributes(
+                mapOf(
+                    "MixinConfigs" to configs.joinToString(","),
+                )
+            )
+        }
     }
 }
 
