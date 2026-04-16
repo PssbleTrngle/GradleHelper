@@ -23,7 +23,7 @@ internal fun Project.configureMixins() {
         }
 
         tasks.named<Jar>("jar") {
-            val configs = the<MixinExtension>().configs.get()
+            val configs = project.the<MixinExtension>().configs.get()
             manifest.attributes(
                 mapOf(
                     "MixinConfigs" to configs.joinToString(","),
