@@ -12,7 +12,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 
-class GradleHelperArchitecturyPlugin : LoaderPlugin(TransparentLoaderSpecifics) {
+class GradleHelperArchitecturyPlugin : LoaderPlugin(ArchitecturyLoaderSpecifics) {
 
     override fun Project.setup() {
         val config = extensions.create<CommonExtension, CommonExtensionImpl>("common")

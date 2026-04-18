@@ -1,26 +1,23 @@
-package com.possible_triangle.gradle.fabric
+package com.possible_triangle.gradle.architectury
 
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.TransparentLoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.appendModPrefix
 import org.gradle.api.artifacts.ExternalModuleDependency
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.add
 
-internal object FabricLoaderSpecifics : LoaderSpecifics {
+object ArchitecturyLoaderSpecifics : LoaderSpecifics {
 
     override fun addModDependency(
         dependencies: DependencyHandlerScope,
         configuration: String,
         dependencyNotation: ExternalModuleDependency,
         block: ExternalModuleDependency.() -> Unit
-    ) = appendModPrefix(
-        dependencies, configuration, dependencyNotation, block
-    )
+    ) = appendModPrefix(dependencies, configuration, dependencyNotation, block)
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,
         dependencyNotation: ExternalModuleDependency
-    ) = dependencies.add("include", dependencyNotation) {}
+    ) = TransparentLoaderSpecifics.addIncluded(dependencies, dependencyNotation)
+
 }

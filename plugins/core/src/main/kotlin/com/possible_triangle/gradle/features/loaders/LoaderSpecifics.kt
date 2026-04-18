@@ -27,7 +27,7 @@ object TransparentLoaderSpecifics : LoaderSpecifics {
         configuration: String,
         dependencyNotation: ExternalModuleDependency,
         block: ExternalModuleDependency.() -> Unit
-    ) = dependencies.add("mod${configuration.capitalized()}", dependencyNotation, block)
+    ) = dependencies.add(configuration, dependencyNotation, block)
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,
@@ -36,6 +36,13 @@ object TransparentLoaderSpecifics : LoaderSpecifics {
         error("it's not supported to include bundled libraries for this loader")
     }
 }
+
+fun appendModPrefix(
+    dependencies: DependencyHandlerScope,
+    configuration: String,
+    dependencyNotation: ExternalModuleDependency,
+    block: ExternalModuleDependency.() -> Unit
+) = dependencies.add("mod${configuration.capitalized()}", dependencyNotation, block)
 
 private const val LOADER_SPECIFICS_KEY = "loaderSpecifics"
 
