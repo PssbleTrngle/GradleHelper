@@ -2,26 +2,28 @@ package com.possible_triangle.gradle.neoforge
 
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.TransparentLoaderSpecifics
+import org.gradle.api.Action
 import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.add
 
 internal object NeoForgeLoaderSpecifics : LoaderSpecifics {
 
     override fun addModDependency(
         dependencies: DependencyHandlerScope,
         configuration: String,
-        dependencyNotation: ExternalModuleDependency,
-        block: ExternalModuleDependency.() -> Unit
-    ) = TransparentLoaderSpecifics.addModDependency(dependencies, configuration, dependencyNotation, block)
+        dependencyNotation: Provider<ExternalModuleDependency>,
+        closure: Action<ExternalModuleDependency>
+    ) =
+        TransparentLoaderSpecifics.addModDependency(dependencies, configuration, dependencyNotation, closure)
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,
-        dependencyNotation: ExternalModuleDependency
-    ) = dependencies.add("jarJar", dependencyNotation) {
+        dependencyNotation: Provider<ExternalModuleDependency>
+    ) = dependencies.addProvider("jarJar", dependencyNotation, Action {
         version {
             strictly("[${version},)")
             prefer(version!!)
         }
-    }
+    })
 }

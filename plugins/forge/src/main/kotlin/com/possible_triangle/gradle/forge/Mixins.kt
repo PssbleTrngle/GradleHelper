@@ -42,6 +42,7 @@ internal fun Project.includeMixinExtras(version: String) {
     dependencies {
         val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${version}")
         add("compileOnly", annotationProcessor!!)
-        add("implementation", addIncluded(resolveDependency("io.github.llamalad7:mixinextras-forge:${version}")))
+        add("implementation", "io.github.llamalad7:mixinextras-forge:${version}")
+        addIncluded("io.github.llamalad7:mixinextras-forge:${version}")
     }
 }

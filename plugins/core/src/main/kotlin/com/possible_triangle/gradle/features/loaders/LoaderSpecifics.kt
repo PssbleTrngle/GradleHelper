@@ -1,38 +1,42 @@
 package com.possible_triangle.gradle.features.loaders
 
+import com.possible_triangle.gradle.features.resolveDependency
+import groovy.lang.Closure
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.provider.Provider
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.closureOf
 import org.gradle.kotlin.dsl.extra
 
 interface LoaderSpecifics {
     fun addModDependency(
         dependencies: DependencyHandlerScope,
         configuration: String,
-        dependencyNotation: ExternalModuleDependency,
-        block: ExternalModuleDependency.() -> Unit,
-    ): ExternalModuleDependency
+        dependencyNotation: Provider<ExternalModuleDependency>,
+        closure: Action<ExternalModuleDependency>,
+    )
 
     fun addIncluded(
         dependencies: DependencyHandlerScope,
-        dependencyNotation: ExternalModuleDependency,
-    ): ExternalModuleDependency
+        dependencyNotation: Provider<ExternalModuleDependency>,
+    )
 }
 
 object TransparentLoaderSpecifics : LoaderSpecifics {
     override fun addModDependency(
         dependencies: DependencyHandlerScope,
         configuration: String,
-        dependencyNotation: ExternalModuleDependency,
-        block: ExternalModuleDependency.() -> Unit
-    ) = dependencies.add(configuration, dependencyNotation, block)
+        dependencyNotation: Provider<ExternalModuleDependency>,
+        closure: Action<ExternalModuleDependency>
+    ) = dependencies.addProvider(configuration, dependencyNotation, closure)
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,
-        dependencyNotation: ExternalModuleDependency
-    ): ExternalModuleDependency {
+        dependencyNotation: Provider<ExternalModuleDependency>
+    ) {
         error("it's not supported to include bundled libraries for this loader")
     }
 }
@@ -40,9 +44,9 @@ object TransparentLoaderSpecifics : LoaderSpecifics {
 fun appendModPrefix(
     dependencies: DependencyHandlerScope,
     configuration: String,
-    dependencyNotation: ExternalModuleDependency,
-    block: ExternalModuleDependency.() -> Unit
-) = dependencies.add("mod${configuration.capitalized()}", dependencyNotation, block)
+    dependencyNotation: Provider<ExternalModuleDependency>,
+    closure: Action<ExternalModuleDependency>
+) = dependencies.addProvider("mod${configuration.capitalized()}", dependencyNotation, closure)
 
 private const val LOADER_SPECIFICS_KEY = "loaderSpecifics"
 
@@ -55,16 +59,16 @@ internal val Project.loaderSpecifics: LoaderSpecifics
     get() = extra[LOADER_SPECIFICS_KEY]?.let { it as? LoaderSpecifics }
         ?: error("only usable when a loader plugin is applied")
 
-private val DependencyHandlerScope.loaderSpecifics: LoaderSpecifics
+internal val DependencyHandlerScope.loaderSpecifics: LoaderSpecifics
     get() = extra[LOADER_SPECIFICS_KEY]?.let { it as? LoaderSpecifics }
         ?: error("only usable when a loader plugin is applied")
 
 fun DependencyHandlerScope.addIncluded(
-    dependencyNotation: ExternalModuleDependency,
-) = loaderSpecifics.addIncluded(this, dependencyNotation)
+    dependencyNotation: Any,
+) = loaderSpecifics.addIncluded(this, resolveDependency(dependencyNotation))
 
 fun DependencyHandlerScope.addModDependency(
     configuration: String,
-    dependencyNotation: ExternalModuleDependency,
+    dependencyNotation: Any,
     block: ExternalModuleDependency.() -> Unit,
-) = loaderSpecifics.addModDependency(this, configuration, dependencyNotation, block)
+) = loaderSpecifics.addModDependency(this, configuration, resolveDependency(dependencyNotation), block)

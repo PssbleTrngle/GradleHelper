@@ -6,6 +6,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.internal.artifacts.dependencies.DefaultMinimalDependencyVariant
+import org.gradle.api.internal.provider.DefaultProvider
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 import org.gradle.kotlin.dsl.DependencyHandlerScope
@@ -23,7 +24,7 @@ fun Project.lazyDependencies(type: String, block: LazyDependencyBuilder.() -> Un
         configurations.getByName(type) {
             withDependencies {
                 block(LazyDependencyBuilder {
-                    val dep = when(it) {
+                    val dep = when (it) {
                         is ProviderConvertible<*> -> it.asProvider().get() as Dependency
                         is Provider<*> -> it.get() as Dependency
                         else -> create(it)
@@ -36,8 +37,8 @@ fun Project.lazyDependencies(type: String, block: LazyDependencyBuilder.() -> Un
     }
 }
 
-fun DependencyHandlerScope.resolveDependency(dependencyNotation: Any): ExternalModuleDependency {
-    if (dependencyNotation is ExternalModuleDependency) return dependencyNotation.copy()
+fun DependencyHandlerScope.resolveDependency(dependencyNotation: Any): Provider<ExternalModuleDependency> {
+    if (dependencyNotation is ExternalModuleDependency) return DefaultProvider { dependencyNotation }
     if (dependencyNotation is String) return resolveDependency(create(dependencyNotation) {})
     if (dependencyNotation is Provider<*>)
         return resolveDependency(dependencyNotation.get())

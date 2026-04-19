@@ -36,28 +36,26 @@ fun Project.enableSpotless(block: SpotlessExtension.() -> Unit = {}) =
     configureSpotless(block)
 
 fun DependencyHandlerScope.modApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
-    addModDependency("api", resolveDependency(dependencyNotation), block)
+    addModDependency("api", dependencyNotation, block)
 
 fun DependencyHandlerScope.modImplementation(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
-    addModDependency("implementation", resolveDependency(dependencyNotation), block)
+    addModDependency("implementation", dependencyNotation, block)
 
 fun DependencyHandlerScope.modRuntimeOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
-    addModDependency("runtimeOnly", resolveDependency(dependencyNotation), block)
+    addModDependency("runtimeOnly", dependencyNotation, block)
 
 fun DependencyHandlerScope.modCompileOnly(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
-    addModDependency("compileOnly", resolveDependency(dependencyNotation), block)
+    addModDependency("compileOnly", dependencyNotation, block)
 
 fun DependencyHandlerScope.modCompileOnlyApi(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) =
-    addModDependency("compileOnlyApi", resolveDependency(dependencyNotation), block)
+    addModDependency("compileOnlyApi", dependencyNotation, block)
 
 fun DependencyHandlerScope.modInclude(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) {
-    val dependency = resolveDependency(dependencyNotation)
-    addModDependency("api", dependency, block)
-    addIncluded(dependency)
+    addModDependency("api", dependencyNotation, block)
+    addIncluded(dependencyNotation)
 }
 
 fun DependencyHandlerScope.apiInclude(dependencyNotation: Any, block: ModuleDependency.() -> Unit = {}) {
-    val dependency = resolveDependency(dependencyNotation)
-    add("api", dependency, block)
-    addIncluded(dependency)
+    addProvider("api", resolveDependency(dependencyNotation), block)
+    addIncluded(dependencyNotation)
 }
