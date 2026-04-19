@@ -74,8 +74,6 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                 config.requireOwner().configureDatagen()
 
                 runs.named("data") {
-                    gameDirectory = project.file("run/data")
-
                     val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
                     val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
                     val dataGenArgs = listOf(
@@ -132,6 +130,7 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                 }
 
                 create("data") {
+                    gameDirectory = project.file("run/data")
                     data()
                 }
 
