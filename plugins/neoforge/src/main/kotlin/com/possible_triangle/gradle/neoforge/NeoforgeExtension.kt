@@ -14,7 +14,7 @@ import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
@@ -32,7 +32,12 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
     override val kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
 
     override fun accessTransformer(file: Provider<File>) {
-        project.the<NeoForgeExtension>().setAccessTransformers(file)
+        project.configure<NeoForgeExtension> {
+            accessTransformers {
+                from(file)
+                publish(file)
+            }
+        }
     }
 
     override fun accessWidener(file: Provider<File>) {
@@ -44,7 +49,12 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
     }
 
     override fun injectInterfaces(file: Provider<File>) {
-        project.the<NeoForgeExtension>().interfaceInjectionData.from(file)
+        project.configure<NeoForgeExtension> {
+            interfaceInjectionData {
+                from(file)
+                publish(file)
+            }
+        }
     }
 
 }

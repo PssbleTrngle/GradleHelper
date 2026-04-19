@@ -2,7 +2,6 @@ package com.possible_triangle.gradle.forge
 
 import com.possible_triangle.gradle.access.generateAccessTransformer
 import com.possible_triangle.gradle.features.loaders.*
-import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
@@ -10,11 +9,12 @@ import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
-interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen {
+interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen,
+    WithInterfaceInjections {
     val forgeVersion: Provider<String>
 
     val kotlinForgeVersion: Property<String>
@@ -36,7 +36,12 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
     }
 
     override fun accessTransformer(file: Provider<File>) {
-        project.the<LegacyForgeExtension>().setAccessTransformers(file)
+        project.configure<LegacyForgeExtension> {
+            accessTransformers {
+                from(file)
+                publish(file)
+            }
+        }
     }
 
     override fun accessWidener(file: Provider<File>) {
@@ -45,6 +50,16 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
             dependsOn(task)
         }
         accessTransformer(output)
+    }
+
+
+    override fun injectInterfaces(file: Provider<File>) {
+        project.configure<LegacyForgeExtension> {
+            interfaceInjectionData {
+                from(file)
+                publish(file)
+            }
+        }
     }
 
 }
