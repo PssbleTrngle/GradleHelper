@@ -39,6 +39,8 @@ You can also define additional values that should be replaced in these files:
 mod {
     additional.add("some_key", "some_value")
     additional.add("other_key", provider { "other_value" })
+    // will reference the gradle.property entry with the same key
+    additional.add("property_key")
 }
 ```
 

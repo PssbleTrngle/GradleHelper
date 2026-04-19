@@ -31,6 +31,7 @@ interface ModExtension {
 interface AdditionalProperties {
     fun add(key: String, value: String)
     fun add(key: String, value: Provider<String>)
+    fun add(key: String)
     fun toMap(): Map<String, Provider<String>>
 }
 
@@ -57,6 +58,8 @@ internal class AdditionalPropertiesImpl(private val project: Project, private va
     override fun add(key: String, value: Provider<String>) {
         values[key] = value
     }
+
+    override fun add(key: String) = add(key, project.provider { project.stringProperty(key) })
 
     override fun toMap() = (parent?.toMap() ?: emptyMap()) + values.toMap()
 }

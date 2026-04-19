@@ -1,13 +1,11 @@
 package com.possible_triangle.gradle.vanilla
 
-import com.possible_triangle.gradle.GradleHelperCorePlugin
 import com.possible_triangle.gradle.commonMixinDependencies
 import com.possible_triangle.gradle.create
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.TransparentLoaderSpecifics
 import com.possible_triangle.gradle.mod
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
