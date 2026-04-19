@@ -31,15 +31,33 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
     override fun Project.finalize() {
         val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
 
+        configureDatagenRun()
+
         configureOutputProject(config)
 
-        configureDatagenRun()
+        configure<NeoForgeExtension> {
+            mods.named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    sourceSet(it.mainSourceSet)
+                }
+
+                config.datagenSourceSet.orNull?.let {
+                    sourceSet(it)
+                }
+            }
+        }
 
         config.kotlinForgeVersion.orNull?.let {
             configure<UploadExtension> {
                 forEach {
                     if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
                 }
+            }
+        }
+
+        tasks.withType<ProcessResources> {
+            config.dependsOn.forEach {
+                from(it.mainSourceSet.resources)
             }
         }
     }
@@ -54,16 +72,6 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
                 parchment {
                     minecraftVersion = mod.minecraftVersion.get()
                     mappingsVersion = it
-                }
-            }
-
-            mods.named(mod.id.get()) {
-                config.dependsOn.forEach {
-                    sourceSet(it.mainSourceSet)
-                }
-
-                config.datagenSourceSet.orNull?.let {
-                    sourceSet(it)
                 }
             }
 
@@ -105,14 +113,6 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
                 val jarTask = tasks.getByName<Jar>("jar")
                 file = jarTask.archiveFile
                 modLoaders.add(ModLoader.NEOFORGE)
-            }
-        }
-
-        afterEvaluate {
-            tasks.withType<ProcessResources> {
-                config.dependsOn.forEach {
-                    from(it.mainSourceSet.resources)
-                }
             }
         }
 

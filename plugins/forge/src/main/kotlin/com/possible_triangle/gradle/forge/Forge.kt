@@ -31,6 +31,18 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
             includeMixinExtras(it)
         }
 
+        configure<LegacyForgeExtension> {
+            mods.named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    sourceSet(it.mainSourceSet)
+                }
+
+                config.datagenSourceSet.orNull?.let {
+                    sourceSet(it)
+                }
+            }
+        }
+
         tasks.withType<ProcessResources> {
             config.dependsOn.forEach {
                 from(it.mainSourceSet.resources)
