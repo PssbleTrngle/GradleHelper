@@ -114,7 +114,12 @@ class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
 
         dependencies {
             add("minecraft", mod.minecraftVersion.map { "com.mojang:minecraft:${it}" })
-            add("mappings", config.mappingsSupplier(loom))
+            add("mappings", loom.layered {
+                officialMojangMappings()
+                config.parchmentMappingsVersion.orNull?.let {
+                    parchment("org.parchmentmc.data:parchment-${mod.minecraftVersion.get()}:${it}@zip")
+                }
+            })
 
             lazyDependencies("modImplementation") {
                 config.loaderVersion.orNull?.let { loaderVersion ->

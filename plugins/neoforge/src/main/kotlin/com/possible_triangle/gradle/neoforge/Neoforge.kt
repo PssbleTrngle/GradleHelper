@@ -50,6 +50,13 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
         configure<NeoForgeExtension> {
             version = config.neoforgeVersion.get()
 
+            config.parchmentMappingsVersion.orNull?.let {
+                parchment {
+                    minecraftVersion = mod.minecraftVersion.get()
+                    mappingsVersion = it
+                }
+            }
+
             mods.named(mod.id.get()) {
                 config.dependsOn.forEach {
                     sourceSet(it.mainSourceSet)

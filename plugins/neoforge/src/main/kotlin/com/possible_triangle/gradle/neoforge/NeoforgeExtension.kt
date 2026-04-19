@@ -21,8 +21,8 @@ import java.io.File
 interface NeoforgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen,
     WithInterfaceInjections {
     val neoforgeVersion: Property<String>
-
     val kotlinForgeVersion: Property<String>
+    val parchmentMappingsVersion: Property<String>
 }
 
 internal open class NeoforgeExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
@@ -30,6 +30,8 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
     override val neoforgeVersion = project.objects.property(project.stringProperty("neoforge_version"))
 
     override val kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
+
+    override val parchmentMappingsVersion = project.objects.property(project.stringProperty("parchment_mappings_version"))
 
     override fun accessTransformer(file: Provider<File>) {
         project.configure<NeoForgeExtension> {

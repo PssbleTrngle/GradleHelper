@@ -26,7 +26,14 @@ internal fun RepositoryHandler.defaultRepositories() {
     mavenLocal()
     modrinthMaven()
     curseMaven()
-    mavenFabric()
+
+    maven {
+        url = URI("https://maven.fabricmc.net/")
+        content {
+            includeGroupAndSubgroups("net.fabricmc")
+            includeGroup("net.minecraft")
+        }
+    }
 
     maven {
         url = URI("https://libraries.minecraft.net/")
@@ -46,6 +53,13 @@ internal fun RepositoryHandler.defaultRepositories() {
         url = URI("https://thedarkcolour.github.io/KotlinForForge/")
         content {
             includeGroup("thedarkcolour")
+        }
+    }
+
+    maven {
+        url = URI("https://maven.parchmentmc.org")
+        content {
+            includeGroupAndSubgroups("org.parchmentmc")
         }
     }
 }

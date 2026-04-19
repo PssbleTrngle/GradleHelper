@@ -25,21 +25,18 @@ interface FabricExtension : LoaderExtension, WithAccessWidener, WithDataGen, Wit
 
     val kotlinFabricVersion: Property<String>
 
-    fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency)
+    val parchmentMappingsVersion: Property<String>
 }
 
 internal open class FabricExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
     FabricExtension {
     override val loaderVersion = project.objects.property(project.stringProperty("fabric_loader_version"))
     override val apiVersion = project.objects.property(project.stringProperty("fabric_api_version"))
+
     override val kotlinFabricVersion = project.objects.property(project.stringProperty("kotlin_fabric_version"))
 
-    var mappingsSupplier: LoomGradleExtensionAPI.() -> Dependency = { officialMojangMappings() }
-        private set
-
-    override fun mappings(supplier: LoomGradleExtensionAPI.() -> Dependency) {
-        this.mappingsSupplier = supplier
-    }
+    override val parchmentMappingsVersion =
+        project.objects.property(project.stringProperty("parchment_mappings_version"))
 
     override fun accessWidener(file: Provider<File>) {
         project.the<LoomGradleExtensionAPI>().accessWidenerPath.set { file.get() }

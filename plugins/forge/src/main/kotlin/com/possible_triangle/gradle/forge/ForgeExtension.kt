@@ -19,6 +19,8 @@ interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransfo
 
     val kotlinForgeVersion: Property<String>
 
+    val parchmentMappingsVersion: Property<String>
+
     fun enableMixins()
 }
 
@@ -27,6 +29,8 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
     override val forgeVersion = project.provider { project.stringProperty("forge_version") }
 
     override val kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
+
+    override val parchmentMappingsVersion = project.objects.property(project.stringProperty("parchment_mappings_version"))
 
     var mixinsEnabled: Boolean = false
         private set

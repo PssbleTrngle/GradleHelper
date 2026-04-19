@@ -31,20 +31,18 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
             includeMixinExtras(it)
         }
 
-        afterEvaluate {
-            tasks.withType<ProcessResources> {
-                config.dependsOn.forEach {
-                    from(it.mainSourceSet.resources)
-                }
+        tasks.withType<ProcessResources> {
+            config.dependsOn.forEach {
+                from(it.mainSourceSet.resources)
             }
         }
 
         if (config.mixinsEnabled) {
-             tasks.withType<Jar> {
-                 filesMatching("${mod.id.get()}*.mixins.json") {
-                     filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
-                 }
-             }
+            tasks.withType<Jar> {
+                filesMatching("${mod.id.get()}*.mixins.json") {
+                    filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
+                }
+            }
         }
 
         config.kotlinForgeVersion.orNull?.let {
@@ -100,6 +98,13 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
 
             mods.create(mod.id.get()) {
                 sourceSet(mainSourceSet)
+            }
+
+            config.parchmentMappingsVersion.orNull?.let {
+                parchment {
+                    minecraftVersion = mod.minecraftVersion.get()
+                    mappingsVersion = it
+                }
             }
 
             runs {
