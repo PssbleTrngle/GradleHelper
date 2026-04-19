@@ -14,7 +14,14 @@ val env: Map<String, String> = System.getenv()
 val repository: String by extra
 val pluginId: String by extra
 
-val majorVersion: String by extra
+val isCI = env["CI"] == "true"
+val majorVersion =
+    if (isCI) {
+        project.extra["major_version"].toString()
+    } else {
+        "99.0"
+    }
+
 val snapshot = env["SNAPSHOT"] == "true"
 val patch = if (snapshot) env["PATCH"] ?: "999" else "0"
 val pluginVersion = "$majorVersion.$patch"
@@ -47,6 +54,7 @@ pluginProjects {
     apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
     extra["pluginVersion"] = pluginVersion
+    extra["majorVersion"] = majorVersion
     extra["snapshot"] = snapshot
 
     gradlePlugin {
