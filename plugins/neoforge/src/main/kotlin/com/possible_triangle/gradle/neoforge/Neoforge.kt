@@ -11,7 +11,6 @@ import net.neoforged.moddevgradle.boot.ModDevPlugin
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.moddevgradle.internal.utils.VersionCapabilitiesInternal
 import org.gradle.api.Project
-import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
@@ -32,20 +31,8 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
         val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
 
         configureDatagenRun()
-
         configureOutputProject(config)
-
-        configure<NeoForgeExtension> {
-            mods.named(mod.id.get()) {
-                config.dependsOn.forEach {
-                    sourceSet(it.mainSourceSet)
-                }
-
-                config.datagenSourceSet.orNull?.let {
-                    sourceSet(it)
-                }
-            }
-        }
+        configureModSourceSets(config)
 
         config.kotlinForgeVersion.orNull?.let {
             configure<UploadExtension> {
@@ -58,6 +45,20 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
         tasks.withType<ProcessResources> {
             config.dependsOn.forEach {
                 from(it.mainSourceSet.resources)
+            }
+        }
+    }
+
+    private fun Project.configureModSourceSets(config: NeoforgeExtensionImpl) {
+        configure<NeoForgeExtension> {
+            mods.named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    sourceSet(it.mainSourceSet)
+                }
+
+                config.datagenSourceSet.orNull?.let {
+                    sourceSet(it)
+                }
             }
         }
     }

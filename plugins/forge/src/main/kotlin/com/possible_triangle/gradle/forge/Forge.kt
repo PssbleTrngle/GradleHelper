@@ -31,18 +31,6 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
             includeMixinExtras(it)
         }
 
-        configure<LegacyForgeExtension> {
-            mods.named(mod.id.get()) {
-                config.dependsOn.forEach {
-                    sourceSet(it.mainSourceSet)
-                }
-
-                config.datagenSourceSet.orNull?.let {
-                    sourceSet(it)
-                }
-            }
-        }
-
         tasks.withType<ProcessResources> {
             config.dependsOn.forEach {
                 from(it.mainSourceSet.resources)
@@ -62,6 +50,18 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                 forEach {
                     if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
                 }
+            }
+        }
+    }
+
+    private fun Project.configureModSourceSets(config: ForgeExtensionImpl) {
+        configure<LegacyForgeExtension> {
+            mods.named(mod.id.get()) {
+                modSourceSets.addAll(provider {
+                    val dependencies = config.dependsOn.map { it.mainSourceSet }
+                    val datagen = listOfNotNull(config.datagenSourceSet.orNull)
+                    dependencies + datagen
+                })
             }
         }
     }
@@ -141,6 +141,8 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                 }
             }
         }
+
+        configureModSourceSets(config)
 
         configure<UploadExtension> {
             forEach {
