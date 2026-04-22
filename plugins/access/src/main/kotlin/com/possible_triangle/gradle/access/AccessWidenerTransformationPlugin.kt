@@ -38,7 +38,6 @@ fun Project.generateAccessTransformer(from: Provider<File>): Pair<Provider<File>
         }
     }
 
-    @Suppress("UnstableApiUsage")
     tasks.withType<ProcessResources> {
         dependsOn(transformAccessWidener)
         from(transformAccessWidener) {

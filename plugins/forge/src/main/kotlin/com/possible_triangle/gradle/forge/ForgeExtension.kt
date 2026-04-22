@@ -50,12 +50,15 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
 
     override fun accessWidener(file: Provider<File>) {
         val (output, task) = project.generateAccessTransformer(file)
+        accessTransformer(output)
+
         project.tasks.withType<CreateMinecraftArtifacts> {
             dependsOn(task)
         }
-        accessTransformer(output)
+        project.tasks.named("copyAccessTransformersPublications") {
+            dependsOn(task)
+        }
     }
-
 
     override fun injectInterfaces(file: Provider<File>) {
         project.configure<LegacyForgeExtension> {
