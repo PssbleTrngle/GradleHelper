@@ -9,7 +9,7 @@ internal fun String.trimComments(): String {
 
 internal fun parseEntry(statements: List<String>): AccessWidener.Entry {
     val modifier = AccessWidener.Modifier.valueOf(
-        statements[0].uppercase().replace("transitive-", "")
+        statements[0].uppercase().replace("TRANSITIVE-", "")
     )
     val target = AccessWidener.Target.valueOf(statements[1].uppercase())
     val className = statements[2]
