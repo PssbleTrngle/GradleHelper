@@ -73,13 +73,6 @@ class GradleHelperCorePlugin : Plugin<Project> {
             }
         }
 
-        // Disables Gradle's custom module metadata from being published to maven. The
-        // metadata includes mapped dependencies which are not reasonably consumable by
-        // other mod developers.
-        tasks.withType<GenerateModuleMetadata> {
-            enabled = false
-        }
-
         tasks.withType<Jar> {
             exclude(".cache")
             exclude("**/*.bbmodel")

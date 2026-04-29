@@ -42,13 +42,6 @@ class GradleHelperPublishingPlugin : Plugin<Project> {
                 }
             }
         }
-
-        // Disables Gradle's custom module metadata from being published to maven. The
-        // metadata includes mapped dependencies which are not reasonably consumable by
-        // other mod developers.
-        target.tasks.withType<GenerateModuleMetadata> {
-            enabled = false
-        }
     }
 
 }
