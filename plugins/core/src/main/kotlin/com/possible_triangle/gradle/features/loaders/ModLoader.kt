@@ -107,14 +107,4 @@ enum class ModLoader {
     FORGE, FABRIC, NEOFORGE
 }
 
-// internal fun Project.detectModLoader(): ModLoader? {
-//     return extensions.findByType<DependencyManagementExtension>()?.let {
-//         ModLoader.FORGE
-//     } ?: extensions.findByType<LoomGradleExtensionAPI>()?.let {
-//         ModLoader.FABRIC
-//     } ?: extensions.findByType<UserDevRuntimeExtension>()?.let {
-//         ModLoader.NEOFORGE
-//     }
-// }
-
-val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version") ?: "0.4.1"
+val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version") ?: "0.5.2"

@@ -8,7 +8,9 @@ internal fun String.trimComments(): String {
 }
 
 internal fun parseEntry(statements: List<String>): AccessWidener.Entry {
-    val modifier = AccessWidener.Modifier.valueOf(statements[0].uppercase())
+    val modifier = AccessWidener.Modifier.valueOf(
+        statements[0].uppercase().replace("transitive-", "")
+    )
     val target = AccessWidener.Target.valueOf(statements[1].uppercase())
     val className = statements[2]
 
@@ -26,11 +28,6 @@ fun parseAccessWidener(file: File): AccessWidener {
         .map { it.trim() }
         .filterNot { it.isEmpty() }
         .map { it.split("\\s+".toRegex()) }
-
-    val (header, version) = lines.first()
-
-    if (header != "accessWidener") error("invalid header '${header}'")
-    if (version != "v1") error("access widener transformation does only support v1")
 
     val entries = lines.subList(1, lines.size).map(::parseEntry)
 
