@@ -6,7 +6,8 @@ import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
-import com.possible_triangle.gradle.publishing.removePomDependencies
+import com.possible_triangle.gradle.publishing.removeDependencies
+import com.possible_triangle.gradle.publishing.removeModuleDependencies
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.modifyPublication
 import net.neoforged.moddevgradle.boot.LegacyForgeModDevPlugin
@@ -172,7 +173,7 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
         }
 
         modifyPublication {
-            removePomDependencies()
+            removeDependencies(this)
         }
     }
 }

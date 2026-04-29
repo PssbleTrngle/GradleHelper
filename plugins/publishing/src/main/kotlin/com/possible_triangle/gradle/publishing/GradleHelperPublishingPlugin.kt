@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
-import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
@@ -32,12 +31,14 @@ class GradleHelperPublishingPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.apply<MavenPublishPlugin>()
 
+        target.registerModuleModifyTask()
+
         target.afterEvaluate {
             configure<PublishingExtension> {
                 publications {
                     withType<MavenPublication> {
-                        if (target.isForge()) removePomDependencies()
-                        else removeRuntimeDependencies()
+                        if (target.isForge()) removeDependencies(this)
+                        else removeRuntimeDependencies(this)
                     }
                 }
             }

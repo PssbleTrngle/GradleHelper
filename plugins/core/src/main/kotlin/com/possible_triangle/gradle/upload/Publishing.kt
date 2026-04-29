@@ -1,12 +1,11 @@
 package com.possible_triangle.gradle.upload
 
-import com.possible_triangle.gradle.ModExtension
 import com.possible_triangle.gradle.env
 import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.loaders.isSubProject
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.publishing.DependencyFilter
-import com.possible_triangle.gradle.publishing.removePomDependencies
+import com.possible_triangle.gradle.publishing.removeDependencies
 import com.possible_triangle.gradle.publishing.removeRuntimeDependencies
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
@@ -138,13 +137,13 @@ internal class ModMavenPublishingExtensionImpl(
                         }
 
                         if (applyDefaultModifications) {
-                            defaultPomModifications(project.mod)
+                            defaultPomModifications(project)
                         }
 
                         if (removeAllDependency) {
-                            removePomDependencies()
+                            project.removeDependencies(this)
                         } else dependencyFilters.forEach {
-                            removePomDependencies(it)
+                            project.removeDependencies(this, it)
                         }
                     }
                 }
@@ -165,10 +164,10 @@ fun Project.modifyPublication(block: MavenPublication.() -> Unit) = afterEvaluat
     }
 }
 
-internal fun MavenPublication.defaultPomModifications(mod: ModExtension) {
-    removeRuntimeDependencies()
+internal fun MavenPublication.defaultPomModifications(project: Project) {
+    project.removeRuntimeDependencies(this)
 
-    mod.repository.orNull?.let { repository ->
+    project.mod.repository.orNull?.let { repository ->
         pom.url = "https://github.com/${repository}"
 
         pom.issueManagement {
@@ -183,7 +182,7 @@ internal fun MavenPublication.defaultPomModifications(mod: ModExtension) {
         }
     }
 
-    mod.author.orNull?.let { author ->
+    project.mod.author.orNull?.let { author ->
         pom.developers {
             developer {
                 name = author
