@@ -11,16 +11,16 @@ data class DependencyFilter(
 )
 
 fun Project.removeRuntimeDependencies(publication: MavenPublication) {
-    removeModuleDependencies(DependencyFilter(scope = "runtime"))
-    publication.removePomDependencies(DependencyFilter(scope = "runtime"))
+    //removeRuntimeModuleDependencies()
+    publication.removeRuntimePomDependencies()
 }
 
 fun Project.removeDependencies(publication: MavenPublication) {
-    removeModuleDependencies()
+    //removeModuleDependencies()
     publication.removePomDependencies()
 }
 
 fun Project.removeDependencies(publication: MavenPublication, filter: DependencyFilter) {
-    removeModuleDependencies(filter)
+    //removeModuleDependencies(filter)
     publication.removePomDependencies(filter)
 }

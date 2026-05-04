@@ -29,9 +29,7 @@ private fun Project.isForge(): Boolean {
 class GradleHelperPublishingPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        target.apply<MavenPublishPlugin>()
-
-        target.registerModuleModifyTask()
+        target.apply<GradleHelperPublishingPluginInternal>()
 
         target.afterEvaluate {
             configure<PublishingExtension> {

@@ -39,7 +39,7 @@ private fun matchesOrNull(filter: String?, element: JsonElement?): Boolean {
     return value == filter
 }
 
-fun Project.registerModuleModifyTask() {
+internal fun Project.registerModuleModifyTask() {
     val task = tasks.register<ModifyModuleMetadataTask>(TASK_NAME) {
         doFirst {
             logger.debug("modifying module metadata")
@@ -80,7 +80,7 @@ fun Project.registerModuleModifyTask() {
     }
 }
 
-fun Project.removeModuleDependencies(filter: DependencyFilter) {
+internal fun Project.removeModuleDependencies(filter: DependencyFilter) {
     tasks.named<ModifyModuleMetadataTask>(TASK_NAME) {
         filters.add(filter)
     }

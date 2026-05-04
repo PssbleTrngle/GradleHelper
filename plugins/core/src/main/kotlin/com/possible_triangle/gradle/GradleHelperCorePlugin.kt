@@ -1,7 +1,7 @@
 package com.possible_triangle.gradle
 
 import com.modrinth.minotaur.Minotaur
-import com.possible_triangle.gradle.publishing.registerModuleModifyTask
+import com.possible_triangle.gradle.publishing.GradleHelperPublishingPluginInternal
 import com.possible_triangle.gradle.repositories.defaultRepositories
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.UploadExtensionImpl
@@ -9,8 +9,6 @@ import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
-import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
@@ -88,11 +86,9 @@ class GradleHelperCorePlugin : Plugin<Project> {
     }
 
     private fun Project.configureUpload() {
-        apply<MavenPublishPlugin>()
+        apply<GradleHelperPublishingPluginInternal>()
         apply<CurseForgeGradlePlugin>()
         apply<Minotaur>()
-
-        project.registerModuleModifyTask()
 
         val upload = extensions.create<UploadExtension, UploadExtensionImpl>("upload")
 
