@@ -22,7 +22,7 @@ class GradleHelperSettingsPlugin : Plugin<Settings> {
             resolutionStrategy {
                 eachPlugin {
                     if (requested.version == null && requested.id.namespace == "com.possible-triangle") {
-                        val snapshotVersion = "${BuildParameters.MAJOR_VERSION}.+"
+                        val snapshotVersion = "${BuildParameters.MAJOR_VERSION}-SNAPSHOT"
                         logger.info("resolving $snapshotVersion for ${requested.id.name}")
                         useVersion(snapshotVersion)
                     }
