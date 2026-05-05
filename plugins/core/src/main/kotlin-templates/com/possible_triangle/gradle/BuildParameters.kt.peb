@@ -1,0 +1,5 @@
+package com.possible_triangle.gradle
+
+object BuildParameters {
+    const val PLUGIN_VERSION = "{{ pluginVersion }}"
+}

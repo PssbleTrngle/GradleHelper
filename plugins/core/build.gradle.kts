@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.blossom)
 }
 
 dependencies {
@@ -12,6 +13,14 @@ dependencies {
 
     api(libs.sonar.scanner)
     api(libs.spotless)
+}
+
+val pluginVersion: String by extra
+
+sourceSets.main {
+    blossom.kotlinSources {
+        property("pluginVersion", pluginVersion)
+    }
 }
 
 gradlePlugin {
