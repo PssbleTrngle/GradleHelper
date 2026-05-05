@@ -80,8 +80,6 @@ pluginProjects {
 
     configure<PublishingExtension> {
         repositories {
-            mavenLocal()
-
             val nexusToken = env["NEXUS_TOKEN"]
             val nexusUser = env["NEXUS_USER"]
             if (nexusToken != null && nexusUser != null) {
@@ -202,7 +200,11 @@ val generateReleaseMetadata =
 
 tasks.register("publishPlugins") {
     pluginProjects {
-        dependsOn(tasks["publishPlugins"])
+        if (isSnapshot) {
+            dependsOn(tasks["publish"])
+        } else {
+            dependsOn(tasks["publishPlugins"])
+        }
     }
 
     finalizedBy(generateReleaseMetadata)
