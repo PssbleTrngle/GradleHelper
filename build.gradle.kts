@@ -148,6 +148,7 @@ allprojects {
     spotless {
         kotlin {
             ktlint()
+            targetExclude("build/generated/**")
         }
         kotlinGradle {
             ktlint()
