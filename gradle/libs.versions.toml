@@ -1,6 +1,6 @@
 [versions]
 kotlin-version = "2.2.21"
-sonar-version = "7.2.3.7755"
+sonar-version = "7.3.0.8198"
 spotless-version = "8.4.0"
 neoforge-version = "2.0.141"
 
@@ -24,7 +24,7 @@ neoforge-srg = { group = "net.neoforged", name = "srgutils", version = "1.0.11" 
 forge-gradle = { module = "net.minecraftforge.gradle:ForgeGradle", version = "[6.0,6.2)" }
 forge-srg = { module = "net.minecraftforge:srgutils", version = "0.5.10" }
 
-fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.15-SNAPSHOT" }
+fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.16-SNAPSHOT" }
 
 architectury-loom = { group = "dev.architectury.loom", name = "dev.architectury.loom.gradle.plugin", version = "1.13-SNAPSHOT" }
 
@@ -37,5 +37,5 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless-version" }
 sonar = { id = "org.sonarqube", version.ref = "sonar-version" }
-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.0" }
-blossom = { id = "net.kyori.blossom", version = "2.1.0" }
+plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.1" }
+blossom = { id = "net.kyori.blossom", version = "2.2.0" }
