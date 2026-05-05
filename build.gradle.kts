@@ -95,7 +95,7 @@ pluginProjects {
                 }
             }
 
-            if (env["GRADLE_PUBLISH_KEY"] != null) {
+            if (env["GRADLE_PUBLISH_KEY"] != null && !isSnapshot) {
                 gradlePluginPortal {
                     name = "gradle-plugin-portal"
                 }
