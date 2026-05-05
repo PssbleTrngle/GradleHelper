@@ -1,6 +1,8 @@
 package com.possible_triangle.gradle.upload
 
 import com.possible_triangle.gradle.features.loaders.ModLoader
+import com.possible_triangle.gradle.modifyReleaseMetadata
+import com.possible_triangle.gradle.releaseMetadataTask
 import net.darkhax.curseforgegradle.Constants
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.UploadArtifact
@@ -41,7 +43,7 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
     override fun setup() {
         if (!isConfigured()) return
 
-        val task = project.tasks.register<TaskPublishCurseForge>("curseforge") {
+        val uploadTask = project.tasks.register<TaskPublishCurseForge>("curseforge") {
             apiToken = token.get()
 
             upload(projectId.get(), file.get()).apply {
@@ -62,6 +64,7 @@ internal class CurseForgeExtensionImpl(private val project: Project) :
             }
         }
 
-        project.tasks.publish.dependsOn(task)
+        project.tasks.publish.dependsOn(uploadTask)
+        project.releaseMetadataTask.dependsOn(uploadTask)
     }
 }

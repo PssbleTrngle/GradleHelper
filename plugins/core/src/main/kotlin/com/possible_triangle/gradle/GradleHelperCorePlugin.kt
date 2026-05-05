@@ -5,6 +5,7 @@ import com.possible_triangle.gradle.publishing.GradleHelperPublishingPluginInter
 import com.possible_triangle.gradle.repositories.defaultRepositories
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.UploadExtensionImpl
+import com.possible_triangle.gradle.upload.publish
 import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -13,6 +14,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -83,6 +85,8 @@ class GradleHelperCorePlugin : Plugin<Project> {
         tasks.withType<Test> { enabled = false }
         tasks.named("compileTestJava") { enabled = false }
         tasks.findByName("compileTestKotlin")?.enabled = false
+
+        setupReleaseMetadata()
     }
 
     private fun Project.configureUpload() {

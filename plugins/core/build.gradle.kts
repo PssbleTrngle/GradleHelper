@@ -1,5 +1,11 @@
+plugins {
+    alias(libs.plugins.kotlin.serialization)
+}
+
 dependencies {
     api(project(":publishing"))
+
+    api(libs.kotlin.serialization.json)
 
     api(libs.cursegradle)
     api(libs.minotaur)
