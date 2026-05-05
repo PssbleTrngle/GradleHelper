@@ -26,3 +26,6 @@ ktlint_standard_property-naming = disabled
 
 [*.md]
 trim_trailing_whitespace = false
+
+[*.yml]
+indent_size = 2

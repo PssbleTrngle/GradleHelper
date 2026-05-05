@@ -1,3 +1,5 @@
+import com.diffplug.gradle.spotless.SpotlessPlugin
+import com.google.gson.Gson
 import com.gradle.publish.PublishPlugin
 
 plugins {
@@ -141,7 +143,7 @@ pluginProjects {
 }
 
 allprojects {
-    apply(plugin = "com.diffplug.spotless")
+    apply<SpotlessPlugin>()
 
     spotless {
         kotlin {
@@ -174,10 +176,30 @@ tasks.jacocoTestReport {
     }
 }
 
+val generateReleaseMetadata =
+    tasks.register("generateReleaseMetadata") {
+        val properties =
+            mapOf(
+                "tag" to pluginVersion,
+            )
+
+        val output = layout.buildDirectory.file("release.json")
+
+        outputs.file(output)
+        inputs.properties(properties)
+
+        doFirst {
+            val json = Gson().toJson(properties)
+            output.get().asFile.writeText(json)
+        }
+    }
+
 tasks.register("publishPlugins") {
     pluginProjects {
         dependsOn(tasks["publishPlugins"])
     }
+
+    finalizedBy(generateReleaseMetadata)
 }
 
 idea {
