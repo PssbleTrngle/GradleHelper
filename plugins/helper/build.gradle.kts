@@ -3,7 +3,7 @@ plugins {
 }
 
 val majorVersion: String by extra
-val snapshot: Boolean by extra
+val isRelease: Boolean by extra
 
 gradlePlugin {
     plugins {
@@ -21,5 +21,5 @@ sourceSets.main {
 }
 
 tasks.publishPlugins {
-    onlyIf { !snapshot }
+    onlyIf { isRelease }
 }

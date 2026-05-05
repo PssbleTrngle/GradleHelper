@@ -14,6 +14,8 @@ env:
   GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_SECRET }}
   NEXUS_USER: ${{ secrets.NEXUS_USER }}
   NEXUS_TOKEN: ${{ secrets.NEXUS_TOKEN }}
+  PATCH: ${{ github.run_number }}
+  RELEASE: ${{ github.event_name == 'release' }}
 
 jobs:
   build:
@@ -34,11 +36,16 @@ jobs:
         with:
           cache-read-only: true
 
-      - name: Build & Publish
-        run: ./gradlew build publishPlugins
+      - name: Build
+        run: ./gradlew build
+
+      - name: Publish Semver
+        run: ./gradlew publishPlugins
+
+      - name: Publish Snapshots
+        run: ./gradlew publishPlugins
         env:
-          PATCH: ${{ github.run_number }}
-          SNAPSHOT: ${{ github.event_name != 'release' }}
+          SNAPSHOT: true
 
       - uses: actions/upload-artifact@v7
         with:

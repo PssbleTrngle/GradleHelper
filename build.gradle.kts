@@ -24,8 +24,9 @@ val majorVersion =
         "99.0"
     }
 
-val snapshot = env["SNAPSHOT"] == "true"
-val patch = if (snapshot) env["PATCH"] ?: "999" else "0"
+val isSnapshot = env["SNAPSHOT"] == "true"
+val isRelease = env["RELEASE"] == "true"
+val patch = env["PATCH"] ?: "999"
 val pluginVersion = "$majorVersion.$patch"
 
 allprojects {
@@ -57,7 +58,8 @@ pluginProjects {
 
     extra["pluginVersion"] = pluginVersion
     extra["majorVersion"] = majorVersion
-    extra["snapshot"] = snapshot
+    extra["snapshot"] = isSnapshot
+    extra["isRelease"] = isRelease
 
     gradlePlugin {
         vcsUrl.set(repositoryUrl)
@@ -66,7 +68,7 @@ pluginProjects {
         plugins {
             create(project.name) {
                 id = "$pluginId.${project.name}"
-                version = pluginVersion
+                version = if (isSnapshot) "$majorVersion-SNAPSHOT" else pluginVersion
                 displayName = "Gradle Helper"
                 implementationClass = "replaced in subprojects"
                 description =
@@ -84,7 +86,8 @@ pluginProjects {
             val nexusUser = env["NEXUS_USER"]
             if (nexusToken != null && nexusUser != null) {
                 maven {
-                    url = uri("https://registry.somethingcatchy.net/repository/maven-releases/")
+                    val type = if (isSnapshot) "snapshots" else "releases"
+                    url = uri("https://registry.somethingcatchy.net/repository/maven-$type/")
                     credentials {
                         username = nexusUser
                         password = nexusToken
@@ -193,6 +196,8 @@ val generateReleaseMetadata =
             val json = Gson().toJson(properties)
             output.get().asFile.writeText(json)
         }
+
+        onlyIf { !isSnapshot }
     }
 
 tasks.register("publishPlugins") {
