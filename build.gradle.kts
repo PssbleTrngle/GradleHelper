@@ -59,7 +59,6 @@ pluginProjects {
     extra["pluginVersion"] = pluginVersion
     extra["majorVersion"] = majorVersion
     extra["snapshot"] = isSnapshot
-    extra["isRelease"] = isRelease
 
     gradlePlugin {
         vcsUrl.set(repositoryUrl)
@@ -84,6 +83,7 @@ pluginProjects {
             val nexusUser = env["NEXUS_USER"]
             if (nexusToken != null && nexusUser != null) {
                 maven {
+                    name = "nexus"
                     val type = if (isSnapshot) "snapshots" else "releases"
                     url = uri("https://registry.somethingcatchy.net/repository/maven-$type/")
                     credentials {
@@ -198,8 +198,11 @@ val generateReleaseMetadata =
         onlyIf { !isSnapshot }
     }
 
-tasks.register("publishPlugins") {
+tasks.register("publishAll") {
     pluginProjects {
+        val isHelper = project.name == "helper"
+        if (isHelper && (isSnapshot || !isRelease)) return@pluginProjects
+
         if (isSnapshot) {
             dependsOn(tasks["publish"])
         } else {

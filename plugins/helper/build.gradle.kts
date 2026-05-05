@@ -3,7 +3,6 @@ plugins {
 }
 
 val majorVersion: String by extra
-val isRelease: Boolean by extra
 
 gradlePlugin {
     plugins {
@@ -18,8 +17,4 @@ sourceSets.main {
     blossom.kotlinSources {
         property("majorVersion", majorVersion)
     }
-}
-
-tasks.publishPlugins {
-    onlyIf { isRelease }
 }
