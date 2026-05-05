@@ -14,12 +14,29 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.register
 import org.gradle.work.DisableCachingByDefault
+import kotlin.collections.mapValues
+
+interface ReleaseMetadata {
+    val name: String
+    val tag: Property<String>
+    val modrinthUrl: Property<String>
+    val curseforgeUrl: Property<String>
+}
 
 @Serializable
-abstract class ReleaseMetadata {
-    abstract val tag: Property<String>
-    abstract val modrinthUrl: Property<String>
-    abstract val curseforgeUrl: Property<String>
+data class SerializedReleaseMetadata(
+    val tag: String? = null,
+    val modrinthUrl: String? = null,
+    val curseforgeUrl: String? = null,
+) {
+    companion object {
+        fun from(value: ReleaseMetadata) =
+            SerializedReleaseMetadata(
+                tag = value.tag.orNull,
+                modrinthUrl = value.modrinthUrl.orNull,
+                curseforgeUrl = value.curseforgeUrl.orNull,
+            )
+    }
 }
 
 private val JSON =
@@ -38,7 +55,12 @@ abstract class GenerateReleaseMetadataTask : DefaultTask() {
     @TaskAction
     fun generate() {
         if (releases.isEmpty()) return
-        val encoded = JSON.encodeToString(releases.names.associateWith { releases.getByName(it) })
+        val encoded =
+            JSON.encodeToString(
+                releases
+                    .associateBy { it.name }
+                    .mapValues { SerializedReleaseMetadata.from(it.value) },
+            )
         getOutput().get().asFile.writeText(encoded)
     }
 }
@@ -62,11 +84,9 @@ fun Project.setupReleaseMetadata() {
     }
 }
 
-fun Project.createReleaseMetadata() {
-    releaseMetadataTask.apply {
-        releases.create(project.name) {
-            tag.convention(project.mod.version)
-        }
+private fun Project.createReleaseMetadata() {
+    releaseMetadataTask.releases.create(project.name) {
+        tag.convention(project.mod.version)
     }
 }
 
