@@ -92,12 +92,6 @@ pluginProjects {
                     }
                 }
             }
-
-            if (env["GRADLE_PUBLISH_KEY"] != null && !isSnapshot) {
-                gradlePluginPortal {
-                    name = "gradle-plugin-portal"
-                }
-            }
         }
 
         publications.withType<MavenPublication> {
@@ -203,9 +197,9 @@ tasks.register("publishAll") {
         val isHelper = project.name == "helper"
         if (isHelper && (isSnapshot || !isRelease)) return@pluginProjects
 
-        if (isSnapshot) {
-            dependsOn(tasks["publish"])
-        } else {
+        dependsOn(tasks["publish"])
+
+        if (!isSnapshot) {
             dependsOn(tasks["publishPlugins"])
         }
     }
