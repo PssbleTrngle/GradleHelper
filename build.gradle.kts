@@ -203,11 +203,11 @@ tasks.register("publishAll") {
         val isHelper = project.name == "helper"
         if (isHelper && (isSnapshot || !isRelease)) return@pluginProjects
 
-        if (isSnapshot) {
-            dependsOn(tasks["publish"])
-        } else {
-            dependsOn(tasks["publishPlugins"])
-        }
+        dependsOn(tasks["publish"])
+        // if (isSnapshot) {
+        // } else {
+        //     dependsOn(tasks["publishPlugins"])
+        // }
     }
 
     finalizedBy(generateReleaseMetadata)
