@@ -14,11 +14,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class NeoforgeTest {
-
     private fun createProjectWithNeoforge(beforeNeoforgeSetup: Project.() -> Unit = {}): Project {
-        val project = createProject<GradleHelperNeoForgePlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperNeoForgePlugin> {
+                withProjectDir("example")
+            }
 
         project.mod {
             minecraftVersion.set("1.21")
@@ -42,9 +42,10 @@ class NeoforgeTest {
 
     @Test
     fun `can customize mod values after neoforge block`() {
-        val project = createProject<GradleHelperNeoForgePlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperNeoForgePlugin> {
+                withProjectDir("example")
+            }
 
         project.configure<NeoforgeExtension> {
             neoforgeVersion.set("21.0.54-beta")

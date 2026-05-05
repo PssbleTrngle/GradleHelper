@@ -8,14 +8,14 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class EnvironmentTest {
-
-    private val localEnv = mapOf(
-        "A_TOKEN" to "token",
-        "SOMETHING_ELSE" to "test",
-        "THE_THING" to "OTHER",
-        "WITH_SPACE" to "VALUE",
-        "CHANGELOG" to "Something Something",
-    )
+    private val localEnv =
+        mapOf(
+            "A_TOKEN" to "token",
+            "SOMETHING_ELSE" to "test",
+            "THE_THING" to "OTHER",
+            "WITH_SPACE" to "VALUE",
+            "CHANGELOG" to "Something Something",
+        )
 
     @Test
     fun `loads load environment files`() {
@@ -23,7 +23,7 @@ class EnvironmentTest {
             withProjectDir("with-env")
         }
 
-        localEnv.forEach {(key, value) ->
+        localEnv.forEach { (key, value) ->
             assertContains(env.toMap(), key)
             assertEquals(env[key], value)
         }
@@ -31,9 +31,10 @@ class EnvironmentTest {
 
     @Test
     fun `loads load environment files in subprojects`() {
-        val project = createProjectWithoutPlugin {
-            withProjectDir("with-env")
-        }
+        val project =
+            createProjectWithoutPlugin {
+                withProjectDir("with-env")
+            }
 
         createProjectWithoutPlugin {
             withParent(project)
@@ -41,10 +42,9 @@ class EnvironmentTest {
 
         project.apply<GradleHelperCorePlugin>()
 
-        localEnv.forEach {(key, value) ->
+        localEnv.forEach { (key, value) ->
             assertContains(env.toMap(), key)
             assertEquals(env[key], value)
         }
     }
-
 }

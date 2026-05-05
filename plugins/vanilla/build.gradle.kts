@@ -2,7 +2,6 @@ dependencies {
     api(project(":core"))
 
     api(libs.vanilla.gradle)
-
 }
 
 gradlePlugin {

@@ -17,10 +17,15 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.*
 import java.net.URI
 
-fun RepositoryHandler.addGithubPackages(project: Project, block: MavenArtifactRepository.() -> Unit) =
-    addGithubPackages(project.mod.repository.get(), block)
+fun RepositoryHandler.addGithubPackages(
+    project: Project,
+    block: MavenArtifactRepository.() -> Unit,
+) = addGithubPackages(project.mod.repository.get(), block)
 
-fun RepositoryHandler.addGithubPackages(repository: String, block: MavenArtifactRepository.() -> Unit) {
+fun RepositoryHandler.addGithubPackages(
+    repository: String,
+    block: MavenArtifactRepository.() -> Unit,
+) {
     val actor = env["GITHUB_ACTOR"]
     val token = env["GITHUB_TOKEN"]
 
@@ -38,7 +43,10 @@ fun RepositoryHandler.addGithubPackages(repository: String, block: MavenArtifact
     }
 }
 
-fun RepositoryHandler.addNexus(type: String, block: MavenArtifactRepository.() -> Unit) {
+fun RepositoryHandler.addNexus(
+    type: String,
+    block: MavenArtifactRepository.() -> Unit,
+) {
     maven {
         name = "Nexus"
         url = URI("https://registry.somethingcatchy.net/repository/maven-$type/")
@@ -46,30 +54,44 @@ fun RepositoryHandler.addNexus(type: String, block: MavenArtifactRepository.() -
     }
 }
 
-private fun Project.defaultArtifactName(): Provider<String> {
-    return mod.id.map { modId ->
-        if (isSubProject) "${modId}-${name.lowercase()}"
-        else modId
+private fun Project.defaultArtifactName(): Provider<String> =
+    mod.id.map { modId ->
+        if (isSubProject) {
+            "$modId-${name.lowercase()}"
+        } else {
+            modId
+        }
     }
-}
 
 interface ModMavenPublishingExtension {
     val artifactVersion: Property<String>
     val group: Property<String>
     val name: Property<String>
     val repositories: RepositoryHandler
+
     fun repositories(configure: RepositoryHandler.() -> Unit)
+
     fun githubPackages(block: MavenArtifactRepository.() -> Unit = {})
-    fun nexus(snapshot: Boolean = false, block: MavenArtifactRepository.() -> Unit = {})
+
+    fun nexus(
+        snapshot: Boolean = false,
+        block: MavenArtifactRepository.() -> Unit = {},
+    )
+
     fun removePomDependencies()
-    fun removePomDependencies(groupId: String, artifactId: String? = null, version: String? = null)
+
+    fun removePomDependencies(
+        groupId: String,
+        artifactId: String? = null,
+        version: String? = null,
+    )
+
     fun disableDefaultModifications()
 }
 
 internal class ModMavenPublishingExtensionImpl(
     private val project: Project,
-) :
-    ModMavenPublishingExtension {
+) : ModMavenPublishingExtension {
     override val artifactVersion: Property<String> = project.objects.property<String>().convention(project.mod.version)
     override val group: Property<String> = project.objects.property<String>().convention(project.mod.mavenGroup)
     override val name: Property<String> = project.objects.property<String>().convention(project.defaultArtifactName())
@@ -77,23 +99,28 @@ internal class ModMavenPublishingExtensionImpl(
     private val parentExtension = project.the<PublishingExtension>()
 
     override val repositories: RepositoryHandler get() = parentExtension.repositories
+
     override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
 
-    override fun githubPackages(block: MavenArtifactRepository.() -> Unit) =
-        repositories.addGithubPackages(project, block)
+    override fun githubPackages(block: MavenArtifactRepository.() -> Unit) = repositories.addGithubPackages(project, block)
 
-    override fun nexus(snapshot: Boolean, block: MavenArtifactRepository.() -> Unit) {
+    override fun nexus(
+        snapshot: Boolean,
+        block: MavenArtifactRepository.() -> Unit,
+    ) {
         val type = if (snapshot) "snapshots" else "releases"
         val token = env["NEXUS_TOKEN"]
         val user = env["NEXUS_USER"]
 
-        if (token != null && user != null) repositories.addNexus(type) {
-            credentials {
-                username = user
-                password = token
-            }
+        if (token != null && user != null) {
+            repositories.addNexus(type) {
+                credentials {
+                    username = user
+                    password = token
+                }
 
-            block()
+                block()
+            }
         }
     }
 
@@ -113,7 +140,11 @@ internal class ModMavenPublishingExtensionImpl(
         applyDefaultModifications = false
     }
 
-    override fun removePomDependencies(groupId: String, artifactId: String?, version: String?) {
+    override fun removePomDependencies(
+        groupId: String,
+        artifactId: String?,
+        version: String?,
+    ) {
         dependencyFilters.add(DependencyFilter(groupId, artifactId, version))
     }
 
@@ -142,8 +173,10 @@ internal class ModMavenPublishingExtensionImpl(
 
                         if (removeAllDependency) {
                             project.removeDependencies(this)
-                        } else dependencyFilters.forEach {
-                            project.removeDependencies(this, it)
+                        } else {
+                            dependencyFilters.forEach {
+                                project.removeDependencies(this, it)
+                            }
                         }
                     }
                 }
@@ -154,31 +187,32 @@ internal class ModMavenPublishingExtensionImpl(
 
 private const val PUBLICATION_NAME = "maven"
 
-fun Project.modifyPublication(block: MavenPublication.() -> Unit) = afterEvaluate {
-    extensions.findByType<PublishingExtension>()?.apply {
-        publications {
-            named<MavenPublication>(PUBLICATION_NAME) {
-                block()
+fun Project.modifyPublication(block: MavenPublication.() -> Unit) =
+    afterEvaluate {
+        extensions.findByType<PublishingExtension>()?.apply {
+            publications {
+                named<MavenPublication>(PUBLICATION_NAME) {
+                    block()
+                }
             }
         }
     }
-}
 
 internal fun MavenPublication.defaultPomModifications(project: Project) {
     project.removeRuntimeDependencies(this)
 
     project.mod.repository.orNull?.let { repository ->
-        pom.url = "https://github.com/${repository}"
+        pom.url = "https://github.com/$repository"
 
         pom.issueManagement {
             system = "github"
-            url = "https://github.com/${repository}/issues"
+            url = "https://github.com/$repository/issues"
         }
 
         pom.scm {
-            url = "https://github.com/${repository}"
-            connection = "scm:git:git://github.com/${repository}.git"
-            developerConnection = "scm:git:git://github.com/${repository}.git"
+            url = "https://github.com/$repository"
+            connection = "scm:git:git://github.com/$repository.git"
+            developerConnection = "scm:git:git://github.com/$repository.git"
         }
     }
 

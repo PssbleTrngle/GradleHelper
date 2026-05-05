@@ -2,8 +2,6 @@ package com.possible_triangle.gradle.upload
 
 import com.modrinth.minotaur.TaskModrinthSyncBody
 import com.modrinth.minotaur.TaskModrinthUpload
-import com.possible_triangle.gradle.GenerateReleaseMetadataTask
-import com.possible_triangle.gradle.coreProject
 import com.possible_triangle.gradle.modifyReleaseMetadata
 import com.possible_triangle.gradle.releaseMetadataTask
 import org.gradle.api.Project
@@ -17,12 +15,16 @@ import com.modrinth.minotaur.ModrinthExtension as MinotaurExtension
 
 interface ModrinthExtension : AbstractUploadExtension<SimpleDependencyBuilder> {
     fun syncBodyFrom(file: File)
+
     fun syncBodyFrom(file: RegularFile) = syncBodyFrom(file.asFile)
+
     fun syncBodyFromReadme()
 }
 
-internal class ModrinthExtensionImpl(private val project: Project) :
-    AbstractUploadExtensionImpl<SimpleDependencyBuilder>(project, "modrinth"), ModrinthExtension {
+internal class ModrinthExtensionImpl(
+    private val project: Project,
+) : AbstractUploadExtensionImpl<SimpleDependencyBuilder>(project, "modrinth"),
+    ModrinthExtension {
     private val syncFile: RegularFileProperty =
         project.objects.fileProperty()
     private val readmeFile = project.rootProject.file("README.md")
@@ -52,7 +54,7 @@ internal class ModrinthExtensionImpl(private val project: Project) :
                     required = { required.project(it) },
                     optional = { optional.project(it) },
                     embedded = { embedded.project(it) },
-                )
+                ),
             )
 
             syncFile.orNull?.let {

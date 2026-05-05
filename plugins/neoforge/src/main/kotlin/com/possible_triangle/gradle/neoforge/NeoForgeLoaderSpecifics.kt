@@ -8,22 +8,24 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 
 internal object NeoForgeLoaderSpecifics : LoaderSpecifics {
-
     override fun addModDependency(
         dependencies: DependencyHandlerScope,
         configuration: String,
         dependencyNotation: Provider<ExternalModuleDependency>,
-        closure: Action<ExternalModuleDependency>
-    ) =
-        TransparentLoaderSpecifics.addModDependency(dependencies, configuration, dependencyNotation, closure)
+        closure: Action<ExternalModuleDependency>,
+    ) = TransparentLoaderSpecifics.addModDependency(dependencies, configuration, dependencyNotation, closure)
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,
-        dependencyNotation: Provider<ExternalModuleDependency>
-    ) = dependencies.addProvider("jarJar", dependencyNotation, Action {
-        version {
-            strictly("[${version},)")
-            prefer(version!!)
-        }
-    })
+        dependencyNotation: Provider<ExternalModuleDependency>,
+    ) = dependencies.addProvider(
+        "jarJar",
+        dependencyNotation,
+        Action {
+            version {
+                strictly("[$version,)")
+                prefer(version!!)
+            }
+        },
+    )
 }

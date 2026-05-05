@@ -26,17 +26,18 @@ fun Project.generateAccessTransformer(from: Provider<File>): Pair<Provider<File>
     val output = generatedAccessTransformer()
 
     val remapper = detectMappings()
-    val transformAccessWidener = tasks.register(TRANSFORM_TASK) {
-        remapper.configureTask(this)
-        outputs.file(output)
-        inputs.file(from)
+    val transformAccessWidener =
+        tasks.register(TRANSFORM_TASK) {
+            remapper.configureTask(this)
+            outputs.file(output)
+            inputs.file(from)
 
-        doLast {
-            val accessWidener = parseAccessWidener(from.get())
-            val transformed = accessWidener.toAccessTransformer(remapper)
-            output.get().writeText(transformed)
+            doLast {
+                val accessWidener = parseAccessWidener(from.get())
+                val transformed = accessWidener.toAccessTransformer(remapper)
+                output.get().writeText(transformed)
+            }
         }
-    }
 
     tasks.withType<ProcessResources> {
         dependsOn(transformAccessWidener)
@@ -55,10 +56,8 @@ fun Project.generateAccessTransformer(from: Provider<File>): Pair<Provider<File>
 
 @Suppress("unused")
 class AccessWidenerTransformationPlugin : Plugin<Project> {
-
     override fun apply(target: Project) {
         val extension = target.extensions.create<AccessTransformerExtension>("access")
         target.generateAccessTransformer(extension.from.map { it.asFile })
     }
-
 }

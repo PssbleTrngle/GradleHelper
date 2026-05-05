@@ -14,15 +14,25 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
-interface CommonExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithInterfaceInjections {
+interface CommonExtension :
+    LoaderExtension,
+    WithAccessWidener,
+    WithAccessTransformer,
+    WithInterfaceInjections {
     val neoformVersion: Property<String>
     val parchmentMappingsVersion: Property<String>
 }
 
-internal open class CommonExtensionImpl(override val project: Project) : AbstractLoaderExtension(), CommonExtension {
-    override val neoformVersion = project.objects.property(project.mod.minecraftVersion.map {
-        NeoformFetcher.fetchFor(it)
-    })
+internal open class CommonExtensionImpl(
+    override val project: Project,
+) : AbstractLoaderExtension(),
+    CommonExtension {
+    override val neoformVersion =
+        project.objects.property(
+            project.mod.minecraftVersion.map {
+                NeoformFetcher.fetchFor(it)
+            },
+        )
 
     override val parchmentMappingsVersion = project.objects.property(project.stringProperty("parchment_mappings_version"))
 
@@ -51,5 +61,4 @@ internal open class CommonExtensionImpl(override val project: Project) : Abstrac
             }
         }
     }
-
 }

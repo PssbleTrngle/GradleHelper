@@ -7,7 +7,6 @@ import org.gradle.kotlin.dsl.create
 
 @Suppress("unused")
 class PackwizVersionCatalogPlugin : Plugin<Settings> {
-
     private val logger = LogManager.getLogger(PackwizVersionCatalogPlugin::class.java)
 
     override fun apply(target: Settings) {
@@ -24,5 +23,4 @@ class PackwizVersionCatalogPlugin : Plugin<Settings> {
         val importer = PackwizVersionCatalog(extension, logger)
         importer.importPackwiz(target)
     }
-
 }

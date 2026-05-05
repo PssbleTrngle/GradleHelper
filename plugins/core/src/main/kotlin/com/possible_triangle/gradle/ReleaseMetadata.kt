@@ -22,13 +22,13 @@ abstract class ReleaseMetadata {
     abstract val curseforgeUrl: Property<String>
 }
 
-private val JSON = Json {
-    prettyPrint = true
-}
+private val JSON =
+    Json {
+        prettyPrint = true
+    }
 
 @DisableCachingByDefault
 abstract class GenerateReleaseMetadataTask : DefaultTask() {
-
     @OutputFile
     abstract fun getOutput(): RegularFileProperty
 
@@ -41,7 +41,6 @@ abstract class GenerateReleaseMetadataTask : DefaultTask() {
         val encoded = JSON.encodeToString(releases.names.associateWith { releases.getByName(it) })
         getOutput().get().asFile.writeText(encoded)
     }
-
 }
 
 private const val TASK_NAME = "generateReleaseMetadata"
@@ -51,9 +50,10 @@ val Project.releaseMetadataTask: GenerateReleaseMetadataTask
 
 fun Project.setupReleaseMetadata() {
     if (this == coreProject) {
-        val releaseMetadataTask = tasks.register<GenerateReleaseMetadataTask>(TASK_NAME) {
-            getOutput().convention(project.layout.buildDirectory.file("release.json"))
-        }
+        val releaseMetadataTask =
+            tasks.register<GenerateReleaseMetadataTask>(TASK_NAME) {
+                getOutput().convention(project.layout.buildDirectory.file("release.json"))
+            }
         tasks.publish.finalizedBy(releaseMetadataTask)
     }
 

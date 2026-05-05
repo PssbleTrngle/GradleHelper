@@ -7,7 +7,6 @@ import java.net.URI
 
 @Suppress("unused")
 class GradleHelperSettingsPlugin : Plugin<Settings> {
-
     private val logger = LogManager.getLogger(GradleHelperSettingsPlugin::class.java)
 
     override fun apply(target: Settings) {
@@ -31,5 +30,4 @@ class GradleHelperSettingsPlugin : Plugin<Settings> {
             }
         }
     }
-
 }

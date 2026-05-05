@@ -19,7 +19,6 @@ val Project.javaVersion get() = intProperty("java_version") ?: 21
 internal fun Project.setupJava() {
     apply<JavaPlugin>()
 
-
     configure<JavaPluginExtension> {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(javaVersion))
@@ -36,8 +35,8 @@ internal fun Project.configureJarTasks() {
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         listOf(".md", ".txt", "").forEach { ext ->
-            from(rootProject.file("LICENSE${ext}")) {
-                rename { "LICENSE_${modName.get()}${ext}" }
+            from(rootProject.file("LICENSE$ext")) {
+                rename { "LICENSE_${modName.get()}$ext" }
             }
         }
 
@@ -51,7 +50,7 @@ internal fun Project.configureJarTasks() {
                     "Implementation-Version" to archiveVersion.orElse(mod.version),
                     "Implementation-Vendor" to mod.author,
                     "Implementation-Timestamp" to now,
-                )
+                ),
             )
         }
     }
@@ -65,15 +64,16 @@ internal fun Project.configureJarTasks() {
 }
 
 internal fun Project.configureBaseName() {
-    val name = mod.id.flatMap { modId ->
-        mod.version.map { modVersion ->
-            if (isSubProject) {
-                "${modId}-${name.lowercase()}-${modVersion}"
-            } else {
-                "${modId}-${modVersion}"
+    val name =
+        mod.id.flatMap { modId ->
+            mod.version.map { modVersion ->
+                if (isSubProject) {
+                    "$modId-${name.lowercase()}-$modVersion"
+                } else {
+                    "$modId-$modVersion"
+                }
             }
         }
-    }
 
     configure<BasePluginExtension> {
         archivesName.set(name)

@@ -9,12 +9,15 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
 import java.io.File
 
-interface CommonExtension : LoaderExtension, WithAccessWidener
+interface CommonExtension :
+    LoaderExtension,
+    WithAccessWidener
 
-internal open class CommonExtensionImpl(override val project: Project) : AbstractLoaderExtension(), CommonExtension {
-
+internal open class CommonExtensionImpl(
+    override val project: Project,
+) : AbstractLoaderExtension(),
+    CommonExtension {
     override fun accessWidener(file: Provider<File>) {
         project.the<LoomGradleExtensionAPI>().accessWidenerPath.set { file.get() }
     }
-
 }

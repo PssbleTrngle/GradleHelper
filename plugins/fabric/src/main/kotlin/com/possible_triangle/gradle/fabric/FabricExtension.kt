@@ -10,7 +10,6 @@ import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.jvm.tasks.Jar
@@ -19,7 +18,11 @@ import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
-interface FabricExtension : LoaderExtension, WithAccessWidener, WithDataGen, WithInterfaceInjections {
+interface FabricExtension :
+    LoaderExtension,
+    WithAccessWidener,
+    WithDataGen,
+    WithInterfaceInjections {
     val apiVersion: Property<String>
     val loaderVersion: Property<String>
 
@@ -28,7 +31,9 @@ interface FabricExtension : LoaderExtension, WithAccessWidener, WithDataGen, Wit
     val parchmentMappingsVersion: Property<String>
 }
 
-internal open class FabricExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
+internal open class FabricExtensionImpl(
+    override val project: Project,
+) : AbstractLoadExtensionWithDatagen(project),
     FabricExtension {
     override val loaderVersion = project.objects.property(project.stringProperty("fabric_loader_version"))
     override val apiVersion = project.objects.property(project.stringProperty("fabric_api_version"))
@@ -49,5 +54,4 @@ internal open class FabricExtensionImpl(override val project: Project) : Abstrac
             }
         }
     }
-
 }

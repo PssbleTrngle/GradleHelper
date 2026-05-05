@@ -9,7 +9,10 @@ interface WithInterfaceInjections {
     val project: Project
 
     fun injectInterfaces(file: Provider<File>)
+
     fun injectInterfaces(file: File) = injectInterfaces(project.provider { file })
+
     fun injectInterfaces(project: Project) = injectInterfaces(project.file("interfaces.json"))
+
     fun injectInterfaces() = injectInterfaces(project.coreProject)
 }

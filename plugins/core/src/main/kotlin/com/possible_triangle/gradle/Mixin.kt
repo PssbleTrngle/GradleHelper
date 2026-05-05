@@ -8,6 +8,6 @@ fun Project.commonMixinDependencies() {
     dependencies {
         add("compileOnly", "org.spongepowered:mixin:0.8.5")
         add("compileOnly", "org.ow2.asm:asm-tree:9.5")
-        add("compileOnly", "io.github.llamalad7:mixinextras-common:${mixinExtrasVersion}")
+        add("compileOnly", "io.github.llamalad7:mixinextras-common:$mixinExtrasVersion")
     }
 }

@@ -6,12 +6,12 @@ import org.gradle.kotlin.dsl.the
 import kotlin.test.Test
 
 class UploadTest {
-
     @Test
     fun `can configure cursegradle without token`() {
-        val project = createProject<GradleHelperCorePlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperCorePlugin> {
+                withProjectDir("example")
+            }
 
         project.the<UploadExtension>().curseforge {
             projectId.set("test-id")
@@ -20,14 +20,13 @@ class UploadTest {
 
     @Test
     fun `can configure modrinth without token`() {
-        val project = createProject<GradleHelperCorePlugin> {
-            withProjectDir("example")
-        }
-
+        val project =
+            createProject<GradleHelperCorePlugin> {
+                withProjectDir("example")
+            }
 
         project.the<UploadExtension>().modrinth {
             projectId.set("test-id")
         }
     }
-
 }

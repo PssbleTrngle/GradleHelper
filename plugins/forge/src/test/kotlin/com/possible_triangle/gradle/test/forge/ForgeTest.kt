@@ -10,11 +10,11 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class ForgeTest {
-
     private fun createProjectWithForge(beforeForgeSetup: Project.() -> Unit = {}): Project {
-        val project = createProject<GradleHelperCorePlugin> {
-            withProjectDir("example-forge")
-        }
+        val project =
+            createProject<GradleHelperCorePlugin> {
+                withProjectDir("example-forge")
+            }
 
         project.apply<GradleHelperForgePlugin>()
 
@@ -29,5 +29,4 @@ class ForgeTest {
 
         assertNotNull(project.configurations.getByName("implementation"))
     }
-
 }

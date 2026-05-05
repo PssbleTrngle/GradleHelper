@@ -8,12 +8,12 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class ArchitecturyTest {
-
     @Test
     fun `can setup common project`() {
-        val project = createProject<GradleHelperArchitecturyPlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperArchitecturyPlugin> {
+                withProjectDir("example")
+            }
 
         project.mod {
             minecraftVersion.set("1.19.2")
@@ -24,13 +24,13 @@ class ArchitecturyTest {
 
     @Test
     fun `can customize mod values after common block`() {
-        val project = createProject<GradleHelperArchitecturyPlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperArchitecturyPlugin> {
+                withProjectDir("example")
+            }
 
         project.mod {
             minecraftVersion.set("1.19.2")
         }
     }
-
 }

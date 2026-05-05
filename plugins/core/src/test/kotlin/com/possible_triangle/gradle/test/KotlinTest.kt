@@ -7,16 +7,15 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class KotlinTest {
-
     @Test
     fun `detects kotlin`() {
-        val project = createProject<GradleHelperCorePlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperCorePlugin> {
+                withProjectDir("example")
+            }
 
         project.enableKotlin()
 
         assertTrue(project.detectKotlin())
     }
-
 }

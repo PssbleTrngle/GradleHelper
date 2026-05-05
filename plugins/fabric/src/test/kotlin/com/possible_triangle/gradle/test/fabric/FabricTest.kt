@@ -10,12 +10,12 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class FabricTest {
-
     @Test
     fun `can setup fabric project`() {
-        val project = createProject<GradleHelperFabricPlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperFabricPlugin> {
+                withProjectDir("example")
+            }
 
         project.mod {
             minecraftVersion.set("1.19.2")
@@ -31,9 +31,10 @@ class FabricTest {
 
     @Test
     fun `can customize mod values after fabric block`() {
-        val project = createProject<GradleHelperFabricPlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperFabricPlugin> {
+                withProjectDir("example")
+            }
 
         project.configure<FabricExtension> {
             loaderVersion.set("0.14.21")
@@ -43,5 +44,4 @@ class FabricTest {
             minecraftVersion.set("1.19.2")
         }
     }
-
 }

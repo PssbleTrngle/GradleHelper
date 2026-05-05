@@ -30,15 +30,14 @@ interface AbstractUploadExtension<TDependencies : DependencyBuilder> {
     val includeKotlinDependency: Property<Boolean>
 
     val dependencies: TDependencies
+
     fun dependencies(block: TDependencies.() -> Unit)
 }
 
 internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBuilder>(
     project: Project,
     platform: String,
-) :
-    AbstractUploadExtension<TDependencies> {
-
+) : AbstractUploadExtension<TDependencies> {
     private val tokenKey = "${platform.uppercase()}_TOKEN"
     private val projectIdKey = "${platform}_project_id"
 
@@ -50,9 +49,12 @@ internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBu
         project.objects.listProperty<String>().convention(project.mod.minecraftVersion.map(::setOf))
     override val modLoaders = project.objects.listProperty<ModLoader>()
     override val version = project.objects.property(project.mod.version)
-    override val versionName = project.objects.property(modLoaders.map { loaders ->
-        "${loaders.joinToString(", ") { it.name.lowercase().capitalized() }} ${version.get()}"
-    })
+    override val versionName =
+        project.objects.property(
+            modLoaders.map { loaders ->
+                "${loaders.joinToString(", ") { it.name.lowercase().capitalized() }} ${version.get()}"
+            },
+        )
     override val changelog = project.objects.property(env["CHANGELOG"])
     override val releaseType = project.objects.property(project.mod.releaseType.orElse("release"))
 
@@ -62,10 +64,7 @@ internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBu
 
     internal abstract fun setup()
 
-    internal fun isConfigured(): Boolean {
-        return token.isPresent && file.isPresent && projectId.isPresent
-    }
-
+    internal fun isConfigured(): Boolean = token.isPresent && file.isPresent && projectId.isPresent
 }
 
 internal val TaskContainer.publish

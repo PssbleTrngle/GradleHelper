@@ -8,18 +8,20 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 
 internal object FabricLoaderSpecifics : LoaderSpecifics {
-
     override fun addModDependency(
         dependencies: DependencyHandlerScope,
         configuration: String,
         dependencyNotation: Provider<ExternalModuleDependency>,
-        closure: Action<ExternalModuleDependency>
+        closure: Action<ExternalModuleDependency>,
     ) = appendModPrefix(
-        dependencies, configuration, dependencyNotation, closure
+        dependencies,
+        configuration,
+        dependencyNotation,
+        closure,
     )
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,
-        dependencyNotation: Provider<ExternalModuleDependency>
+        dependencyNotation: Provider<ExternalModuleDependency>,
     ) = dependencies.addProvider("include", dependencyNotation)
 }

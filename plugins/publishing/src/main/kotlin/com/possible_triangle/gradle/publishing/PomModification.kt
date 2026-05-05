@@ -34,22 +34,26 @@ fun MavenPublication.removePomDependencies(filter: DependencyFilter) {
     }
 }
 
-private fun matchesOrNull(filter: String?, node: Node?): Boolean {
+private fun matchesOrNull(
+    filter: String?,
+    node: Node?,
+): Boolean {
     if (node == null || filter == null) return false
-    val value = when (val it = node.value()) {
-        is NodeList -> it.first()
-        is String -> it
-        else -> null
-    }
+    val value =
+        when (val it = node.value()) {
+            is NodeList -> it.first()
+            is String -> it
+            else -> null
+        }
     return value == filter
 }
 
-private fun Node.test(filter: DependencyFilter): Boolean {
-    return matchesOrNull(filter.groupId, first("groupId"))
-            || matchesOrNull(filter.artifactId, first("artifactId"))
-            || matchesOrNull(filter.version, first("version"))
-            || matchesOrNull(filter.scope, first("scope"))
-}
+private fun Node.test(filter: DependencyFilter): Boolean =
+    matchesOrNull(filter.groupId, first("groupId")) ||
+        matchesOrNull(filter.artifactId, first("artifactId")) ||
+        matchesOrNull(filter.version, first("version")) ||
+        matchesOrNull(filter.scope, first("scope"))
 
 private fun Node.all(key: String) = (get(key) as List<Node>?) ?: emptyList()
+
 private fun Node.first(key: String) = all(key).firstOrNull()

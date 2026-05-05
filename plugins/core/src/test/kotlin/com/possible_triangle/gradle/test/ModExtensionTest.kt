@@ -10,7 +10,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ModExtensionTest {
-
     @Test
     fun `can customize mod values`() {
         val project = createProject<GradleHelperCorePlugin>()
@@ -41,9 +40,10 @@ class ModExtensionTest {
 
     @Test
     fun `uses extra properties as default`() {
-        val project = createProject<GradleHelperCorePlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperCorePlugin> {
+                withProjectDir("example")
+            }
 
         assertTrue(project.extra.properties.size >= 4)
         assertEquals("example-mod", project.mod.id.get())
@@ -51,5 +51,4 @@ class ModExtensionTest {
         assertEquals("Example Author", project.mod.author.get())
         assertEquals("1.2.3", project.mod.version.get())
     }
-
 }

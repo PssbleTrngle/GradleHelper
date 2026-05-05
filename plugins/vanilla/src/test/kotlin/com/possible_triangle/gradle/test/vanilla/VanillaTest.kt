@@ -8,12 +8,12 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class VanillaTest {
-
     @Test
     fun `can setup common project`() {
-        val project = createProject<GradleHelperVanillaPlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperVanillaPlugin> {
+                withProjectDir("example")
+            }
 
         project.mod {
             minecraftVersion.set("1.19.2")
@@ -24,13 +24,13 @@ class VanillaTest {
 
     @Test
     fun `can customize mod values after common block`() {
-        val project = createProject<GradleHelperVanillaPlugin> {
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperVanillaPlugin> {
+                withProjectDir("example")
+            }
 
         project.mod {
             minecraftVersion.set("1.19.2")
         }
     }
-
 }

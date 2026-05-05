@@ -1,10 +1,8 @@
 package com.possible_triangle.gradle.test
 
-import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.provider.ProviderConvertible
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.extra
 import org.gradle.testfixtures.ProjectBuilder
@@ -28,19 +26,23 @@ inline fun <reified T : Plugin<*>> createProject(noinline block: ProjectBuilder.
     }
 
 fun createProjectWithoutPlugin(block: ProjectBuilder.() -> Unit = {}): Project {
-    val project = ProjectBuilder.builder()
-        .withGradleUserHomeDir(File(".gradle/userHome"))
-        .apply(block)
-        .build()
+    val project =
+        ProjectBuilder
+            .builder()
+            .withGradleUserHomeDir(File(".gradle/userHome"))
+            .apply(block)
+            .build()
 
     project.loadProperties()
     return project
 }
 
-fun ProjectBuilder.withProjectDir(name: String) =
-    withProjectDir(File("../../modules/test/src/main/resources/projects").resolve(name))
+fun ProjectBuilder.withProjectDir(name: String) = withProjectDir(File("../../modules/test/src/main/resources/projects").resolve(name))
 
-fun Project.findTestDependencies(type: String, group: String = "test.something"): Collection<Dependency> {
+fun Project.findTestDependencies(
+    type: String,
+    group: String = "test.something",
+): Collection<Dependency> {
     val configuration = configurations.getByName(type)
     return configuration.incoming.dependencies.matching {
         it.group == group

@@ -12,6 +12,7 @@ import org.gradle.kotlin.dsl.the
 val Project.coreProject get() = rootProject.takeIf { it.plugins.hasPlugin(GradleHelperCorePlugin::class) } ?: this
 
 fun ExtensionAware.mod(block: ModExtension.() -> Unit) = extensions.configure(block)
+
 val Project.mod get() = the<ModExtension>()
 
 interface ModExtension {
@@ -29,13 +30,24 @@ interface ModExtension {
 }
 
 interface AdditionalProperties {
-    fun add(key: String, value: String)
-    fun add(key: String, value: Provider<String>)
+    fun add(
+        key: String,
+        value: String,
+    )
+
+    fun add(
+        key: String,
+        value: Provider<String>,
+    )
+
     fun add(key: String)
+
     fun toMap(): Map<String, Provider<String>>
 }
 
-internal open class ModExtensionImpl(project: Project) : ModExtension {
+internal open class ModExtensionImpl(
+    project: Project,
+) : ModExtension {
     override val id: Property<String> = project.objects.property()
     override val name: Property<String> = project.objects.property()
     override val version: Property<String> = project.objects.property()
@@ -49,13 +61,21 @@ internal open class ModExtensionImpl(project: Project) : ModExtension {
         AdditionalPropertiesImpl(project, project.parent?.mod?.additional)
 }
 
-internal class AdditionalPropertiesImpl(private val project: Project, private val parent: AdditionalProperties?) :
-    AdditionalProperties {
+internal class AdditionalPropertiesImpl(
+    private val project: Project,
+    private val parent: AdditionalProperties?,
+) : AdditionalProperties {
     private val values = mutableMapOf<String, Provider<String>>()
 
-    override fun add(key: String, value: String) = add(key, project.provider { value })
+    override fun add(
+        key: String,
+        value: String,
+    ) = add(key, project.provider { value })
 
-    override fun add(key: String, value: Provider<String>) {
+    override fun add(
+        key: String,
+        value: Provider<String>,
+    ) {
         values[key] = value
     }
 
@@ -67,19 +87,20 @@ internal class AdditionalPropertiesImpl(private val project: Project, private va
 internal fun ModExtension.resolveProperties(): Map<String, String> {
     val mcVersionRange = minecraftVersion.map { "[$it,)" }
 
-    val providers = mapOf(
-        "version" to version,
-        "mod_version" to version,
-        "mod_name" to name,
-        "mod_id" to id,
-        "mod_author" to author,
-        "mod_description" to description,
-        "repository" to repository,
-        "minecraft_version" to minecraftVersion,
-        "mc_version" to minecraftVersion,
-        "minecraft_version_range" to mcVersionRange,
-        "mc_version_range" to mcVersionRange,
-    ) + additional.toMap()
+    val providers =
+        mapOf(
+            "version" to version,
+            "mod_version" to version,
+            "mod_name" to name,
+            "mod_id" to id,
+            "mod_author" to author,
+            "mod_description" to description,
+            "repository" to repository,
+            "minecraft_version" to minecraftVersion,
+            "mc_version" to minecraftVersion,
+            "minecraft_version_range" to mcVersionRange,
+            "mc_version_range" to mcVersionRange,
+        ) + additional.toMap()
 
     return providers
         .filterValues { it.isPresent }

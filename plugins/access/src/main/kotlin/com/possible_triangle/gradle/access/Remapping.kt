@@ -7,25 +7,39 @@ import org.gradle.api.Task
 
 interface Remapper {
     fun remapClass(value: String): String
-    fun remapField(className: String, field: String): String
-    fun remapMethod(className: String, method: String, descriptor: String): String
+
+    fun remapField(
+        className: String,
+        field: String,
+    ): String
+
+    fun remapMethod(
+        className: String,
+        method: String,
+        descriptor: String,
+    ): String
 
     fun configureTask(task: Task) {
     }
 
     companion object {
-        fun empty(block: Task.() -> Unit = {}) = object : Remapper {
-            override fun remapClass(value: String) = value
-            override fun remapField(className: String, field: String) = field
+        fun empty(block: Task.() -> Unit = {}) =
+            object : Remapper {
+                override fun remapClass(value: String) = value
 
-            override fun remapMethod(
-                className: String,
-                method: String,
-                descriptor: String
-            ) = method + descriptor
+                override fun remapField(
+                    className: String,
+                    field: String,
+                ) = field
 
-            override fun configureTask(task: Task) = task.block()
-        }
+                override fun remapMethod(
+                    className: String,
+                    method: String,
+                    descriptor: String,
+                ) = method + descriptor
+
+                override fun configureTask(task: Task) = task.block()
+            }
     }
 }
 

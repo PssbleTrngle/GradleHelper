@@ -9,18 +9,18 @@ import java.net.URI
 
 @Serializable
 private data class Response(
-    val versions: List<String>
+    val versions: List<String>,
 )
 
 object NeoformFetcher {
-
     private const val API_ENDPOINT = "https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoform"
 
     private val logger = LogManager.getLogger(NeoformFetcher::class.java)
 
-    private val JSON = Json {
-        ignoreUnknownKeys = true
-    }
+    private val JSON =
+        Json {
+            ignoreUnknownKeys = true
+        }
 
     private fun fetch(): Response {
         val url = URI(API_ENDPOINT).toURL()
@@ -44,5 +44,4 @@ object NeoformFetcher {
         logger.info("Using NeoForm version $match")
         return match
     }
-
 }

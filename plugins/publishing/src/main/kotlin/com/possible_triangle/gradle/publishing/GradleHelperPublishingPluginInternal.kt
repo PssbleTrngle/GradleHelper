@@ -8,7 +8,6 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.withType
 
 class GradleHelperPublishingPluginInternal : Plugin<Project> {
-
     override fun apply(target: Project) {
         target.apply<MavenPublishPlugin>()
 
@@ -21,5 +20,4 @@ class GradleHelperPublishingPluginInternal : Plugin<Project> {
             enabled = false
         }
     }
-
 }

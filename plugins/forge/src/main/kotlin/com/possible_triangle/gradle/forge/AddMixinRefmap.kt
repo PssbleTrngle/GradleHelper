@@ -5,8 +5,9 @@ import com.google.gson.JsonObject
 import org.apache.tools.ant.filters.BaseFilterReader
 import java.io.Reader
 
-class AddMixinRefmap(input: Reader) : BaseFilterReader(input) {
-
+class AddMixinRefmap(
+    input: Reader,
+) : BaseFilterReader(input) {
     val gson = GsonBuilder().setPrettyPrinting().create()
 
     private lateinit var out: String
@@ -33,5 +34,4 @@ class AddMixinRefmap(input: Reader) : BaseFilterReader(input) {
         if (index >= out.length) return -1
         return out[index++].toInt()
     }
-
 }

@@ -17,18 +17,20 @@ fun Project.forgeGradleMappings(): Remapper {
     }
 
     return object : Remapper {
-        override fun remapClass(value: String): String {
-            return mappings.remapClass(value)
-        }
+        override fun remapClass(value: String): String = mappings.remapClass(value)
 
-        override fun remapField(className: String, field: String): String {
-            return mappings.getClass(className).remapField(field)
-        }
+        override fun remapField(
+            className: String,
+            field: String,
+        ): String = mappings.getClass(className).remapField(field)
 
-        override fun remapMethod(className: String, method: String, descriptor: String): String {
-            return mappings.getClass(className).remapMethod(method, descriptor) +
-                    mappings.remapDescriptor(descriptor)
-        }
+        override fun remapMethod(
+            className: String,
+            method: String,
+            descriptor: String,
+        ): String =
+            mappings.getClass(className).remapMethod(method, descriptor) +
+                mappings.remapDescriptor(descriptor)
 
         override fun configureTask(task: Task) {
             task.dependsOn(downloadMappings)

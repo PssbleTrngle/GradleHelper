@@ -6,23 +6,25 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SubprojectTest {
-
     @Test
     fun `mod properties are accessible from sub projects`() {
-        val project = createProject<GradleHelperCorePlugin> {
-            withName("parent")
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperCorePlugin> {
+                withName("parent")
+                withProjectDir("example")
+            }
 
-        val subproject = createProject<GradleHelperCorePlugin> {
-            withName("project-1")
-            withParent(project)
-        }
+        val subproject =
+            createProject<GradleHelperCorePlugin> {
+                withName("project-1")
+                withParent(project)
+            }
 
-        val otherSubproject = createProject<GradleHelperCorePlugin> {
-            withName("project-2")
-            withParent(project)
-        }
+        val otherSubproject =
+            createProject<GradleHelperCorePlugin> {
+                withName("project-2")
+                withParent(project)
+            }
 
         project.mod {
             name.set("Another Name")
@@ -37,20 +39,23 @@ class SubprojectTest {
 
     @Test
     fun `mod properties can be overwritten in sub projects`() {
-        val project = createProject<GradleHelperCorePlugin> {
-            withName("parent")
-            withProjectDir("example")
-        }
+        val project =
+            createProject<GradleHelperCorePlugin> {
+                withName("parent")
+                withProjectDir("example")
+            }
 
-        val subproject = createProject<GradleHelperCorePlugin> {
-            withName("project-1")
-            withParent(project)
-        }
+        val subproject =
+            createProject<GradleHelperCorePlugin> {
+                withName("project-1")
+                withParent(project)
+            }
 
-        val otherSubproject = createProject<GradleHelperCorePlugin> {
-            withName("project-2")
-            withParent(project)
-        }
+        val otherSubproject =
+            createProject<GradleHelperCorePlugin> {
+                withName("project-2")
+                withParent(project)
+            }
 
         subproject.mod {
             name.set("Subproject Mod Name")
@@ -60,5 +65,4 @@ class SubprojectTest {
         assertEquals("Subproject Mod Name", subproject.mod.name.get())
         assertEquals("Example Name", otherSubproject.mod.name.get())
     }
-
 }

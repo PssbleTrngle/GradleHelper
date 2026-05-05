@@ -18,7 +18,6 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 
 class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
-
     override fun Project.finalize() {
         val config = the<ForgeExtension>() as ForgeExtensionImpl
 
@@ -57,11 +56,13 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
     private fun Project.configureModSourceSets(config: ForgeExtensionImpl) {
         configure<LegacyForgeExtension> {
             mods.named(mod.id.get()) {
-                modSourceSets.addAll(provider {
-                    val dependencies = config.dependsOn.map { it.mainSourceSet }
-                    val datagen = listOfNotNull(config.datagenSourceSet.orNull)
-                    dependencies + datagen
-                })
+                modSourceSets.addAll(
+                    provider {
+                        val dependencies = config.dependsOn.map { it.mainSourceSet }
+                        val datagen = listOfNotNull(config.datagenSourceSet.orNull)
+                        dependencies + datagen
+                    },
+                )
             }
         }
     }
@@ -76,13 +77,14 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                 runs.named("data") {
                     val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
                     val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
-                    val dataGenArgs = listOf(
-                        "--mod",
-                        mod.id.get(),
-                        "--all",
-                        "--output",
-                        config.requireOwner().datagenOutput.path
-                    ) + existingResources + existingMods
+                    val dataGenArgs =
+                        listOf(
+                            "--mod",
+                            mod.id.get(),
+                            "--all",
+                            "--output",
+                            config.requireOwner().datagenOutput.path,
+                        ) + existingResources + existingMods
 
                     programArguments.addAll(dataGenArgs)
 
@@ -166,7 +168,7 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
 
             lazyDependencies("api") {
                 config.kotlinForgeVersion.orNull?.let {
-                    add("thedarkcolour:kotlinforforge:${it}")
+                    add("thedarkcolour:kotlinforforge:$it")
                 }
             }
         }

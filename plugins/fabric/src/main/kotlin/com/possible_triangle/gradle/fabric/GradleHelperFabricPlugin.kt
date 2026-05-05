@@ -16,7 +16,6 @@ import org.gradle.kotlin.dsl.*
 private val Project.loom get() = the<LoomGradleExtensionAPI>()
 
 class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
-
     override fun Project.finalize() {
         configureDatagenRun()
         linkDependencyProjects()
@@ -113,27 +112,30 @@ class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
         }
 
         dependencies {
-            add("minecraft", mod.minecraftVersion.map { "com.mojang:minecraft:${it}" })
-            add("mappings", loom.layered {
-                officialMojangMappings()
-                config.parchmentMappingsVersion.orNull?.let {
-                    parchment("org.parchmentmc.data:parchment-${mod.minecraftVersion.get()}:${it}@zip")
-                }
-            })
+            add("minecraft", mod.minecraftVersion.map { "com.mojang:minecraft:$it" })
+            add(
+                "mappings",
+                loom.layered {
+                    officialMojangMappings()
+                    config.parchmentMappingsVersion.orNull?.let {
+                        parchment("org.parchmentmc.data:parchment-${mod.minecraftVersion.get()}:$it@zip")
+                    }
+                },
+            )
 
             lazyDependencies("modImplementation") {
                 config.loaderVersion.orNull?.let { loaderVersion ->
-                    add("net.fabricmc:fabric-loader:${loaderVersion}")
+                    add("net.fabricmc:fabric-loader:$loaderVersion")
                 }
 
                 config.apiVersion.orNull?.let { apiVersion ->
-                    add("net.fabricmc.fabric-api:fabric-api:${apiVersion}")
+                    add("net.fabricmc.fabric-api:fabric-api:$apiVersion")
                 }
             }
 
             lazyDependencies("modApi") {
                 config.kotlinFabricVersion.orNull?.let {
-                    add("net.fabricmc:fabric-language-kotlin:${it}")
+                    add("net.fabricmc:fabric-language-kotlin:$it")
                 }
             }
 

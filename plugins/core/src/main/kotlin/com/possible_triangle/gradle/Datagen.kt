@@ -13,21 +13,26 @@ val Project.defaultDataGenProject get() = if (isSubProject) findProject(":common
 val Project.datagenOutput get() = file("src/generated/resources")
 
 val Project.existingResources
-    get() = listOfNotNull(
-        defaultDataGenProject?.file("src/main/resources"),
-        file("src/main/resources")
-    )
+    get() =
+        listOfNotNull(
+            defaultDataGenProject?.file("src/main/resources"),
+            file("src/main/resources"),
+        )
 
 interface DatagenBuilder {
     var owner: Project?
+
     fun existing(vararg mods: String)
+
     fun splitSourceSet(name: String = "data")
+
     fun sourceSet(sourceSet: Provider<SourceSet>)
 }
 
-fun DatagenBuilder.requireOwner() = requireNotNull(owner) {
-    "could not locate default :common project, datagen owner must be configured manually"
-}
+fun DatagenBuilder.requireOwner() =
+    requireNotNull(owner) {
+        "could not locate default :common project, datagen owner must be configured manually"
+    }
 
 fun Project.configureDatagen() {
     mainSourceSet.resources {

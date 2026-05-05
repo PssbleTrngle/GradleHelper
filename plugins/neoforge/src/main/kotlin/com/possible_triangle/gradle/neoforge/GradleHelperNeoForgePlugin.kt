@@ -17,16 +17,17 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 
 fun Project.splitDataRuns(): Boolean {
-    val version = mod.minecraftVersion.map {
-        VersionCapabilitiesInternal.ofMinecraftVersion(it)
-    }.getOrElse(
-        VersionCapabilitiesInternal.latest()
-    )
+    val version =
+        mod.minecraftVersion
+            .map {
+                VersionCapabilitiesInternal.ofMinecraftVersion(it)
+            }.getOrElse(
+                VersionCapabilitiesInternal.latest(),
+            )
     return version.splitDataRuns()
 }
 
 class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
-
     override fun Project.finalize() {
         val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
 
@@ -84,13 +85,14 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
 
                     val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
                     val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
-                    val dataGenArgs = listOf(
-                        "--mod",
-                        mod.id.get(),
-                        "--all",
-                        "--output",
-                        config.requireOwner().datagenOutput.path
-                    ) + existingResources + existingMods
+                    val dataGenArgs =
+                        listOf(
+                            "--mod",
+                            mod.id.get(),
+                            "--all",
+                            "--output",
+                            config.requireOwner().datagenOutput.path,
+                        ) + existingResources + existingMods
 
                     programArguments.addAll(dataGenArgs)
 
@@ -137,8 +139,11 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
                 }
 
                 create("data") {
-                    if (splitDataRuns()) clientData()
-                    else data()
+                    if (splitDataRuns()) {
+                        clientData()
+                    } else {
+                        data()
+                    }
                 }
 
                 forEach { run ->
@@ -149,7 +154,7 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
         }
 
         dependencies {
-            add("implementation", config.neoforgeVersion.map { "net.neoforged:neoforge:${it}" })
+            add("implementation", config.neoforgeVersion.map { "net.neoforged:neoforge:$it" })
 
             lazyDependencies("implementation") {
                 config.dependsOn.forEach {
@@ -159,10 +164,9 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
 
             lazyDependencies("api") {
                 config.kotlinForgeVersion.orNull?.let {
-                    add("thedarkcolour:kotlinforforge-neoforge:${it}")
+                    add("thedarkcolour:kotlinforforge-neoforge:$it")
                 }
             }
         }
-
     }
 }

@@ -6,7 +6,6 @@ package com.possible_triangle.gradle.access
 data class AccessWidener(
     val entries: List<Entry>,
 ) {
-
     sealed interface Entry {
         val target: Target
         val modifier: Modifier
@@ -49,5 +48,4 @@ data class AccessWidener(
         METHOD,
         FIELD,
     }
-
 }

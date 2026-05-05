@@ -3,7 +3,6 @@ package com.possible_triangle.gradle.forge
 import com.possible_triangle.gradle.features.loaders.addIncluded
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.features.loaders.mixinExtrasVersion
-import com.possible_triangle.gradle.features.resolveDependency
 import com.possible_triangle.gradle.mod
 import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
 import org.gradle.api.Project
@@ -27,7 +26,7 @@ internal fun Project.configureMixins() {
             manifest.attributes(
                 mapOf(
                     "MixinConfigs" to configs.joinToString(","),
-                )
+                ),
             )
         }
     }
@@ -40,9 +39,9 @@ internal fun Project.mixinExtrasVersion(): String? {
 
 internal fun Project.includeMixinExtras(version: String) {
     dependencies {
-        val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:${version}")
+        val annotationProcessor = add("annotationProcessor", "io.github.llamalad7:mixinextras-common:$version")
         add("compileOnly", annotationProcessor!!)
-        add("implementation", "io.github.llamalad7:mixinextras-forge:${version}")
-        addIncluded("io.github.llamalad7:mixinextras-forge:${version}")
+        add("implementation", "io.github.llamalad7:mixinextras-forge:$version")
+        addIncluded("io.github.llamalad7:mixinextras-forge:$version")
     }
 }

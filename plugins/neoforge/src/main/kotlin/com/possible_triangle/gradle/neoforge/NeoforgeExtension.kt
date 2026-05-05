@@ -13,14 +13,20 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
-interface NeoforgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen,
+interface NeoforgeExtension :
+    LoaderExtension,
+    WithAccessWidener,
+    WithAccessTransformer,
+    WithDataGen,
     WithInterfaceInjections {
     val neoforgeVersion: Property<String>
     val kotlinForgeVersion: Property<String>
     val parchmentMappingsVersion: Property<String>
 }
 
-internal open class NeoforgeExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
+internal open class NeoforgeExtensionImpl(
+    override val project: Project,
+) : AbstractLoadExtensionWithDatagen(project),
     NeoforgeExtension {
     override val neoforgeVersion = project.objects.property(project.stringProperty("neoforge_version"))
 
@@ -57,5 +63,4 @@ internal open class NeoforgeExtensionImpl(override val project: Project) : Abstr
             }
         }
     }
-
 }

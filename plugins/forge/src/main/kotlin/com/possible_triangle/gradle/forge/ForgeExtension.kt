@@ -13,7 +13,11 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
-interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransformer, WithDataGen,
+interface ForgeExtension :
+    LoaderExtension,
+    WithAccessWidener,
+    WithAccessTransformer,
+    WithDataGen,
     WithInterfaceInjections {
     val forgeVersion: Provider<String>
 
@@ -24,7 +28,9 @@ interface ForgeExtension : LoaderExtension, WithAccessWidener, WithAccessTransfo
     fun enableMixins()
 }
 
-internal open class ForgeExtensionImpl(override val project: Project) : AbstractLoadExtensionWithDatagen(project),
+internal open class ForgeExtensionImpl(
+    override val project: Project,
+) : AbstractLoadExtensionWithDatagen(project),
     ForgeExtension {
     override val forgeVersion = project.provider { project.stringProperty("forge_version") }
 
@@ -68,5 +74,4 @@ internal open class ForgeExtensionImpl(override val project: Project) : Abstract
             }
         }
     }
-
 }

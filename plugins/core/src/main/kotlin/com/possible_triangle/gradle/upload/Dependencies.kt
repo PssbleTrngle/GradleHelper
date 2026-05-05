@@ -2,7 +2,9 @@ package com.possible_triangle.gradle.upload
 
 interface DependencyBuilder {
     fun required(dependency: String)
+
     fun optional(dependency: String)
+
     fun embedded(dependency: String)
 }
 
@@ -12,27 +14,29 @@ data class DependencyConsumer<T>(
     val embedded: (T) -> Unit,
 ) {
     companion object {
-        fun <T> empty() = DependencyConsumer<T>(
-            required = {},
-            optional = {},
-            embedded = {},
-        )
+        fun <T> empty() =
+            DependencyConsumer<T>(
+                required = {},
+                optional = {},
+                embedded = {},
+            )
     }
 
-    operator fun plus(other: DependencyConsumer<T>) = DependencyConsumer<T>(
-        required = {
-            this.required(it)
-            other.required(it)
-        },
-        optional = {
-            this.optional(it)
-            other.optional(it)
-        },
-        embedded = {
-            this.embedded(it)
-            other.embedded(it)
-        },
-    )
+    operator fun plus(other: DependencyConsumer<T>) =
+        DependencyConsumer<T>(
+            required = {
+                this.required(it)
+                other.required(it)
+            },
+            optional = {
+                this.optional(it)
+                other.optional(it)
+            },
+            embedded = {
+                this.embedded(it)
+                other.embedded(it)
+            },
+        )
 }
 
 abstract class AbstractDependencyBuilder<T> : DependencyBuilder {
@@ -70,7 +74,9 @@ abstract class AbstractDependencyBuilder<T> : DependencyBuilder {
     }
 
     override fun required(dependency: String) = required(resolve(dependency))
+
     override fun optional(dependency: String) = optional(resolve(dependency))
+
     override fun embedded(dependency: String) = embedded(resolve(dependency))
 }
 

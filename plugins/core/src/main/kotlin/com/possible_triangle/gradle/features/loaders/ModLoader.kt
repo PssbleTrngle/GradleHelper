@@ -16,7 +16,7 @@ interface LoaderExtension {
     fun dependOn(vararg projects: Project)
 }
 
-abstract class AbstractLoaderExtension() : LoaderExtension {
+abstract class AbstractLoaderExtension : LoaderExtension {
     private val _dependsOn = arrayListOf<Project>()
 
     val dependsOn get() = _dependsOn.toSet()
@@ -30,9 +30,11 @@ interface WithDataGen {
     fun dataGen(factory: DatagenBuilder.() -> Unit = {})
 }
 
-abstract class AbstractLoadExtensionWithDatagen(project: Project) : AbstractLoaderExtension(), DatagenBuilder,
+abstract class AbstractLoadExtensionWithDatagen(
+    project: Project,
+) : AbstractLoaderExtension(),
+    DatagenBuilder,
     WithDataGen {
-
     abstract val project: Project
 
     private val _existingMods = mutableSetOf<String>()
@@ -54,12 +56,13 @@ abstract class AbstractLoadExtensionWithDatagen(project: Project) : AbstractLoad
     }
 
     final override fun splitSourceSet(name: String) {
-        val split = project.the<SourceSetContainer>().register(name) {
-            compileClasspath += project.mainSourceSet.compileClasspath
-            compileClasspath += project.mainSourceSet.output
-            runtimeClasspath += project.mainSourceSet.runtimeClasspath
-            runtimeClasspath += project.mainSourceSet.output
-        }
+        val split =
+            project.the<SourceSetContainer>().register(name) {
+                compileClasspath += project.mainSourceSet.compileClasspath
+                compileClasspath += project.mainSourceSet.output
+                runtimeClasspath += project.mainSourceSet.runtimeClasspath
+                runtimeClasspath += project.mainSourceSet.output
+            }
 
         project.tasks.named<Jar>("sourcesJar") {
             from(split.map { it.allSource })
@@ -104,7 +107,9 @@ fun Project.configureOutputProject(config: AbstractLoaderExtension) {
 }
 
 enum class ModLoader {
-    FORGE, FABRIC, NEOFORGE
+    FORGE,
+    FABRIC,
+    NEOFORGE,
 }
 
 val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version") ?: "0.5.2"

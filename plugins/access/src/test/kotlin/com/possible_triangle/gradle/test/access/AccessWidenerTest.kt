@@ -8,12 +8,12 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class AccessWidenerTest {
-
     @Test
     fun `parses correctly`() {
-        val project = createProjectWithoutPlugin {
-            withProjectDir(File("src/test/resources"))
-        }
+        val project =
+            createProjectWithoutPlugin {
+                withProjectDir(File("src/test/resources"))
+            }
 
         val parsed = parseAccessWidener(project.file("aw/simple.accesswidener"))
 
@@ -22,14 +22,14 @@ class AccessWidenerTest {
 
     @Test
     fun `transforms correctly`() {
-        val project = createProjectWithoutPlugin {
-            withProjectDir(File("src/test/resources"))
-        }
+        val project =
+            createProjectWithoutPlugin {
+                withProjectDir(File("src/test/resources"))
+            }
 
         val parsed = parseAccessWidener(project.file("aw/simple.accesswidener"))
         val transformed = parsed.toAccessTransformer()
 
         assertNotNull(transformed)
     }
-
 }

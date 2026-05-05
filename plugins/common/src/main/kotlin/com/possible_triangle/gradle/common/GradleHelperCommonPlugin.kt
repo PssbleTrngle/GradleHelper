@@ -15,7 +15,6 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
 class GradleHelperCommonPlugin : LoaderPlugin(TransparentLoaderSpecifics) {
-
     override fun Project.setup() {
         val config = extensions.create<CommonExtension, CommonExtensionImpl>("common")
 

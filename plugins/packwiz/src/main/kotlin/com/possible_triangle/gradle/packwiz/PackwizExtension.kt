@@ -5,7 +5,9 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 
 enum class ErrorStrategy {
-    WARN, FAIL, SKIP
+    WARN,
+    FAIL,
+    SKIP,
 }
 
 interface PackwizExtension {

@@ -8,9 +8,10 @@ internal fun String.trimComments(): String {
 }
 
 internal fun parseEntry(statements: List<String>): AccessWidener.Entry {
-    val modifier = AccessWidener.Modifier.valueOf(
-        statements[0].uppercase().replace("TRANSITIVE-", "")
-    )
+    val modifier =
+        AccessWidener.Modifier.valueOf(
+            statements[0].uppercase().replace("TRANSITIVE-", ""),
+        )
     val target = AccessWidener.Target.valueOf(statements[1].uppercase())
     val className = statements[2]
 
@@ -22,12 +23,14 @@ internal fun parseEntry(statements: List<String>): AccessWidener.Entry {
 }
 
 fun parseAccessWidener(file: File): AccessWidener {
-    if (!file.exists()) error("unable to find access widener file '${file}'")
-    val lines = file.readLines()
-        .map { it.trimComments() }
-        .map { it.trim() }
-        .filterNot { it.isEmpty() }
-        .map { it.split("\\s+".toRegex()) }
+    if (!file.exists()) error("unable to find access widener file '$file'")
+    val lines =
+        file
+            .readLines()
+            .map { it.trimComments() }
+            .map { it.trim() }
+            .filterNot { it.isEmpty() }
+            .map { it.split("\\s+".toRegex()) }
 
     val entries = lines.subList(1, lines.size).map(::parseEntry)
 

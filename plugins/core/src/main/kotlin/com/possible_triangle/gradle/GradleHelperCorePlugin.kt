@@ -5,7 +5,6 @@ import com.possible_triangle.gradle.publishing.GradleHelperPublishingPluginInter
 import com.possible_triangle.gradle.repositories.defaultRepositories
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.UploadExtensionImpl
-import com.possible_triangle.gradle.upload.publish
 import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -14,13 +13,11 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 
 class GradleHelperCorePlugin : Plugin<Project> {
-
     override fun apply(target: Project) = target.configure()
 
     private fun Project.configure() {
@@ -29,7 +26,10 @@ class GradleHelperCorePlugin : Plugin<Project> {
         val rootMod = coreProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
         val mod = extensions.create<ModExtension, ModExtensionImpl>("mod")
 
-        fun <T : Any> configureDefault(default: T?, supplier: ModExtension.() -> Property<T>) {
+        fun <T : Any> configureDefault(
+            default: T?,
+            supplier: ModExtension.() -> Property<T>,
+        ) {
             mod.supplier().convention(provider { rootMod?.supplier()?.orNull ?: default })
         }
 
@@ -67,8 +67,8 @@ class GradleHelperCorePlugin : Plugin<Project> {
                     "META-INF/neoforge.mods.toml",
                     "pack.mcmeta",
                     "fabric.mod.json",
-                    mod.id.map { modId -> "${modId}*.mixins.json" }.orNull,
-                )
+                    mod.id.map { modId -> "$modId*.mixins.json" }.orNull,
+                ),
             ) {
                 expand(mod.resolveProperties())
             }
@@ -100,5 +100,4 @@ class GradleHelperCorePlugin : Plugin<Project> {
             upload.setup()
         }
     }
-
 }

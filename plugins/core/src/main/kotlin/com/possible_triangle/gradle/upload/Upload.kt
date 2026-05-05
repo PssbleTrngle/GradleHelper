@@ -8,12 +8,17 @@ interface UploadExtension {
     val maven: ModMavenPublishingExtension
 
     fun maven(block: ModMavenPublishingExtension.() -> Unit)
+
     fun curseforge(block: CurseForgeExtension.() -> Unit)
+
     fun modrinth(block: ModrinthExtension.() -> Unit)
+
     fun forEach(block: AbstractUploadExtension<*>.() -> Unit)
 }
 
-internal open class UploadExtensionImpl(project: Project) : UploadExtension {
+internal open class UploadExtensionImpl(
+    project: Project,
+) : UploadExtension {
     override val modrinth = ModrinthExtensionImpl(project)
     override val curseforge = CurseForgeExtensionImpl(project)
     override val maven = ModMavenPublishingExtensionImpl(project)

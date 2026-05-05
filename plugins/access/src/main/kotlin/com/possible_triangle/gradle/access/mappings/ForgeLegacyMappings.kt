@@ -17,7 +17,6 @@ import org.gradle.work.DisableCachingByDefault
 
 @DisableCachingByDefault(because = "Implements its own caching")
 abstract class NamedToIntermediaryMapping : NeoFormRuntimeTask() {
-
     @OutputFile
     abstract fun getOutput(): RegularFileProperty
 
@@ -26,17 +25,21 @@ abstract class NamedToIntermediaryMapping : NeoFormRuntimeTask() {
 
     @TaskAction
     fun createMappings() {
-        val args = listOf(
-            "run",
-            "--neoforge", getForgeVersion().get(),
-            "--dist", "joined",
-            "--repository", "https://maven.minecraftforge.net/",
-            "--write-result", "namedToIntermediaryMapping:${getOutput().get().asFile.absoluteFile}"
-        )
+        val args =
+            listOf(
+                "run",
+                "--neoforge",
+                getForgeVersion().get(),
+                "--dist",
+                "joined",
+                "--repository",
+                "https://maven.minecraftforge.net/",
+                "--write-result",
+                "namedToIntermediaryMapping:${getOutput().get().asFile.absoluteFile}",
+            )
 
         run(args)
     }
-
 }
 
 fun Project.forgeLegacyMappings(): Remapper {
@@ -50,24 +53,27 @@ fun Project.forgeLegacyMappings(): Remapper {
 
     val extension = the<LegacyForgeExtension>()
 
-    val mappingsTask = tasks.register<NamedToIntermediaryMapping>("createNamedToIntermediaryMapping") {
-        getOutput().set(mappingsFile)
-        getForgeVersion().set("net.minecraftforge:forge:${extension.version}:userdev")
-    }
+    val mappingsTask =
+        tasks.register<NamedToIntermediaryMapping>("createNamedToIntermediaryMapping") {
+            getOutput().set(mappingsFile)
+            getForgeVersion().set("net.minecraftforge:forge:${extension.version}:userdev")
+        }
 
     return object : Remapper {
-        override fun remapClass(value: String): String {
-            return mappings.remapClass(value)
-        }
+        override fun remapClass(value: String): String = mappings.remapClass(value)
 
-        override fun remapField(className: String, field: String): String {
-            return mappings.getClass(className).remapField(field)
-        }
+        override fun remapField(
+            className: String,
+            field: String,
+        ): String = mappings.getClass(className).remapField(field)
 
-        override fun remapMethod(className: String, method: String, descriptor: String): String {
-            return mappings.getClass(className).remapMethod(method, descriptor) +
-                    mappings.remapDescriptor(descriptor)
-        }
+        override fun remapMethod(
+            className: String,
+            method: String,
+            descriptor: String,
+        ): String =
+            mappings.getClass(className).remapMethod(method, descriptor) +
+                mappings.remapDescriptor(descriptor)
 
         override fun configureTask(task: Task) {
             task.dependsOn(mappingsTask)

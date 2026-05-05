@@ -7,20 +7,23 @@ data class DependencyFilter(
     val groupId: String? = null,
     val artifactId: String? = null,
     val version: String? = null,
-    val scope: String? = null
+    val scope: String? = null,
 )
 
 fun Project.removeRuntimeDependencies(publication: MavenPublication) {
-    //removeRuntimeModuleDependencies()
+    // removeRuntimeModuleDependencies()
     publication.removeRuntimePomDependencies()
 }
 
 fun Project.removeDependencies(publication: MavenPublication) {
-    //removeModuleDependencies()
+    // removeModuleDependencies()
     publication.removePomDependencies()
 }
 
-fun Project.removeDependencies(publication: MavenPublication, filter: DependencyFilter) {
-    //removeModuleDependencies(filter)
+fun Project.removeDependencies(
+    publication: MavenPublication,
+    filter: DependencyFilter,
+) {
+    // removeModuleDependencies(filter)
     publication.removePomDependencies(filter)
 }

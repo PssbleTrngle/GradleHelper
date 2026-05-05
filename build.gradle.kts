@@ -140,16 +140,16 @@ pluginProjects {
     }
 }
 
-spotless {
-    kotlin {
-        ktlint()
-        leadingTabsToSpaces()
-        suppressLintsFor { shortCode = "standard:package-name" }
-        suppressLintsFor { shortCode = "standard:no-wildcard-imports" }
-    }
-    kotlinGradle {
-        ktlint()
-        suppressLintsFor { shortCode = "standard:property-naming" }
+allprojects {
+    apply(plugin = "com.diffplug.spotless")
+
+    spotless {
+        kotlin {
+            ktlint()
+        }
+        kotlinGradle {
+            ktlint()
+        }
     }
 }
 
