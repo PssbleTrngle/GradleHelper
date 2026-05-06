@@ -1,6 +1,5 @@
 package com.possible_triangle.gradle
 
-import com.possible_triangle.gradle.features.loaders.isSubProject
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.BasePluginExtension
@@ -67,7 +66,7 @@ internal fun Project.configureBaseName() {
     val name =
         mod.id.flatMap { modId ->
             mod.version.map { modVersion ->
-                if (isSubProject) {
+                if (coreProject != project) {
                     "$modId-${name.lowercase()}-$modVersion"
                 } else {
                     "$modId-$modVersion"

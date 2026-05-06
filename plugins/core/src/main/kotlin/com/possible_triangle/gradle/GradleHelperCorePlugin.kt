@@ -50,7 +50,6 @@ class GradleHelperCorePlugin : Plugin<Project> {
         registerUpload()
         setupJava()
         configureBaseName()
-        setupReleaseMetadata()
 
         tasks.withType<Jar> {
             exclude(".cache")
@@ -60,7 +59,13 @@ class GradleHelperCorePlugin : Plugin<Project> {
         }
 
         if (subprojects.isEmpty()) {
-            setupSubprojectOnly()
+            configureUpload()
+        }
+
+        setupReleaseMetadata()
+
+        if (subprojects.isEmpty()) {
+            createReleaseMetadata()
         }
 
         // needed so compile-only dependencies are also available for tests
@@ -77,10 +82,5 @@ class GradleHelperCorePlugin : Plugin<Project> {
         // tasks.withType<Test> { enabled = false }
         // tasks.named("compileTestJava") { enabled = false }
         // tasks.findByName("compileTestKotlin")?.enabled = false
-    }
-
-    private fun Project.setupSubprojectOnly() {
-        createReleaseMetadata()
-        configureUpload()
     }
 }
