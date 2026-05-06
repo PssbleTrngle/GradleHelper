@@ -78,13 +78,9 @@ fun Project.setupReleaseMetadata() {
             }
         tasks.publish.finalizedBy(releaseMetadataTask)
     }
-
-    if (subprojects.isEmpty()) {
-        createReleaseMetadata()
-    }
 }
 
-private fun Project.createReleaseMetadata() {
+internal fun Project.createReleaseMetadata() {
     releaseMetadataTask.releases.create(project.name) {
         tag.convention(project.mod.version)
     }

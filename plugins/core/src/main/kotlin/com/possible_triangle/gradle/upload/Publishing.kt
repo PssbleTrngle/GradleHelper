@@ -96,7 +96,7 @@ internal class ModMavenPublishingExtensionImpl(
     override val group: Property<String> = project.objects.property<String>().convention(project.mod.mavenGroup)
     override val name: Property<String> = project.objects.property<String>().convention(project.defaultArtifactName())
 
-    private val parentExtension = project.the<PublishingExtension>()
+    private val parentExtension get() = project.the<PublishingExtension>()
 
     override val repositories: RepositoryHandler get() = parentExtension.repositories
 

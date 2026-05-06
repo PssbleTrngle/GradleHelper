@@ -1,21 +1,16 @@
 package com.possible_triangle.gradle
 
-import com.modrinth.minotaur.Minotaur
-import com.possible_triangle.gradle.publishing.GradleHelperPublishingPluginInternal
 import com.possible_triangle.gradle.repositories.defaultRepositories
-import com.possible_triangle.gradle.upload.UploadExtension
-import com.possible_triangle.gradle.upload.UploadExtensionImpl
-import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
+import com.possible_triangle.gradle.upload.configureUpload
+import com.possible_triangle.gradle.upload.registerUpload
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.kotlin.dsl.withType
-import org.gradle.language.jvm.tasks.ProcessResources
 
 class GradleHelperCorePlugin : Plugin<Project> {
     override fun apply(target: Project) = target.configure()
@@ -52,29 +47,10 @@ class GradleHelperCorePlugin : Plugin<Project> {
             defaultRepositories()
         }
 
+        registerUpload()
         setupJava()
         configureBaseName()
-        configureJarTasks()
-
-        configureUpload()
-
-        @Suppress("UnstableApiUsage")
-        tasks.withType<ProcessResources> {
-            // this will ensure that this task is redone when the versions change.
-            inputs.property("version", mod.version)
-
-            filesMatching(
-                listOfNotNull(
-                    "META-INF/mods.toml",
-                    "META-INF/neoforge.mods.toml",
-                    "pack.mcmeta",
-                    "fabric.mod.json",
-                    mod.id.map { modId -> "$modId*.mixins.json" }.orNull,
-                ),
-            ) {
-                expand(mod.resolveProperties())
-            }
-        }
+        setupReleaseMetadata()
 
         tasks.withType<Jar> {
             exclude(".cache")
@@ -83,23 +59,28 @@ class GradleHelperCorePlugin : Plugin<Project> {
             exclude("**/*.xcf")
         }
 
-        // disable tests, these sometimes break builds because no test sources are found
-        tasks.withType<Test> { enabled = false }
-        tasks.named("compileTestJava") { enabled = false }
-        tasks.findByName("compileTestKotlin")?.enabled = false
+        if (subprojects.isEmpty()) {
+            setupSubprojectOnly()
+        }
 
-        setupReleaseMetadata()
+        // needed so compile-only dependencies are also available for tests
+        configurations.named("testCompileOnly") {
+            extendsFrom(configurations.getByName("compileOnly"))
+        }
+
+        tasks.withType<Test> {
+            exclude("**/mixins/**")
+            exclude("**/mixin/**")
+        }
+
+        // disable tests, these sometimes break builds because no test sources are found
+        // tasks.withType<Test> { enabled = false }
+        // tasks.named("compileTestJava") { enabled = false }
+        // tasks.findByName("compileTestKotlin")?.enabled = false
     }
 
-    private fun Project.configureUpload() {
-        apply<GradleHelperPublishingPluginInternal>()
-        apply<CurseForgeGradlePlugin>()
-        apply<Minotaur>()
-
-        val upload = extensions.create<UploadExtension, UploadExtensionImpl>("upload")
-
-        project.afterEvaluate {
-            upload.setup()
-        }
+    private fun Project.setupSubprojectOnly() {
+        createReleaseMetadata()
+        configureUpload()
     }
 }

@@ -2,10 +2,12 @@ package com.possible_triangle.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.hasPlugin
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.the
 
@@ -43,6 +45,8 @@ interface AdditionalProperties {
     fun add(key: String)
 
     fun toMap(): Map<String, Provider<String>>
+
+    val files: ListProperty<String>
 }
 
 internal open class ModExtensionImpl(
@@ -82,6 +86,21 @@ internal class AdditionalPropertiesImpl(
     override fun add(key: String) = add(key, project.provider { project.stringProperty(key) })
 
     override fun toMap() = (parent?.toMap() ?: emptyMap()) + values.toMap()
+
+    override val files =
+        project.objects.listProperty<String>().convention(
+            project.provider {
+                listOfNotNull(
+                    "META-INF/mods.toml",
+                    "META-INF/neoforge.mods.toml",
+                    "pack.mcmeta",
+                    "fabric.mod.json",
+                    project.mod.id
+                        .map { modId -> "$modId*.mixins.json" }
+                        .orNull,
+                )
+            },
+        )
 }
 
 internal fun ModExtension.resolveProperties(): Map<String, String> {

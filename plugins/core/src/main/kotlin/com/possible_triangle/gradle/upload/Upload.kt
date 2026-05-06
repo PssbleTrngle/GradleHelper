@@ -1,6 +1,12 @@
 package com.possible_triangle.gradle.upload
 
+import com.modrinth.minotaur.Minotaur
+import com.possible_triangle.gradle.create
+import com.possible_triangle.gradle.publishing.GradleHelperPublishingPluginInternal
+import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.the
 
 interface UploadExtension {
     val modrinth: ModrinthExtension
@@ -42,5 +48,21 @@ internal open class UploadExtensionImpl(
         modrinth.setup()
         curseforge.setup()
         maven.setup()
+    }
+}
+
+internal fun Project.registerUpload() {
+    extensions.create<UploadExtension, UploadExtensionImpl>("upload")
+}
+
+internal fun Project.configureUpload() {
+    apply<GradleHelperPublishingPluginInternal>()
+    apply<CurseForgeGradlePlugin>()
+    apply<Minotaur>()
+
+    val upload = the<UploadExtension>() as UploadExtensionImpl
+
+    project.afterEvaluate {
+        upload.setup()
     }
 }

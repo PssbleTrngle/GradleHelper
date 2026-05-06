@@ -11,6 +11,7 @@ import net.neoforged.moddevgradle.boot.ModDevPlugin
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.moddevgradle.internal.utils.VersionCapabilitiesInternal
 import org.gradle.api.Project
+import org.gradle.api.tasks.testing.Test
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
@@ -28,84 +29,6 @@ fun Project.splitDataRuns(): Boolean {
 }
 
 class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
-    override fun Project.finalize() {
-        val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
-
-        configureDatagenRun()
-        configureOutputProject(config)
-        configureModSourceSets(config)
-
-        config.kotlinForgeVersion.orNull?.let {
-            configure<UploadExtension> {
-                forEach {
-                    if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
-                }
-            }
-        }
-
-        tasks.withType<ProcessResources> {
-            config.dependsOn.forEach {
-                from(it.mainSourceSet.resources)
-            }
-        }
-    }
-
-    private fun Project.configureModSourceSets(config: NeoforgeExtensionImpl) {
-        configure<NeoForgeExtension> {
-            mods.named(mod.id.get()) {
-                config.dependsOn.forEach {
-                    sourceSet(it.mainSourceSet)
-                }
-
-                config.datagenSourceSet.orNull?.let {
-                    sourceSet(it)
-                }
-            }
-        }
-    }
-
-    private fun Project.configureDatagenRun() {
-        val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
-
-        configure<NeoForgeExtension> {
-            version = config.neoforgeVersion.get()
-
-            config.parchmentMappingsVersion.orNull?.let {
-                parchment {
-                    minecraftVersion = mod.minecraftVersion.get()
-                    mappingsVersion = it
-                }
-            }
-
-            if (config.enabledDataGen) {
-                config.requireOwner().configureDatagen()
-
-                runs.named("data") {
-                    gameDirectory = project.file("run/data")
-
-                    val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
-                    val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
-                    val dataGenArgs =
-                        listOf(
-                            "--mod",
-                            mod.id.get(),
-                            "--all",
-                            "--output",
-                            config.requireOwner().datagenOutput.path,
-                        ) + existingResources + existingMods
-
-                    programArguments.addAll(dataGenArgs)
-
-                    config.datagenSourceSet.orNull?.let {
-                        sourceSet.set(it)
-                    }
-                }
-            } else {
-                runs.removeIf { it.name == "data" }
-            }
-        }
-    }
-
     override fun Project.setup() {
         apply<ModDevPlugin>()
 
@@ -166,6 +89,109 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
                 config.kotlinForgeVersion.orNull?.let {
                     add("thedarkcolour:kotlinforforge-neoforge:$it")
                 }
+            }
+        }
+    }
+
+    override fun Project.finalize() {
+        val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
+
+        configure<NeoForgeExtension> {
+            version = config.neoforgeVersion.get()
+
+            config.parchmentMappingsVersion.orNull?.let {
+                parchment {
+                    minecraftVersion = mod.minecraftVersion.get()
+                    mappingsVersion = it
+                }
+            }
+        }
+
+        setupJUnit()
+        configureDatagenRun()
+        configureOutputProject(config)
+        configureModSourceSets(config)
+
+        config.kotlinForgeVersion.orNull?.let {
+            configure<UploadExtension> {
+                forEach {
+                    if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
+                }
+            }
+        }
+
+        tasks.withType<ProcessResources> {
+            config.dependsOn.forEach {
+                from(it.mainSourceSet.resources)
+            }
+        }
+    }
+
+    private fun Project.setupJUnit() {
+        val config = the<NeoforgeExtension>()
+
+        tasks.named<Test>("test") {
+            enabled = config.unitTest.get()
+            useJUnitPlatform()
+        }
+
+        configure<NeoForgeExtension> {
+            unitTest {
+                enable()
+                testedMod = mods[mod.id.get()]
+            }
+        }
+
+        dependencies {
+            add("testImplementation", "org.junit.jupiter:junit-jupiter:5.7.1")
+            add("testRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+            add("testImplementation", "net.neoforged:testframework:${config.neoforgeVersion.get()}")
+        }
+    }
+
+    private fun Project.configureModSourceSets(config: NeoforgeExtensionImpl) {
+        configure<NeoForgeExtension> {
+            mods.named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    sourceSet(it.mainSourceSet)
+                }
+
+                config.datagenSourceSet.orNull?.let {
+                    sourceSet(it)
+                }
+            }
+        }
+    }
+
+    private fun Project.configureDatagenRun() {
+        val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
+
+        configure<NeoForgeExtension> {
+            if (config.enabledDataGen) {
+                config.requireOwner().configureDatagen()
+
+                runs.named("data") {
+                    gameDirectory = project.file("run/data")
+
+                    val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
+                    val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
+                    val dataGenArgs =
+                        listOf(
+                            "--mod",
+                            mod.id.get(),
+                            "--all",
+                            "--output",
+                            config.requireOwner().datagenOutput.path,
+                        ) + existingResources + existingMods
+
+                    programArguments.addAll(dataGenArgs)
+
+                    config.datagenSourceSet.orNull?.let {
+                        sourceSet.set(it)
+                    }
+                }
+            } else {
+                runs.removeIf { it.name == "data" }
             }
         }
     }

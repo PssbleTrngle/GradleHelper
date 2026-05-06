@@ -13,24 +13,15 @@ fun Project.configureSpotless(block: SpotlessExtension.() -> Unit) {
         configure<SpotlessExtension> {
             kotlin {
                 ktlint()
-
-                leadingTabsToSpaces()
-
-                suppressLintsFor { shortCode = "standard:package-name" }
-                suppressLintsFor { shortCode = "standard:no-wildcard-imports" }
             }
 
             java {
                 importOrder()
                 removeUnusedImports()
-
-                leadingTabsToSpaces()
             }
 
             kotlinGradle {
                 ktlint()
-
-                suppressLintsFor { shortCode = "standard:property-naming" }
             }
 
             json {
