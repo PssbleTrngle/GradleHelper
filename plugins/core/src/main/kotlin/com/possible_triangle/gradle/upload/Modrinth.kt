@@ -3,7 +3,6 @@ package com.possible_triangle.gradle.upload
 import com.modrinth.minotaur.TaskModrinthSyncBody
 import com.modrinth.minotaur.TaskModrinthUpload
 import com.possible_triangle.gradle.modifyReleaseMetadata
-import com.possible_triangle.gradle.releaseMetadataTask
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
@@ -73,7 +72,6 @@ internal class ModrinthExtensionImpl(
                 uploadTask.dependsOn(project.tasks.withType<TaskModrinthSyncBody>())
             }
 
-            project.releaseMetadataTask.dependsOn(uploadTask)
             project.modifyReleaseMetadata {
                 modrinthUrl.set(uploadTask.newVersion?.let { "https://modrinth.com/mod/${it.projectId}/version/${it.id}" })
             }

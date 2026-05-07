@@ -1,16 +1,18 @@
 package com.possible_triangle.gradle
 
-import com.possible_triangle.gradle.upload.publish
+import com.possible_triangle.gradle.upload.upload
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskContainer
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.register
 import org.gradle.work.DisableCachingByDefault
@@ -67,8 +69,8 @@ abstract class GenerateReleaseMetadataTask : DefaultTask() {
 
 private const val TASK_NAME = "generateReleaseMetadata"
 
-val Project.releaseMetadataTask: GenerateReleaseMetadataTask
-    get() = coreProject.tasks.getByName<GenerateReleaseMetadataTask>(TASK_NAME)
+val TaskContainer.releaseMetadata: GenerateReleaseMetadataTask
+    get() = getByName<GenerateReleaseMetadataTask>(TASK_NAME)
 
 fun Project.setupReleaseMetadata() {
     if (this == coreProject) {
@@ -76,16 +78,21 @@ fun Project.setupReleaseMetadata() {
             tasks.register<GenerateReleaseMetadataTask>(TASK_NAME) {
                 getOutput().convention(project.layout.buildDirectory.file("release.json"))
             }
-        tasks.publish.finalizedBy(releaseMetadataTask)
+
+        tasks.getOrCreate<Task>("publish") {
+            finalizedBy(releaseMetadataTask)
+            tasks.upload.finalizedBy(this)
+        }
     }
 }
 
 internal fun Project.createReleaseMetadata() {
-    releaseMetadataTask.releases.create(project.name) {
+    coreProject.tasks.releaseMetadata.releases.create(project.name) {
         tag.convention(project.mod.version)
     }
 }
 
 fun Project.modifyReleaseMetadata(block: ReleaseMetadata.() -> Unit = {}) {
-    releaseMetadataTask.releases.named(project.name, block)
+    coreProject.tasks.releaseMetadata.releases
+        .named(project.name, block)
 }

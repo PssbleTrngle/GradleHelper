@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle.upload
 
 import com.possible_triangle.gradle.features.loaders.ModLoader
-import com.possible_triangle.gradle.releaseMetadataTask
 import net.darkhax.curseforgegradle.Constants
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.UploadArtifact

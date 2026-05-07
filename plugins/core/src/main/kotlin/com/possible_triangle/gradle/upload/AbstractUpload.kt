@@ -6,11 +6,9 @@ import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.TaskContainer
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.listProperty
 
@@ -66,12 +64,3 @@ internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBu
 
     internal fun isConfigured(): Boolean = token.isPresent && file.isPresent && projectId.isPresent
 }
-
-internal val TaskContainer.publish
-    get(): Task {
-        return findByName("publish") ?: register("publish") {
-            doLast {
-                print("successfully published")
-            }
-        }.get()
-    }

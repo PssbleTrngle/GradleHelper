@@ -3,13 +3,15 @@ package com.possible_triangle.gradle.upload
 import com.modrinth.minotaur.Minotaur
 import com.possible_triangle.gradle.coreProject
 import com.possible_triangle.gradle.create
+import com.possible_triangle.gradle.getOrCreate
 import com.possible_triangle.gradle.publishing.GradleHelperPublishingPluginInternal
-import com.possible_triangle.gradle.releaseMetadataTask
+import com.possible_triangle.gradle.releaseMetadata
 import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.TaskContainer
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.the
 
 interface UploadExtension {
@@ -55,16 +57,25 @@ internal open class UploadExtensionImpl(
     }
 }
 
+private const val TASK_NAME = "upload"
+
 internal fun Project.registerUpload() {
     extensions.create<UploadExtension, UploadExtensionImpl>("upload")
+    tasks.register(TASK_NAME)
 }
 
-internal fun Project.modifyUploadTask(name: String, block: Task.() -> Unit) {
-    coreProject.tasks.findByName(name)?.block() ?: coreProject.tasks.register(name) {
-        releaseMetadataTask.dependsOn(this)
-        coreProject.tasks.publish.dependsOn(this)
-        block()
-    }
+internal val TaskContainer.upload
+    get() = getByName<Task>(TASK_NAME)
+
+internal fun Project.modifyUploadTask(
+    name: String,
+    block: Task.() -> Unit,
+) {
+    coreProject.tasks
+        .getOrCreate<Task>(name) {
+            coreProject.tasks.releaseMetadata.dependsOn(this)
+            coreProject.tasks.upload.dependsOn(this)
+        }.block()
 }
 
 internal fun Project.configureUpload() {
