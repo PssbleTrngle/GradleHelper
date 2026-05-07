@@ -3,6 +3,7 @@ kotlin-version = "2.2.21"
 sonar-version = "7.3.0.8198"
 spotless-version = "8.4.0"
 neoforge-version = "2.0.141"
+power-mock-version = "2.0.9"
 
 [libraries]
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
@@ -32,6 +33,10 @@ sonar-scanner = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plug
 spotless = { module = "com.diffplug.spotless:com.diffplug.spotless.gradle.plugin", version.ref = "spotless-version" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin-version" }
+mockk = { group = "io.mockk", name = "mockk", version = "1.14.9" }
+
+[bundles]
+testing = ["kotlin-test", "mockk"]
 
 [plugins]
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }

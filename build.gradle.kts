@@ -132,7 +132,7 @@ pluginProjects {
         api(rootProject.libs.kotlin.serialization)
         implementation(rootProject.libs.gson)
 
-        testImplementation(rootProject.libs.kotlin.test)
+        testImplementation(rootProject.libs.bundles.testing)
         testImplementation(project(":test"))
     }
 }

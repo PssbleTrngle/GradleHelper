@@ -12,6 +12,8 @@ class GradleHelperSettingsPlugin : Plugin<Settings> {
     override fun apply(target: Settings) {
         logger.info("using gradle helper version ${BuildParameters.MAJOR_VERSION}")
 
+        val config = target.createHelperExtension()
+
         target.pluginManagement {
             repositories {
                 maven {
@@ -21,8 +23,11 @@ class GradleHelperSettingsPlugin : Plugin<Settings> {
 
             resolutionStrategy {
                 eachPlugin {
+                    val strategy = config.versionStrategy.get()
+                    if (strategy == ResolutionStrategy.NONE) return@eachPlugin
+
                     if (requested.version == null && requested.id.namespace == "com.possible-triangle") {
-                        val snapshotVersion = "${BuildParameters.MAJOR_VERSION}-SNAPSHOT"
+                        val snapshotVersion = strategy.versionOf(requested.id)
                         logger.info("resolving $snapshotVersion for ${requested.id.name}")
                         useVersion(snapshotVersion)
                     }
