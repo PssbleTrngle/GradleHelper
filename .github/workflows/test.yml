@@ -47,7 +47,7 @@ jobs:
           dependency-graph: generate-and-submit
 
       - name: Test
-        run: ./gradlew check
+        run: ./gradlew check --stacktrace
 
       - name: Sonarqube
         if: ${{ github.event_name == 'push' }}
