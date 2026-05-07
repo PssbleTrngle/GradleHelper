@@ -6,6 +6,7 @@ import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.resolveProperties
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -21,6 +22,11 @@ abstract class LoaderPlugin(
         target.configureJarTasks()
 
         target.setup()
+
+        target.tasks.withType<Test> { onlyIf { target.testEnabled() } }
+        target.tasks.named("compileTestJava") { onlyIf { target.testEnabled() } }
+        target.tasks.named("compileTestKotlin") { onlyIf { target.testEnabled() } }
+
         target.afterEvaluate { finalize() }
     }
 
@@ -40,4 +46,6 @@ abstract class LoaderPlugin(
             }
         }
     }
+
+    protected open fun Project.testEnabled(): Boolean = false
 }

@@ -16,62 +16,6 @@ import org.gradle.kotlin.dsl.*
 private val Project.loom get() = the<LoomGradleExtensionAPI>()
 
 class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
-    override fun Project.finalize() {
-        configureDatagenRun()
-        linkDependencyProjects()
-    }
-
-    private fun Project.configureDatagenRun() {
-        val config = the<FabricExtension>() as FabricExtensionImpl
-
-        if (config.enabledDataGen) {
-            config.requireOwner().configureDatagen()
-
-            loom.runs {
-                named("data") {
-                    client()
-                    configName = "Fabric Datagen"
-                    runDir("run/data")
-
-                    property("fabric-api.datagen")
-                    property("fabric-api.datagen.output-dir=${config.requireOwner().datagenOutput}")
-                    property("fabric-api.datagen.modid=${mod.id.get()}")
-                    property("porting_lib.datagen.existing_resources=${existingResources.first()}")
-                }
-            }
-        } else {
-            loom.runs.removeIf { it.name == "data" }
-        }
-    }
-
-    private fun Project.linkDependencyProjects() {
-        val config = the<FabricExtension>() as FabricExtensionImpl
-
-        configureOutputProject(config)
-
-        mainSourceSet.apply {
-            config.dependsOn.forEach {
-                resources.srcDir(it.mainSourceSet.resources)
-            }
-        }
-
-        loom.mods {
-            named(mod.id.get()) {
-                config.dependsOn.forEach {
-                    sourceSet(it.mainSourceSet)
-                }
-            }
-        }
-
-        config.kotlinFabricVersion.orNull?.let {
-            configure<UploadExtension> {
-                forEach {
-                    if (includeKotlinDependency.get()) dependencies.required("fabric-language-kotlin")
-                }
-            }
-        }
-    }
-
     override fun Project.setup() {
         apply<LoomGradlePlugin>()
 
@@ -142,6 +86,62 @@ class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
             lazyDependencies("implementation") {
                 config.dependsOn.forEach {
                     add(it)
+                }
+            }
+        }
+    }
+
+    override fun Project.finalize() {
+        configureDatagenRun()
+        linkDependencyProjects()
+    }
+
+    private fun Project.configureDatagenRun() {
+        val config = the<FabricExtension>() as FabricExtensionImpl
+
+        if (config.enabledDataGen) {
+            config.requireOwner().configureDatagen()
+
+            loom.runs {
+                named("data") {
+                    client()
+                    configName = "Fabric Datagen"
+                    runDir("run/data")
+
+                    property("fabric-api.datagen")
+                    property("fabric-api.datagen.output-dir=${config.requireOwner().datagenOutput}")
+                    property("fabric-api.datagen.modid=${mod.id.get()}")
+                    property("porting_lib.datagen.existing_resources=${existingResources.first()}")
+                }
+            }
+        } else {
+            loom.runs.removeIf { it.name == "data" }
+        }
+    }
+
+    private fun Project.linkDependencyProjects() {
+        val config = the<FabricExtension>() as FabricExtensionImpl
+
+        configureOutputProject(config)
+
+        mainSourceSet.apply {
+            config.dependsOn.forEach {
+                resources.srcDir(it.mainSourceSet.resources)
+            }
+        }
+
+        loom.mods {
+            named(mod.id.get()) {
+                config.dependsOn.forEach {
+                    sourceSet(it.mainSourceSet)
+                }
+            }
+        }
+
+        config.kotlinFabricVersion.orNull?.let {
+            configure<UploadExtension> {
+                forEach {
+                    if (includeKotlinDependency.get()) dependencies.required("fabric-language-kotlin")
                 }
             }
         }

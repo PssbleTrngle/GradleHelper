@@ -131,7 +131,6 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
         val config = the<NeoforgeExtension>()
 
         tasks.named<Test>("test") {
-            enabled = config.unitTest.get()
             useJUnitPlatform()
         }
 
@@ -194,5 +193,10 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
                 runs.removeIf { it.name == "data" }
             }
         }
+    }
+
+    override fun Project.testEnabled(): Boolean {
+        val config = the<NeoforgeExtension>()
+        return config.unitTests.get()
     }
 }

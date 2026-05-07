@@ -22,7 +22,7 @@ interface NeoforgeExtension :
     val neoforgeVersion: Property<String>
     val kotlinForgeVersion: Property<String>
     val parchmentMappingsVersion: Property<String>
-    val unitTest: Property<Boolean>
+    val unitTests: Property<Boolean>
 }
 
 internal open class NeoforgeExtensionImpl(
@@ -36,7 +36,7 @@ internal open class NeoforgeExtensionImpl(
     override val parchmentMappingsVersion =
         project.objects.property(project.stringProperty("parchment_mappings_version"))
 
-    override val unitTest = project.objects.property(false)
+    override val unitTests = project.objects.property(false)
 
     override fun accessTransformer(file: Provider<File>) {
         project.configure<NeoForgeExtension> {
