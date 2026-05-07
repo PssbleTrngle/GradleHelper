@@ -52,20 +52,26 @@ internal fun fetchMetadataRaw(plugin: PluginId): InputStream {
     return connection.getInputStream()
 }
 
-private fun fetchVersion(plugin: PluginId): String {
+private fun fetchVersion(
+    majorVersion: String,
+    plugin: PluginId,
+): String {
     val inputStream = fetchMetadataRaw(plugin)
     val response = InputStreamReader(inputStream).readText()
     val versions = parseMetadataVersions(response)
 
     return versions
         .sorted()
-        .last { it.startsWith("${BuildParameters.MAJOR_VERSION}.") }
+        .last { it.startsWith("$majorVersion.") }
 }
 
-internal fun ResolutionStrategy.versionOf(plugin: PluginId): String =
+internal fun ResolutionStrategy.versionOf(
+    majorVersion: String,
+    plugin: PluginId,
+): String =
     when (this) {
         ResolutionStrategy.NONE -> error("no resolution strategy selected")
-        ResolutionStrategy.SNAPSHOT -> "${BuildParameters.MAJOR_VERSION}-SNAPSHOT"
-        ResolutionStrategy.WILDCARD -> "${BuildParameters.MAJOR_VERSION}.+"
-        ResolutionStrategy.FETCH -> fetchVersion(plugin)
+        ResolutionStrategy.SNAPSHOT -> "$majorVersion-SNAPSHOT"
+        ResolutionStrategy.WILDCARD -> "$majorVersion.+"
+        ResolutionStrategy.FETCH -> fetchVersion(majorVersion, plugin)
     }

@@ -17,7 +17,7 @@ class VersionResolutionTest {
         mockkStatic(::fetchMetadataRaw)
         every { fetchMetadataRaw(plugin) } returns VersionResolutionTest::class.java.getResourceAsStream("/responses/core.xml")!!
 
-        val version = ResolutionStrategy.FETCH.versionOf(plugin)
+        val version = ResolutionStrategy.FETCH.versionOf("99.0", plugin)
 
         assertEquals("99.0.150", version)
     }
