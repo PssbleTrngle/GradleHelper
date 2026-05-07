@@ -36,7 +36,10 @@ private fun parseMetadataVersions(from: String): List<String> {
     return versions.values().map { it.value<NodeList>().first() as String }
 }
 
-internal fun metadataUri(plugin: PluginId): URI = URI("https://plugins.gradle.org/m2/${plugin.namespace}/${plugin.name}/maven-metadata.xml")
+private const val MAVEN_BASE_URL = "https://registry.somethingcatchy.net/repository/maven-releases"
+
+internal fun metadataUri(plugin: PluginId): URI =
+    URI("$MAVEN_BASE_URL/${plugin.namespace!!.replace('.', '/')}/${plugin.name}/maven-metadata.xml")
 
 internal fun fetchMetadataRaw(plugin: PluginId): InputStream {
     val uri = metadataUri(plugin)
