@@ -24,8 +24,8 @@ abstract class LoaderPlugin(
         target.setup()
 
         target.tasks.withType<Test> { onlyIf { target.testEnabled() } }
-        target.tasks.named("compileTestJava") { onlyIf { target.testEnabled() } }
-        target.tasks.named("compileTestKotlin") { onlyIf { target.testEnabled() } }
+        target.tasks.findByName("compileTestJava")?.onlyIf { target.testEnabled() }
+        target.tasks.findByName("compileTestKotlin")?.onlyIf { target.testEnabled() }
 
         target.afterEvaluate { finalize() }
     }
