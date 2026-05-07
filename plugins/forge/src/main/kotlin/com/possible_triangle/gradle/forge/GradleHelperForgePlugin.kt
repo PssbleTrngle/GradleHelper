@@ -51,10 +51,6 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                 }
             }
         }
-
-        modifyPublication {
-            removeDependencies(this)
-        }
     }
 
     private fun Project.configureModSourceSets(config: ForgeExtensionImpl) {
@@ -175,6 +171,10 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                     add("thedarkcolour:kotlinforforge:$it")
                 }
             }
+        }
+
+        modifyPublication {
+            removeDependencies(this)
         }
     }
 }

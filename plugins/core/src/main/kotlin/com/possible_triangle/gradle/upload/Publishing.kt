@@ -89,6 +89,8 @@ interface ModMavenPublishingExtension {
     fun disableDefaultModifications()
 }
 
+private const val PUBLICATION_NAME = "maven"
+
 internal class ModMavenPublishingExtensionImpl(
     private val project: Project,
 ) : ModMavenPublishingExtension {
@@ -102,7 +104,8 @@ internal class ModMavenPublishingExtensionImpl(
 
     override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
 
-    override fun githubPackages(block: MavenArtifactRepository.() -> Unit) = repositories.addGithubPackages(project, block)
+    override fun githubPackages(block: MavenArtifactRepository.() -> Unit) =
+        repositories.addGithubPackages(project, block)
 
     override fun nexus(
         snapshot: Boolean,
@@ -185,15 +188,12 @@ internal class ModMavenPublishingExtensionImpl(
     }
 }
 
-private const val PUBLICATION_NAME = "maven"
-
 fun Project.modifyPublication(block: MavenPublication.() -> Unit) =
     afterEvaluate {
         extensions.findByType<PublishingExtension>()?.apply {
             publications {
-                named<MavenPublication>(PUBLICATION_NAME) {
-                    block()
-                }
+                val publication = findByName(PUBLICATION_NAME) as MavenPublication?
+                publication?.block()
             }
         }
     }
