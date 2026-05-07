@@ -1,11 +1,15 @@
 package com.possible_triangle.gradle.upload
 
 import com.modrinth.minotaur.Minotaur
+import com.possible_triangle.gradle.coreProject
 import com.possible_triangle.gradle.create
 import com.possible_triangle.gradle.publishing.GradleHelperPublishingPluginInternal
+import com.possible_triangle.gradle.releaseMetadataTask
 import net.darkhax.curseforgegradle.CurseForgeGradlePlugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.the
 
 interface UploadExtension {
@@ -53,6 +57,14 @@ internal open class UploadExtensionImpl(
 
 internal fun Project.registerUpload() {
     extensions.create<UploadExtension, UploadExtensionImpl>("upload")
+}
+
+internal fun Project.modifyUploadTask(name: String, block: Task.() -> Unit) {
+    coreProject.tasks.findByName(name)?.block() ?: coreProject.tasks.register(name) {
+        releaseMetadataTask.dependsOn(this)
+        coreProject.tasks.publish.dependsOn(this)
+        block()
+    }
 }
 
 internal fun Project.configureUpload() {

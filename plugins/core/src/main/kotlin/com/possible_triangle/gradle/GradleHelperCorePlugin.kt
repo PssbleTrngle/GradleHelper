@@ -18,7 +18,7 @@ class GradleHelperCorePlugin : Plugin<Project> {
     private fun Project.configure() {
         loadEnv()
 
-        logger.info("applying gradle helper plugin with version ${BuildParameters.PLUGIN_VERSION}")
+        logger.lifecycle("applying gradle helper plugin with version ${BuildParameters.PLUGIN_VERSION}")
 
         val rootMod = coreProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
         val mod = extensions.create<ModExtension, ModExtensionImpl>("mod")
@@ -77,10 +77,5 @@ class GradleHelperCorePlugin : Plugin<Project> {
             exclude("**/mixins/**")
             exclude("**/mixin/**")
         }
-
-        // disable tests, these sometimes break builds because no test sources are found
-        // tasks.withType<Test> { enabled = false }
-        // tasks.named("compileTestJava") { enabled = false }
-        // tasks.findByName("compileTestKotlin")?.enabled = false
     }
 }
