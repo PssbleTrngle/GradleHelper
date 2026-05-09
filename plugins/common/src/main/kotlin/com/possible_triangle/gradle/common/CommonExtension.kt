@@ -34,7 +34,8 @@ internal open class CommonExtensionImpl(
             },
         )
 
-    override val parchmentMappingsVersion = project.objects.property(project.stringProperty("parchment_mappings_version"))
+    override val parchmentMappingsVersion =
+        project.objects.property(project.stringProperty("parchment_mappings_version"))
 
     override fun accessTransformer(file: Provider<File>) {
         project.configure<NeoForgeExtension> {
@@ -48,6 +49,9 @@ internal open class CommonExtensionImpl(
     override fun accessWidener(file: Provider<File>) {
         val (output, task) = project.generateAccessTransformer(file)
         project.tasks.withType<CreateMinecraftArtifacts> {
+            dependsOn(task)
+        }
+        project.tasks.named("copyAccessTransformersPublications") {
             dependsOn(task)
         }
         accessTransformer(output)
