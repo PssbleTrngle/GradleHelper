@@ -21,7 +21,7 @@ internal fun javaVersionFor(minecraftVersion: String): Int {
     return 17
 }
 
-val Project.javaVersion
+private val Project.javaVersion
     get() =
         intProperty("java_version")
             ?: javaVersionFor(project.mod.minecraftVersion.get())
@@ -31,7 +31,7 @@ internal fun Project.setupJava() {
 
     configure<JavaPluginExtension> {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(javaVersion))
+            languageVersion.set(provider { JavaLanguageVersion.of(javaVersion) })
         }
         withSourcesJar()
     }
