@@ -13,7 +13,7 @@ import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 
-private val Project.loom get() = the<LoomGradleExtensionAPI>()
+internal val Project.loom get() = the<LoomGradleExtensionAPI>()
 
 class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
     override fun Project.setup() {
@@ -96,29 +96,6 @@ class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
         linkDependencyProjects()
     }
 
-    private fun Project.configureDatagenRun() {
-        val config = the<FabricExtension>() as FabricExtensionImpl
-
-        if (config.enabledDataGen) {
-            config.requireOwner().configureDatagen()
-
-            loom.runs {
-                named("data") {
-                    client()
-                    configName = "Fabric Datagen"
-                    runDir("run/data")
-
-                    property("fabric-api.datagen")
-                    property("fabric-api.datagen.output-dir=${config.requireOwner().datagenOutput}")
-                    property("fabric-api.datagen.modid=${mod.id.get()}")
-                    property("porting_lib.datagen.existing_resources=${existingResources.first()}")
-                }
-            }
-        } else {
-            loom.runs.removeIf { it.name == "data" }
-        }
-    }
-
     private fun Project.linkDependencyProjects() {
         val config = the<FabricExtension>() as FabricExtensionImpl
 
@@ -132,8 +109,8 @@ class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
 
         loom.mods {
             named(mod.id.get()) {
-                config.dependsOn.forEach {
-                    sourceSet(it.mainSourceSet)
+                config.modSourceSets().forEach {
+                    sourceSet(it)
                 }
             }
         }

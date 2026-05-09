@@ -66,7 +66,8 @@ internal class CurseForgeExtensionImpl(
 
                 upload(projectId.get(), file.get()).apply {
                     changelogType = Constants.CHANGELOG_MARKDOWN
-                    changelog = this@CurseForgeExtensionImpl.changelog.get()
+                    changelog = this@CurseForgeExtensionImpl.changelog.orNull
+                        ?: error("no changelog provided, unable to upload to curseforge")
                     releaseType = this@CurseForgeExtensionImpl.releaseType.get()
                     modLoaders.get().forEach { addModLoader(it.loaderName()) }
                     minecraftVersions.get().forEach { addGameVersion(it) }

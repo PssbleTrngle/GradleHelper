@@ -39,7 +39,7 @@ class GradleHelperCorePlugin : Plugin<Project> {
         configureDefault(coreProject.stringProperty("mod_author")) { author }
         configureDefault(coreProject.stringProperty("mod_description")) { description }
         configureDefault(mcVersion) { minecraftVersion }
-        configureDefault(coreProject.stringProperty("release_type")) { releaseType }
+        configureDefault(coreProject.stringProperty("release_type") ?: "release") { releaseType }
         configureDefault(coreProject.stringProperty("repository")) { repository }
         configureDefault(coreProject.stringProperty("maven_group")) { mavenGroup }
 

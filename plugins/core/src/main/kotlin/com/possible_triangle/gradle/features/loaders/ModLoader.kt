@@ -28,6 +28,8 @@ abstract class AbstractLoaderExtension : LoaderExtension {
 
 interface WithDataGen {
     fun dataGen(factory: DatagenBuilder.() -> Unit = {})
+
+    fun modSourceSets(): List<SourceSet>
 }
 
 abstract class AbstractLoadExtensionWithDatagen(
@@ -74,6 +76,12 @@ abstract class AbstractLoadExtensionWithDatagen(
     final override fun dataGen(factory: DatagenBuilder.() -> Unit) {
         enabledDataGen = true
         factory(this)
+    }
+
+    override fun modSourceSets(): List<SourceSet> {
+        val dependencies = dependsOn.map { it.mainSourceSet }
+        val datagen = listOfNotNull(datagenSourceSet.orNull)
+        return dependencies + datagen
     }
 }
 

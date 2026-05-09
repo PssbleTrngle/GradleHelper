@@ -104,8 +104,7 @@ internal class ModMavenPublishingExtensionImpl(
 
     override fun repositories(configure: RepositoryHandler.() -> Unit) = parentExtension.repositories(configure)
 
-    override fun githubPackages(block: MavenArtifactRepository.() -> Unit) =
-        repositories.addGithubPackages(project, block)
+    override fun githubPackages(block: MavenArtifactRepository.() -> Unit) = repositories.addGithubPackages(project, block)
 
     override fun nexus(
         snapshot: Boolean,

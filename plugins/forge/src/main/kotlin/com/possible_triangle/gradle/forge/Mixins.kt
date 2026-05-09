@@ -9,13 +9,23 @@ import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.filter
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 
 internal fun Project.configureMixins() {
     val config = the<ForgeExtension>() as ForgeExtensionImpl
 
     if (config.mixinsEnabled) {
+        includeMixinExtras(project.mixinExtrasVersion)
+
+        tasks.withType<Jar> {
+            filesMatching("${mod.id.get()}*.mixins.json") {
+                filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
+            }
+        }
+
         configure<MixinExtension> {
             add(mainSourceSet, "${mod.id.get()}.refmap.json")
             config("${mod.id.get()}.mixins.json")
@@ -30,11 +40,6 @@ internal fun Project.configureMixins() {
             )
         }
     }
-}
-
-internal fun Project.mixinExtrasVersion(): String? {
-    val config = the<ForgeExtension>() as ForgeExtensionImpl
-    return project.mixinExtrasVersion.takeIf { config.mixinsEnabled }
 }
 
 internal fun Project.includeMixinExtras(version: String) {

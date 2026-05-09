@@ -18,86 +18,6 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 
 class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
-    override fun Project.finalize() {
-        val config = the<ForgeExtension>() as ForgeExtensionImpl
-
-        configureDatagenRun()
-        configureMixins()
-
-        configureOutputProject(config)
-
-        project.mixinExtrasVersion()?.let {
-            includeMixinExtras(it)
-        }
-
-        tasks.withType<ProcessResources> {
-            config.dependsOn.forEach {
-                from(it.mainSourceSet.resources)
-            }
-        }
-
-        if (config.mixinsEnabled) {
-            tasks.withType<Jar> {
-                filesMatching("${mod.id.get()}*.mixins.json") {
-                    filter(AddMixinRefmap::class, "name" to "${mod.id.get()}.refmap.json")
-                }
-            }
-        }
-
-        config.kotlinForgeVersion.orNull?.let {
-            configure<UploadExtension> {
-                forEach {
-                    if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
-                }
-            }
-        }
-    }
-
-    private fun Project.configureModSourceSets(config: ForgeExtensionImpl) {
-        configure<LegacyForgeExtension> {
-            mods.named(mod.id.get()) {
-                modSourceSets.addAll(
-                    provider {
-                        val dependencies = config.dependsOn.map { it.mainSourceSet }
-                        val datagen = listOfNotNull(config.datagenSourceSet.orNull)
-                        dependencies + datagen
-                    },
-                )
-            }
-        }
-    }
-
-    private fun Project.configureDatagenRun() {
-        val config = the<ForgeExtension>() as ForgeExtensionImpl
-
-        configure<LegacyForgeExtension> {
-            if (config.enabledDataGen) {
-                config.requireOwner().configureDatagen()
-
-                runs.named("data") {
-                    val existingResources = existingResources.flatMap { listOf("--existing", it.path) }
-                    val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
-                    val dataGenArgs =
-                        listOf(
-                            "--mod",
-                            mod.id.get(),
-                            "--all",
-                            "--output",
-                            config.requireOwner().datagenOutput.path,
-                        ) + existingResources + existingMods
-
-                    programArguments.addAll(dataGenArgs)
-
-                    config.datagenSourceSet.orNull?.let {
-                        sourceSet.set(it)
-                    }
-                }
-            } else {
-                runs.removeIf { it.name == "data" }
-            }
-        }
-    }
-
     override fun Project.setup() {
         apply<LegacyForgeModDevPlugin>()
 
@@ -175,6 +95,37 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
 
         modifyPublication {
             removeDependencies(this)
+        }
+    }
+
+    override fun Project.finalize() {
+        val config = the<ForgeExtension>() as ForgeExtensionImpl
+
+        configureDatagenRun()
+        configureMixins()
+
+        configureOutputProject(config)
+
+        tasks.withType<ProcessResources> {
+            config.dependsOn.forEach {
+                from(it.mainSourceSet.resources)
+            }
+        }
+
+        config.kotlinForgeVersion.orNull?.let {
+            configure<UploadExtension> {
+                forEach {
+                    if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
+                }
+            }
+        }
+    }
+
+    private fun Project.configureModSourceSets(config: ForgeExtensionImpl) {
+        configure<LegacyForgeExtension> {
+            mods.named(mod.id.get()) {
+                modSourceSets.addAll(provider(config::modSourceSets))
+            }
         }
     }
 }
