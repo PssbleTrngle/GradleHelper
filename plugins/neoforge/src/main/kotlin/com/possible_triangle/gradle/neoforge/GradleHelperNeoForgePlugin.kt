@@ -97,7 +97,7 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
         setupJUnit()
         configureDatagenRun()
         configureOutputProject(config)
-        configureModSourceSets(config)
+        configureModSourceSets()
 
         config.kotlinForgeVersion.orNull?.let {
             configure<UploadExtension> {
@@ -114,7 +114,8 @@ class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
         }
     }
 
-    private fun Project.configureModSourceSets(config: NeoforgeExtensionImpl) {
+    private fun Project.configureModSourceSets() {
+        val config = the<NeoforgeExtension>()
         configure<NeoForgeExtension> {
             mods.named(mod.id.get()) {
                 modSourceSets.addAll(provider(config::modSourceSets))

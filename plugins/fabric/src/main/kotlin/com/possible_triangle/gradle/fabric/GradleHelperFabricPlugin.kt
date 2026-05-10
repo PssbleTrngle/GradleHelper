@@ -12,6 +12,7 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.configure
 
 internal val Project.loom get() = the<LoomGradleExtensionAPI>()
 
@@ -94,6 +95,7 @@ class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
     override fun Project.finalize() {
         configureDatagenRun()
         linkDependencyProjects()
+        configureModSourceSets()
     }
 
     private fun Project.linkDependencyProjects() {
@@ -107,18 +109,21 @@ class GradleHelperFabricPlugin : LoaderPlugin(FabricLoaderSpecifics) {
             }
         }
 
-        loom.mods {
-            named(mod.id.get()) {
-                config.modSourceSets().forEach {
-                    sourceSet(it)
-                }
-            }
-        }
-
         config.kotlinFabricVersion.orNull?.let {
             configure<UploadExtension> {
                 forEach {
                     if (includeKotlinDependency.get()) dependencies.required("fabric-language-kotlin")
+                }
+            }
+        }
+    }
+
+    private fun Project.configureModSourceSets() {
+        val config = the<FabricExtension>()
+        loom.mods {
+            named(mod.id.get()) {
+                config.modSourceSets().forEach {
+                    sourceSet(it)
                 }
             }
         }

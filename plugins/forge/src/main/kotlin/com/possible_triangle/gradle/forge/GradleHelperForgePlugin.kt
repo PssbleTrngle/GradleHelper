@@ -63,7 +63,7 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
             }
         }
 
-        configureModSourceSets(config)
+        configureModSourceSets()
 
         configure<UploadExtension> {
             forEach {
@@ -121,7 +121,8 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
         }
     }
 
-    private fun Project.configureModSourceSets(config: ForgeExtensionImpl) {
+    private fun Project.configureModSourceSets() {
+        val config = the<ForgeExtension>()
         configure<LegacyForgeExtension> {
             mods.named(mod.id.get()) {
                 modSourceSets.addAll(provider(config::modSourceSets))
