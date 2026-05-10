@@ -21,9 +21,12 @@ internal fun Project.configureDatagenRun() {
                 runDir("run/data")
 
                 property("fabric-api.datagen")
-                property("fabric-api.datagen.output-dir=${config.requireOwner().datagenOutput}")
-                property("fabric-api.datagen.modid=${mod.id.get()}")
-                property("porting_lib.datagen.existing_resources=${existingResources.first()}")
+                property("fabric-api.datagen.output-dir", "${config.requireOwner().datagenOutput}")
+                property("fabric-api.datagen.modid", mod.id.get())
+                property("porting_lib.datagen.existing_resources", "${existingResources.first()}")
+                if (config.existingMods.isNotEmpty()) {
+                    property("porting_lib.datagen.existing-mod", config.existingMods.joinToString(","))
+                }
 
                 config.datagenSourceSet.orNull?.let {
                     source(it)
