@@ -111,6 +111,7 @@ internal fun Project.registerModuleModifyTask() {
         finalizedBy(task)
         task.configure {
             inputs.file(outputFile)
+            onlyIf { this@withType.enabled }
         }
     }
 }
