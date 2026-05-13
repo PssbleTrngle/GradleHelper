@@ -79,10 +79,12 @@ fun Project.setupReleaseMetadata() {
                 getOutput().convention(project.layout.buildDirectory.file("release.json"))
             }
 
-        tasks.getOrCreate<Task>("publish") {
-            finalizedBy(releaseMetadataTask)
-            tasks.upload.finalizedBy(this)
-        }
+        tasks
+            .getOrCreate<Task>("publish")
+            .apply {
+                tasks.upload.finalizedBy(this)
+                finalizedBy(releaseMetadataTask)
+            }
     }
 }
 
