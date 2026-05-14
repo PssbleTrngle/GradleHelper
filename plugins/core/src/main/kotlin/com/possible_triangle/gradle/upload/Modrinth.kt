@@ -71,7 +71,12 @@ internal class ModrinthExtensionImpl(
             }
 
             project.modifyReleaseMetadata {
-                modrinthUrl.set(uploadTask.newVersion?.let { "https://modrinth.com/mod/${it.projectId}/version/${it.id}" })
+                modrinthUrl.set(
+                    project.provider {
+                        // TODO could be extracted from extension API Url
+                        uploadTask.newVersion?.let { "https://modrinth.com/mod/${it.projectId}/version/${it.id}" }
+                    },
+                )
             }
         }
     }

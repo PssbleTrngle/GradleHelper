@@ -84,5 +84,13 @@ internal class CurseForgeExtensionImpl(
             }
 
         project.addUploadTask("curseforge", uploadTask.get())
+
+        // TODO would require project slug, because links on curseforge do not work with the project ID
+        // project.modifyReleaseMetadata {
+        //     curseforgeUrl.set(project.provider {
+        //         val artifact = uploadTask.get().uploadArtifacts.firstOrNull()
+        //         artifact?.let { "https://www.curseforge.com/minecraft/mc-mods/${it.slug}/files/${it.curseFileId}" }
+        //     })
+        // }
     }
 }
