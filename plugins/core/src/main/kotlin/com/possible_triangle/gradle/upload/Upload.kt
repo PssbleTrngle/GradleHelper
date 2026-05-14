@@ -70,7 +70,7 @@ internal fun Project.addUploadTask(
         if (this == coreProject) {
             task
         } else {
-            coreProject.tasks.getOrCreate<Task>(name) {
+            coreProject.tasks.getOrCreate<Task>(name).apply {
                 dependsOn(task)
             }
         }
@@ -81,7 +81,10 @@ internal fun Project.addUploadTask(
 
 internal fun Project.setupUpload() {
     extensions.create<UploadExtension, UploadExtensionImpl>("upload")
-    tasks.register(TASK_NAME)
+
+    if (this == coreProject) {
+        tasks.register(TASK_NAME)
+    }
 
     if (subprojects.isEmpty()) {
         apply<GradleHelperPublishingPluginInternal>()

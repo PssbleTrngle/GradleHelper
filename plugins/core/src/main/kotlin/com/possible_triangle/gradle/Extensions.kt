@@ -15,8 +15,4 @@ inline fun <reified T : Any> ObjectFactory.property(default: T?) = property<T>()
 
 inline fun <reified T : Any> ObjectFactory.property(default: Provider<out T>) = property<T>().convention(default)
 
-inline fun <reified T : Task> TaskContainer.getOrCreate(
-    name: String,
-    noinline init: T.() -> Unit = {
-    },
-): T = findByName(name) as T? ?: register(name, init).get()
+inline fun <reified T : Task> TaskContainer.getOrCreate(name: String): T = findByName(name) as T? ?: register<T>(name).get()
