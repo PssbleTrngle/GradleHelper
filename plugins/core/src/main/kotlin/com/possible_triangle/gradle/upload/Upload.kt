@@ -11,6 +11,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.the
 
@@ -67,15 +68,23 @@ internal fun Project.registerUpload() {
 internal val TaskContainer.upload
     get() = getByName<Task>(TASK_NAME)
 
-internal fun Project.modifyUploadTask(
+internal fun Project.addUploadTask(
     name: String,
-    block: Task.() -> Unit,
+    task: Task,
 ) {
-    coreProject.tasks
-        .getOrCreate<Task>(name) {
-            coreProject.tasks.releaseMetadata.dependsOn(this)
-            coreProject.tasks.upload.dependsOn(this)
-        }.block()
+    val rootTask =
+        if (this == coreProject) {
+            task
+        } else {
+            coreProject.tasks.getOrCreate<Task>(name) {
+                dependsOn(task)
+            }
+        }
+
+    rootTask.apply {
+        coreProject.tasks.releaseMetadata.dependsOn(this)
+        coreProject.tasks.upload.dependsOn(this)
+    }
 }
 
 internal fun Project.configureUpload() {

@@ -64,9 +64,7 @@ internal class ModrinthExtensionImpl(
         if (isConfigured()) {
             val uploadTask = project.tasks.getByName<TaskModrinthUpload>("modrinth")
 
-            project.modifyUploadTask("modrinth") {
-                dependsOn(uploadTask)
-            }
+            project.addUploadTask("modrinth", uploadTask)
 
             if (syncFile.isPresent) {
                 uploadTask.dependsOn(project.tasks.withType<TaskModrinthSyncBody>())

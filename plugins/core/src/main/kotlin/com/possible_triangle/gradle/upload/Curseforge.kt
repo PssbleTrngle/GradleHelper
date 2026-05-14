@@ -83,8 +83,6 @@ internal class CurseForgeExtensionImpl(
                 }
             }
 
-        project.modifyUploadTask("curseforge") {
-            dependsOn(uploadTask)
-        }
+        project.addUploadTask("curseforge", uploadTask.get())
     }
 }
