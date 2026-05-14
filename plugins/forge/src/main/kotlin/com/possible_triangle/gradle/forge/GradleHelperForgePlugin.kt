@@ -76,7 +76,7 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
         dependencies {
             lazyDependencies("annotationProcessor") {
                 if (config.mixinsEnabled) {
-                    add("org.spongepowered:mixin:0.8.5:processor")
+                    add("org.spongepowered:mixin:0.8.7:processor")
                 }
             }
 

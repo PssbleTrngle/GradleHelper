@@ -72,12 +72,10 @@ internal fun Project.modifyUploadTask(
     block: Task.() -> Unit,
 ) {
     coreProject.tasks
-        .getOrCreate<Task>(name)
-        .apply {
+        .getOrCreate<Task>(name) {
             coreProject.tasks.releaseMetadata.dependsOn(this)
             coreProject.tasks.upload.dependsOn(this)
-            block()
-        }
+        }.block()
 }
 
 internal fun Project.configureUpload() {

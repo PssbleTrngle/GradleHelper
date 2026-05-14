@@ -52,12 +52,3 @@ jobs:
           archive: false
           path: build/release.json
           retention-days: 1
-
-      - name: Trigger Test Mod
-        uses: peter-evans/repository-dispatch@v4
-        if: ${{ github.event_name != 'release' }}
-        with:
-          token: ${{ secrets.DISPATCH_TOKEN }}
-          repository: ${{ github.actor }}/TestMod
-          event-type: trigger-test
-          client-payload: '{"version": "${{ github.ref_name }}"}'
