@@ -183,6 +183,8 @@ internal class ModMavenPublishingExtensionImpl(
                     }
                 }
             }
+
+            project.addUploadTask("publish", project.tasks.getByName("publish"))
         }
     }
 }

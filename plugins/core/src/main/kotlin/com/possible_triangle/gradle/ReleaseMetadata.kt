@@ -6,7 +6,6 @@ import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -79,16 +78,15 @@ fun Project.setupReleaseMetadata() {
                 getOutput().convention(project.layout.buildDirectory.file("release.json"))
             }
 
-        tasks
-            .getOrCreate<Task>("publish")
-            .apply {
-                tasks.upload.finalizedBy(this)
-                finalizedBy(releaseMetadataTask)
-            }
+        tasks.upload.finalizedBy(releaseMetadataTask)
+    }
+
+    if (subprojects.isEmpty()) {
+        createReleaseMetadata()
     }
 }
 
-internal fun Project.createReleaseMetadata() {
+private fun Project.createReleaseMetadata() {
     coreProject.tasks.releaseMetadata.releases.create(project.name) {
         tag.convention(project.mod.version)
     }

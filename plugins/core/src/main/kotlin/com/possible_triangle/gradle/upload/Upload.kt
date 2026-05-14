@@ -11,7 +11,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.the
 
@@ -60,11 +59,6 @@ internal open class UploadExtensionImpl(
 
 private const val TASK_NAME = "upload"
 
-internal fun Project.registerUpload() {
-    extensions.create<UploadExtension, UploadExtensionImpl>("upload")
-    tasks.register(TASK_NAME)
-}
-
 internal val TaskContainer.upload
     get() = getByName<Task>(TASK_NAME)
 
@@ -81,20 +75,23 @@ internal fun Project.addUploadTask(
             }
         }
 
-    rootTask.apply {
-        coreProject.tasks.releaseMetadata.dependsOn(this)
-        coreProject.tasks.upload.dependsOn(this)
-    }
+    coreProject.tasks.upload.dependsOn(rootTask)
+    coreProject.tasks.releaseMetadata.dependsOn(rootTask)
 }
 
-internal fun Project.configureUpload() {
-    apply<GradleHelperPublishingPluginInternal>()
-    apply<CurseForgeGradlePlugin>()
-    apply<Minotaur>()
+internal fun Project.setupUpload() {
+    extensions.create<UploadExtension, UploadExtensionImpl>("upload")
+    tasks.register(TASK_NAME)
 
-    val upload = the<UploadExtension>() as UploadExtensionImpl
+    if (subprojects.isEmpty()) {
+        apply<GradleHelperPublishingPluginInternal>()
+        apply<CurseForgeGradlePlugin>()
+        apply<Minotaur>()
 
-    project.afterEvaluate {
-        upload.setup()
+        val upload = the<UploadExtension>() as UploadExtensionImpl
+
+        project.afterEvaluate {
+            upload.setup()
+        }
     }
 }

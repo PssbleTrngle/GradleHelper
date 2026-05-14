@@ -1,8 +1,7 @@
 package com.possible_triangle.gradle
 
 import com.possible_triangle.gradle.repositories.defaultRepositories
-import com.possible_triangle.gradle.upload.configureUpload
-import com.possible_triangle.gradle.upload.registerUpload
+import com.possible_triangle.gradle.upload.setupUpload
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -47,25 +46,16 @@ class GradleHelperCorePlugin : Plugin<Project> {
             defaultRepositories()
         }
 
-        registerUpload()
         setupJava()
         configureBaseName()
+        setupUpload()
+        setupReleaseMetadata()
 
         tasks.withType<Jar> {
             exclude(".cache")
             exclude("**/*.bbmodel")
             exclude("**/*.aseprite")
             exclude("**/*.xcf")
-        }
-
-        if (subprojects.isEmpty()) {
-            configureUpload()
-        }
-
-        setupReleaseMetadata()
-
-        if (subprojects.isEmpty()) {
-            createReleaseMetadata()
         }
 
         // needed so compile-only dependencies are also available for tests
