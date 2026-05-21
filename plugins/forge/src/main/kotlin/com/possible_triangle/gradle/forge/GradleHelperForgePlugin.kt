@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.forge
 
 import com.possible_triangle.gradle.*
+import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.ModLoader
@@ -18,7 +19,7 @@ import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 
-private val TaskContainer.reobfJar get() = getByName<Jar>("reobfJar")
+internal val TaskContainer.reobfJar get() = getByName<Jar>("reobfJar")
 
 class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
     override fun Project.setup() {
@@ -71,7 +72,7 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
         configure<UploadExtension> {
             forEach {
                 modLoaders.add(ModLoader.FORGE)
-                file.set(tasks.reobfJar.archiveFile)
+                file = tasks.reobfJar.archiveFile
             }
         }
 
@@ -99,8 +100,11 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
             archiveClassifier = "raw"
         }
 
+        tasks.reobfJar.apply {
+            archiveClassifier = ""
+        }
+
         modifyPublication {
-            artifact(tasks.reobfJar.archiveFile)
             removeDependencies(this)
         }
     }
@@ -125,6 +129,10 @@ class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
                     if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
                 }
             }
+        }
+
+        if (project.detectKotlin()) {
+            project.modifyKotlinComponent()
         }
     }
 

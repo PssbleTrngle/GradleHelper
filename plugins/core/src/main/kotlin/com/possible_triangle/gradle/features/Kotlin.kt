@@ -9,4 +9,4 @@ fun Project.enableKotlin() =
         apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
     }
 
-internal fun Project.detectKotlin(): Boolean = plugins.findPlugin("org.jetbrains.kotlin.jvm") != null
+fun Project.detectKotlin(): Boolean = plugins.findPlugin("org.jetbrains.kotlin.jvm") != null
