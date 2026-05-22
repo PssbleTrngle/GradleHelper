@@ -2,8 +2,8 @@ name: Build Container
 
 on:
    workflow_dispatch:
-   repository_dispatch:
-      types: [build-docs]
+   registry_package:
+      types: [published]
 
 env:
    REGISTRY: ghcr.io
