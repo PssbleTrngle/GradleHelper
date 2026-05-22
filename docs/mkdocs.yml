@@ -64,6 +64,8 @@ plugins:
       enabled: !ENV [CI, false]
   - social:
       enabled: !ENV [CI, false]
+  - site-urls:
+      prefix: "/"
 
 extra_css:
   - styles/extra.css
