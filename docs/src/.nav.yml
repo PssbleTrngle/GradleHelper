@@ -1,0 +1,10 @@
+nav:
+  - index.md
+  - setup.md
+  - general.md
+  - mod-loaders
+  - multiloader.md
+  - publishing.md
+  - sugar
+
+append_unmatched: true
