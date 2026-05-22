@@ -1,4 +1,4 @@
-The `com.possible-triangle.fabric` plugin is an abstract layer around [Fabric Loom](https://docs.fabricmc.net/develop/loom/), specifically version 1.15.
+The `com.possible-triangle.fabric` plugin is an abstract layer around [Fabric Loom](https://docs.fabricmc.net/develop/loom/), specifically version 1.16.
 
 Like the other loader plugins, it tries to align with a common API interface, to make migration & sharing between them easier.
 

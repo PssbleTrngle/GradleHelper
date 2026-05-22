@@ -96,7 +96,7 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     using [Fabric Loom](https://docs.fabricmc.net/develop/loom/) (1)
     { .annotate }
 
-    1.  using version __1.15__
+    1.  using version __1.16__
 
 </div>
 
