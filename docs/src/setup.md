@@ -14,9 +14,20 @@ plugins {
 ```
 
 While all the subprojects are published using a semantic version with a patch segment, the `helper` plugin only has a major & minor versions.
-All other `com.possible-triangle.*` plugins can be specified without a version, and will automatically use the `1.2.+` resolution.
+All other `com.possible-triangle.*` plugins can be specified without a version, and will automatically use the latest patch version found on maven.
 
 This means you will get update improvements whenever a new patch is releases, but these updates should never break the existing functionality.
+This behaviour can be changed by selecting on of the other version resolution strategies, or by manually specifying a version in the `build.gradle.kts` plugins.
+
+```kotlin title="settings.gradle.kts"
+import com.possible_triangle.gradle.settings.ResolutionStrategy
+
+helper {
+    // will resolve to "1.4-SNAPSHOT" instead of fetching the latest version from maven
+    // ! warning, this will often require running --refresh-dependencies when a new patch is released
+    versionResolution = ResolutionStrategy.SNAPSHOT
+}
+```
 
 !!! info
     There is a [Test Mod](https://github.com/PssbleTrngle/TestMod) that creates a release by an automation twice a week to verify that any newer patch versions are still working for a variety of setups. 

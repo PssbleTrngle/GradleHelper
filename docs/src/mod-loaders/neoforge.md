@@ -10,10 +10,12 @@ There are some neoforge-only values, which fallback to gradle properties
 | ---------------------- | ------------------------------------------- |
 | neoforgeVersion        | _gradle.properties_: `neoforge_version`     |
 | kotlinForgeVersion (1) | _gradle.properties_: `kotlin_forge_version` |
+| unitTests           (2) | `false`                                     |
 
 </div>
 
 1.  read more about [kotlin support](/kotlin)
+2.  read more about [unit tests](#unit-tests)
 
 ## Access Transformers
 
@@ -41,6 +43,14 @@ neoforge {
 }
 ```
 
+These Access Transformers will also be automatically published to maven by default and can be included in another project like this:
+
+```kotlin title="build.gradle.kts"
+dependencies {
+
+}
+```
+
 ## Jar-In-Jar
 
 Mods & Libraries [included using the mod extension](/general#including-libraries), will be bundled using neoforge's [Jar-In-Jar](https://docs.neoforged.net/toolchain/docs/dependencies/jarinjar/) system.
@@ -49,3 +59,10 @@ Mods & Libraries [included using the mod extension](/general#including-libraries
 
 Like other loaders, it can be configured using the `dataGen` method on the `neoforge` extension.
 Everything else follows the same [standard API](/general#datagen) as the other loaders.
+
+## Unit-Tests
+
+ModDevGradle allows [Unit Tests](https://github.com/neoforged/ModDevGradle#unit-testing-with-junit) and ships with some useful helpers.
+By settings the `neoforge.unitTests` property to `true`, these test libraries are included and the test task is enabled.
+
+An example of these Unit Tests can be found in the [Test Mod Repository](https://github.com/PssbleTrngle/TestMod/tree/main/neoforge/1.21.x/src/test/java/com/possible_triangle/test_mod/test)
