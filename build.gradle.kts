@@ -185,7 +185,7 @@ val generateReleaseMetadata =
         inputs.properties(properties)
 
         doFirst {
-            val json = Gson().toJson(properties)
+            val json = Gson().toJson(mapOf("plugin" to properties))
             output.get().asFile.writeText(json)
         }
 
