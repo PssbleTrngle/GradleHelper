@@ -4,6 +4,7 @@ import com.possible_triangle.gradle.*
 import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
+import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
@@ -21,7 +22,9 @@ import org.gradle.language.jvm.tasks.ProcessResources
 
 internal val TaskContainer.reobfJar get() = getByName<Jar>("reobfJar")
 
-class GradleHelperForgePlugin : LoaderPlugin(ForgeLoaderSpecifics) {
+class GradleHelperForgePlugin : LoaderPlugin() {
+    override fun Project.createSpecifics(): LoaderSpecifics = ForgeLoaderSpecifics
+
     override fun Project.setup() {
         apply<LegacyForgeModDevPlugin>()
 

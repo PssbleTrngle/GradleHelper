@@ -13,7 +13,9 @@ import org.gradle.kotlin.dsl.dependencies
 import org.spongepowered.gradle.vanilla.MinecraftExtension
 import org.spongepowered.gradle.vanilla.VanillaGradle
 
-class GradleHelperVanillaPlugin : LoaderPlugin(TransparentLoaderSpecifics) {
+class GradleHelperVanillaPlugin : LoaderPlugin() {
+    override fun Project.createSpecifics() = TransparentLoaderSpecifics
+
     override fun Project.setup() {
         val config = extensions.create<CommonExtension, CommonExtensionImpl>("common")
 

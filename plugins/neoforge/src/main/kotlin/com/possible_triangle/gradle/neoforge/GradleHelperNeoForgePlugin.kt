@@ -3,6 +3,7 @@ package com.possible_triangle.gradle.neoforge
 import com.possible_triangle.gradle.*
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
+import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureOutputProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
@@ -15,7 +16,9 @@ import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 
-class GradleHelperNeoForgePlugin : LoaderPlugin(NeoForgeLoaderSpecifics) {
+class GradleHelperNeoForgePlugin : LoaderPlugin() {
+    override fun Project.createSpecifics(): LoaderSpecifics = NeoForgeLoaderSpecifics
+
     override fun Project.setup() {
         apply<ModDevPlugin>()
 

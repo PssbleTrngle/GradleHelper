@@ -2,7 +2,7 @@ package com.possible_triangle.gradle.architectury
 
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.TransparentLoaderSpecifics
-import com.possible_triangle.gradle.features.loaders.appendModPrefix
+import com.possible_triangle.gradle.features.loaders.addModPrefix
 import org.gradle.api.Action
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.provider.Provider
@@ -14,7 +14,7 @@ object ArchitecturyLoaderSpecifics : LoaderSpecifics {
         configuration: String,
         dependencyNotation: Provider<ExternalModuleDependency>,
         closure: Action<ExternalModuleDependency>,
-    ) = appendModPrefix(dependencies, configuration, dependencyNotation, closure)
+    ) = addModPrefix(dependencies, configuration, dependencyNotation, closure)
 
     override fun addIncluded(
         dependencies: DependencyHandlerScope,

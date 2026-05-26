@@ -17,10 +17,6 @@ class FabricTest {
                 withProjectDir("example")
             }
 
-        project.mod {
-            minecraftVersion.set("1.19.2")
-        }
-
         project.configure<FabricExtension> {
             apiVersion.set("0.76.0+1.19.2")
             loaderVersion.set("0.14.21")
@@ -38,10 +34,6 @@ class FabricTest {
 
         project.configure<FabricExtension> {
             loaderVersion.set("0.14.21")
-        }
-
-        project.mod {
-            minecraftVersion.set("1.19.2")
         }
     }
 }

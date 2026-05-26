@@ -11,12 +11,12 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 
-abstract class LoaderPlugin(
-    private val loaderSpecifics: LoaderSpecifics,
-) : Plugin<Project> {
+abstract class LoaderPlugin : Plugin<Project> {
+    protected abstract fun Project.createSpecifics(): LoaderSpecifics
+
     final override fun apply(target: Project) {
-        target.registerLoaderSpecifics(loaderSpecifics)
         target.apply<GradleHelperCorePlugin>()
+        target.registerLoaderSpecifics(target.createSpecifics())
 
         target.provideProperties()
         target.configureJarTasks()

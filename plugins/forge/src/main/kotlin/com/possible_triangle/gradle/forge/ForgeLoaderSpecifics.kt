@@ -1,7 +1,7 @@
 package com.possible_triangle.gradle.forge
 
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
-import com.possible_triangle.gradle.features.loaders.appendModPrefix
+import com.possible_triangle.gradle.features.loaders.addModPrefix
 import org.gradle.api.Action
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.provider.Provider
@@ -13,7 +13,7 @@ internal object ForgeLoaderSpecifics : LoaderSpecifics {
         configuration: String,
         dependencyNotation: Provider<ExternalModuleDependency>,
         closure: Action<ExternalModuleDependency>,
-    ) = appendModPrefix(
+    ) = addModPrefix(
         dependencies,
         configuration,
         dependencyNotation,

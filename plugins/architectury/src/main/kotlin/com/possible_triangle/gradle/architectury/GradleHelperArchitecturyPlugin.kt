@@ -11,7 +11,9 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 
-class GradleHelperArchitecturyPlugin : LoaderPlugin(ArchitecturyLoaderSpecifics) {
+class GradleHelperArchitecturyPlugin : LoaderPlugin() {
+    override fun Project.createSpecifics() = ArchitecturyLoaderSpecifics
+
     override fun Project.setup() {
         val config = extensions.create<CommonExtension, CommonExtensionImpl>("common")
 

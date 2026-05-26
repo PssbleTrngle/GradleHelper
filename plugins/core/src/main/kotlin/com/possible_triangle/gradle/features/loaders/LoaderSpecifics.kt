@@ -39,12 +39,14 @@ object TransparentLoaderSpecifics : LoaderSpecifics {
     }
 }
 
-fun appendModPrefix(
+fun addModPrefix(
     dependencies: DependencyHandlerScope,
     configuration: String,
     dependencyNotation: Provider<ExternalModuleDependency>,
     closure: Action<ExternalModuleDependency>,
-) = dependencies.addProvider("mod${configuration.capitalized()}", dependencyNotation, closure)
+) = dependencies.addProvider(configuration.addModPrefix(), dependencyNotation, closure)
+
+fun String.addModPrefix() = "mod${capitalized()}"
 
 private const val LOADER_SPECIFICS_KEY = "loaderSpecifics"
 

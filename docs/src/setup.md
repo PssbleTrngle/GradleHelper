@@ -25,7 +25,7 @@ import com.possible_triangle.gradle.settings.ResolutionStrategy
 helper {
     // will resolve to "1.4-SNAPSHOT" instead of fetching the latest version from maven
     // ! warning, this will often require running --refresh-dependencies when a new patch is released
-    versionResolution = ResolutionStrategy.SNAPSHOT
+    versionStrategy = ResolutionStrategy.SNAPSHOT
 }
 ```
 
