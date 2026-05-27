@@ -71,3 +71,53 @@ fabric {
     dependOn(project(":common"))
 }
 ```
+
+## Do's and Don'ts
+
+```kotlin title="common/build.gradle.kts"
+plugins {
+    id("com.possible-triangle.common")
+}
+
+dependencies {
+    // 🙅‍♂️ Don't: will provide the common module to the fabric/neoforge projects, which cannot handle it
+    modApi(libs.moonlight.common)
+
+    // 👌 Do: will only add it to the common module
+    modImplementation(libs.moonlight.common)
+}
+```
+
+```kotlin title="neoforge/build.gradle.kts"
+plugins {
+    id("com.possible-triangle.neoforge")
+}
+
+neoforge {
+    dependOn(project(":common"))
+
+    // 🙅‍♂️ Don't: the mods common module is marked as "common" and cannot be consumed by neoforge
+    modApi(libs.moonlight.common)
+
+    // 👌 Do: the mods loader-specific JAR also includes the common source code
+    // and is marked as "neoforge"
+    modApi(libs.moonlight.neoforge)
+}
+```
+
+```kotlin title="fabric/build.gradle.kts"
+plugins {
+    id("com.possible-triangle.fabric")
+}
+
+fabric {
+    dependOn(project(":common"))
+
+    // 🙅‍♂️ Don't: the mods common module is marked as "common" and cannot be consumed by neoforge
+    modApi(libs.moonlight.common)
+
+    // 👌 Do: the mods loader-specific JAR also includes the common source code
+    // and is marked as "fabric"
+    modApi(libs.moonlight.fabric)
+}
+```
