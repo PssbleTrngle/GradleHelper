@@ -4,6 +4,7 @@ import com.possible_triangle.gradle.commonMixinDependencies
 import com.possible_triangle.gradle.create
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
+import com.possible_triangle.gradle.features.loaders.configureCommonProject
 import com.possible_triangle.gradle.mod
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Project
@@ -16,6 +17,8 @@ class GradleHelperArchitecturyPlugin : LoaderPlugin() {
 
     override fun Project.setup() {
         val config = extensions.create<CommonExtension, CommonExtensionImpl>("common")
+
+        configureCommonProject()
 
         apply(plugin = "dev.architectury.loom")
         val loom = the<LoomGradleExtensionAPI>()

@@ -5,6 +5,7 @@ import com.possible_triangle.gradle.create
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.TransparentLoaderSpecifics
+import com.possible_triangle.gradle.features.loaders.configureCommonProject
 import com.possible_triangle.gradle.mod
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -18,6 +19,8 @@ class GradleHelperVanillaPlugin : LoaderPlugin() {
 
     override fun Project.setup() {
         val config = extensions.create<CommonExtension, CommonExtensionImpl>("common")
+
+        configureCommonProject()
 
         apply<VanillaGradle>()
         configure<MinecraftExtension> {

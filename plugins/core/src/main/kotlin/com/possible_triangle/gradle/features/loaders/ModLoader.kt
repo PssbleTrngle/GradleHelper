@@ -2,14 +2,18 @@ package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.DatagenBuilder
 import com.possible_triangle.gradle.defaultDataGenProject
+import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
+import org.gradle.api.attributes.Attribute
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.withType
+import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 interface LoaderExtension {
@@ -79,9 +83,10 @@ abstract class AbstractLoadExtensionWithDatagen(
     }
 
     override fun modSourceSets(): List<SourceSet> {
-        val dependencies = dependsOn.map { it.mainSourceSet }
+        // val dependencies = dependsOn.map { it.mainSourceSet }
         val datagen = listOfNotNull(datagenSourceSet.orNull)
-        return dependencies + datagen
+        // return dependencies + datagen
+        return datagen
     }
 }
 
@@ -93,24 +98,96 @@ val Project.mainSourceSet: SourceSet
 
 val Project.isSubProject: Boolean get() = rootProject != project
 
-fun Project.configureOutputProject(config: AbstractLoaderExtension) {
-    tasks.getByName<Jar>("jar") {
-        from(mainSourceSet.output)
-        config.dependsOn.forEach {
-            from(it.mainSourceSet.output)
+fun Project.configureCommonProject() {
+    addLoaderAttribute("common")
+
+    val dependsOnCode =
+        configurations.register("dependsOnCode") {
+            isCanBeResolved = false
+            isCanBeConsumed = true
         }
+    val dependsOnResources =
+        configurations.register("dependsOnResources") {
+            isCanBeResolved = false
+            isCanBeConsumed = true
+        }
+
+    artifacts {
+        add(dependsOnCode.name, mainSourceSet.java.sourceDirectories.singleFile)
+        // TODO kotlin
+        add(dependsOnResources.name, mainSourceSet.resources.sourceDirectories.singleFile)
+    }
+}
+
+val LOADER_ATTRIBUTE = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
+
+private fun Project.addLoaderAttribute(type: String) {
+    listOf("apiElements", "runtimeElements", "sourcesElements").forEach { variant ->
+        configurations.named(variant) {
+            attributes {
+                attribute(LOADER_ATTRIBUTE, project.name)
+            }
+        }
+    }
+
+    the<SourceSetContainer>().configureEach {
+        listOf(compileClasspathConfigurationName, runtimeClasspathConfigurationName).forEach { variant ->
+            configurations.named(variant) {
+                attributes {
+                    attribute(LOADER_ATTRIBUTE, type)
+                }
+            }
+        }
+    }
+}
+
+fun Project.configureLoaderProject(
+    config: AbstractLoaderExtension,
+    loader: ModLoader,
+) {
+    addLoaderAttribute(loader.name.lowercase())
+
+    val dependsOnCode = configurations.register("dependsOnCode") { isCanBeResolved = true }
+    val dependsOnResources = configurations.register("dependsOnResources") { isCanBeResolved = true }
+
+    listOf(dependsOnResources, dependsOnCode).forEach { configuration ->
+        lazyDependencies(configuration.name) {
+            config.dependsOn.forEach {
+                add(dependencies.project(path = it.path, configuration = configuration.name))
+            }
+        }
+    }
+
+    lazyDependencies("compileOnly") {
+        config.dependsOn.forEach {
+            add(it) {
+                attributes {
+                    attribute(LOADER_ATTRIBUTE, "common")
+                }
+            }
+        }
+    }
+
+    tasks.withType<ProcessResources> {
+        dependsOn(dependsOnResources)
+        from(dependsOnResources)
+    }
+
+    tasks.getByName<Jar>("sourcesJar") {
+        dependsOn(dependsOnResources)
+        from(dependsOnResources)
+        dependsOn(dependsOnCode)
+        from(dependsOnCode)
     }
 
     tasks.withType<JavaCompile> {
-        config.dependsOn.forEach {
-            source(it.mainSourceSet.allSource)
-        }
+        dependsOn(dependsOnCode)
+        source(dependsOnCode)
     }
 
     tasks.withType<KotlinCompile> {
-        config.dependsOn.forEach {
-            source(it.mainSourceSet.allSource)
-        }
+        dependsOn(dependsOnCode)
+        source(dependsOnCode)
     }
 }
 

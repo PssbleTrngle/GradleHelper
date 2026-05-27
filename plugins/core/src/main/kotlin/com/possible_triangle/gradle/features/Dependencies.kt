@@ -1,18 +1,25 @@
 package com.possible_triangle.gradle.features
 
+import groovy.lang.Closure
 import org.gradle.api.IllegalDependencyNotation
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.internal.provider.DefaultProvider
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.closureOf
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 
 fun interface LazyDependencyBuilder {
-    fun add(dependency: Any)
+    fun add(
+        dependency: Any,
+        block: ModuleDependency.() -> Unit,
+    )
+
+    fun add(dependency: Any) = add(dependency) {}
 }
 
 fun Project.lazyDependencies(
@@ -23,15 +30,11 @@ fun Project.lazyDependencies(
         configurations.getByName(type) {
             withDependencies {
                 block(
-                    LazyDependencyBuilder {
-                        val dep =
-                            when (it) {
-                                is ProviderConvertible<*> -> it.asProvider().get() as Dependency
-                                is Provider<*> -> it.get() as Dependency
-                                else -> create(it)
-                            }
-                        this@withDependencies.add(dep)
-                        logger.debug("Adding lazy dependency for '{}': {}", type, it)
+                    LazyDependencyBuilder { notation, block ->
+                        val closure = closureOf<ModuleDependency> { block() } as Closure<Any>
+                        val dependency = create(notation, closure)
+                        this@withDependencies.add(dependency)
+                        logger.debug("Adding lazy dependency for '{}': {}", type, notation)
                     },
                 )
             }

@@ -7,7 +7,7 @@ import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.ModLoader
-import com.possible_triangle.gradle.features.loaders.configureOutputProject
+import com.possible_triangle.gradle.features.loaders.configureLoaderProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.upload.UploadExtension
@@ -33,6 +33,8 @@ class GradleHelperFabricPlugin : LoaderPlugin() {
         }
 
         val config = extensions.create<FabricExtension, FabricExtensionImpl>("fabric")
+
+        configureLoaderProject(config, ModLoader.FABRIC)
 
         configure<UploadExtension> {
             forEach {
@@ -98,12 +100,6 @@ class GradleHelperFabricPlugin : LoaderPlugin() {
                     add("net.fabricmc:fabric-language-kotlin:$it")
                 }
             }
-
-            lazyDependencies("implementation") {
-                config.dependsOn.forEach {
-                    add(it)
-                }
-            }
         }
     }
 
@@ -115,14 +111,6 @@ class GradleHelperFabricPlugin : LoaderPlugin() {
 
     private fun Project.linkDependencyProjects() {
         val config = the<FabricExtension>() as FabricExtensionImpl
-
-        configureOutputProject(config)
-
-        mainSourceSet.apply {
-            config.dependsOn.forEach {
-                resources.srcDir(it.mainSourceSet.resources)
-            }
-        }
 
         config.kotlinFabricVersion.orNull?.let {
             configure<UploadExtension> {

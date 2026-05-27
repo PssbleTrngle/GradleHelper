@@ -6,7 +6,7 @@ import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.ModLoader
-import com.possible_triangle.gradle.features.loaders.configureOutputProject
+import com.possible_triangle.gradle.features.loaders.configureLoaderProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.publishing.removeDependencies
 import com.possible_triangle.gradle.upload.UploadExtension
@@ -18,7 +18,6 @@ import org.gradle.api.tasks.TaskContainer
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
-import org.gradle.language.jvm.tasks.ProcessResources
 
 internal val TaskContainer.reobfJar get() = getByName<Jar>("reobfJar")
 
@@ -29,6 +28,8 @@ class GradleHelperForgePlugin : LoaderPlugin() {
         apply<LegacyForgeModDevPlugin>()
 
         val config = extensions.create<ForgeExtension, ForgeExtensionImpl>("forge")
+
+        configureLoaderProject(config, ModLoader.FORGE)
 
         configure<LegacyForgeExtension> {
             version = "${mod.minecraftVersion.get()}-${config.forgeVersion.get()}"
@@ -86,12 +87,6 @@ class GradleHelperForgePlugin : LoaderPlugin() {
                 }
             }
 
-            lazyDependencies("implementation") {
-                config.dependsOn.forEach {
-                    add(it)
-                }
-            }
-
             lazyDependencies("api") {
                 config.kotlinForgeVersion.orNull?.let {
                     add("thedarkcolour:kotlinforforge:$it")
@@ -117,14 +112,6 @@ class GradleHelperForgePlugin : LoaderPlugin() {
 
         configureDatagenRun()
         configureMixins()
-
-        configureOutputProject(config)
-
-        tasks.withType<ProcessResources> {
-            config.dependsOn.forEach {
-                from(it.mainSourceSet.resources)
-            }
-        }
 
         config.kotlinForgeVersion.orNull?.let {
             configure<UploadExtension> {
