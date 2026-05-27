@@ -49,16 +49,17 @@ fun pluginProjects(block: Project.() -> Unit) {
         .forEach { it.block() }
 }
 
-val repositoryUrl = "https://github.com/$repository"
-val cloneUrl = "scm:git:git://github.com/$repository.git"
-
-fun publishedProjects(block: Project.() -> Unit) {
+fun moduleProjects(block: Project.() -> Unit) {
     subprojects
+        .filter { it.projectDir.relativeTo(it.rootDir).startsWith("modules/") }
         .filter { it.name != "test" }
         .forEach { it.block() }
 }
 
-publishedProjects {
+val repositoryUrl = "https://github.com/$repository"
+val cloneUrl = "scm:git:git://github.com/$repository.git"
+
+fun Project.publish() {
     apply<PublishPlugin>()
 
     extra["pluginVersion"] = pluginVersion
@@ -110,7 +111,13 @@ publishedProjects {
     }
 }
 
+moduleProjects {
+    publish()
+}
+
 pluginProjects {
+    publish()
+
     apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
     gradlePlugin {
@@ -203,15 +210,19 @@ val generateReleaseMetadata =
     }
 
 tasks.register("publishAll") {
-    publishedProjects {
+    pluginProjects {
         val isHelper = project.name == "helper"
-        if (isHelper && (isSnapshot || !isRelease)) return@publishedProjects
+        if (isHelper && (isSnapshot || !isRelease)) return@pluginProjects
 
         dependsOn(tasks["publish"])
 
         if (!isSnapshot) {
             dependsOn(tasks["publishPlugins"])
         }
+    }
+
+    moduleProjects {
+        dependsOn(tasks["publish"])
     }
 
     finalizedBy(generateReleaseMetadata)
