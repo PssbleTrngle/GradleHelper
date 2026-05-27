@@ -126,7 +126,7 @@ private fun Project.addLoaderAttribute(type: String) {
     listOf("apiElements", "runtimeElements", "sourcesElements").forEach { variant ->
         configurations.named(variant) {
             attributes {
-                attribute(LOADER_ATTRIBUTE, project.name)
+                attribute(LOADER_ATTRIBUTE, type)
             }
         }
     }
