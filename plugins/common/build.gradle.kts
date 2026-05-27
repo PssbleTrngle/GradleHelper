@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api(project(":core"))
     api(project(":access"))
+    api(project(":neoforge-like"))
 
     api(libs.neoforge.gradle)
     implementation(libs.kotlin.serialization.json)

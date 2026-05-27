@@ -6,23 +6,11 @@ import com.possible_triangle.gradle.existingResources
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.requireOwner
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
-import net.neoforged.moddevgradle.internal.utils.VersionCapabilitiesInternal
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import kotlin.collections.plus
-
-internal fun Project.hasSplitDataRuns(): Boolean {
-    val version =
-        mod.minecraftVersion
-            .map {
-                VersionCapabilitiesInternal.ofMinecraftVersion(it)
-            }.getOrElse(
-                VersionCapabilitiesInternal.latest(),
-            )
-    return version.splitDataRuns()
-}
 
 internal fun Project.configureDatagenRun() {
     val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl

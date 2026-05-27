@@ -1,11 +1,10 @@
 package com.possible_triangle.gradle.upload
 
-import com.possible_triangle.gradle.features.loaders.ModLoader
+import com.possible_triangle.gradle.features.loaders.displayName
 import net.darkhax.curseforgegradle.Constants
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.UploadArtifact
 import org.gradle.api.Project
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.register
 
 data class CurseForgeDependency(
@@ -33,12 +32,6 @@ class CurseForgeDependencies : AbstractDependencyBuilder<CurseForgeDependency>()
 }
 
 interface CurseForgeExtension : AbstractUploadExtension<CurseForgeDependencies>
-
-private fun ModLoader.loaderName(): String =
-    when (this) {
-        ModLoader.NEOFORGE -> "NeoForge"
-        else -> name.lowercase().capitalized()
-    }
 
 private fun UploadArtifact.addDependency(
     it: CurseForgeDependency,
@@ -69,7 +62,7 @@ internal class CurseForgeExtensionImpl(
                     changelog = this@CurseForgeExtensionImpl.changelog.orNull
                         ?: error("no changelog provided, unable to upload to curseforge")
                     releaseType = this@CurseForgeExtensionImpl.releaseType.get()
-                    modLoaders.get().forEach { addModLoader(it.loaderName()) }
+                    modLoaders.get().forEach { addModLoader(it.displayName()) }
                     minecraftVersions.get().forEach { addGameVersion(it) }
                     displayName = versionName.get()
 

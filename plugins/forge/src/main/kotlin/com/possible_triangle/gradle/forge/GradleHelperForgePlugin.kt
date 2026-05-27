@@ -7,7 +7,9 @@ import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureLoaderProject
-import com.possible_triangle.gradle.features.loaders.mainSourceSet
+import com.possible_triangle.gradle.neoforge.configureModRuns
+import com.possible_triangle.gradle.neoforge.configureParchment
+import com.possible_triangle.gradle.neoforge.sharedConfiguration
 import com.possible_triangle.gradle.publishing.removeDependencies
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.modifyPublication
@@ -15,7 +17,6 @@ import net.neoforged.moddevgradle.boot.LegacyForgeModDevPlugin
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskContainer
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 
@@ -34,41 +35,9 @@ class GradleHelperForgePlugin : LoaderPlugin() {
         configure<LegacyForgeExtension> {
             version = "${mod.minecraftVersion.get()}-${config.forgeVersion.get()}"
 
-            validateAccessTransformers = true
-
-            mods.create(mod.id.get()) {
-                sourceSet(mainSourceSet)
-            }
-
-            config.parchmentMappingsVersion.orNull?.let {
-                parchment {
-                    minecraftVersion = mod.minecraftVersion.get()
-                    mappingsVersion = it
-                }
-            }
-
-            runs {
-                create("client") {
-                    gameDirectory = project.file("run")
-                    client()
-                }
-
-                create("server") {
-                    gameDirectory = project.file("run/server")
-                    programArgument("--nogui")
-                    server()
-                }
-
-                create("data") {
-                    gameDirectory = project.file("run/data")
-                    data()
-                }
-
-                forEach { run ->
-                    run.jvmArguments.addAll(JVM_ARGUMENTS)
-                    run.ideName = "NeoForge ${run.name.capitalized()}"
-                }
-            }
+            sharedConfiguration(project)
+            configureModRuns(project, ModLoader.FORGE)
+            configureParchment(project, config.parchmentMappingsVersion)
         }
 
         configureModSourceSets()

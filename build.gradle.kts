@@ -52,30 +52,20 @@ fun pluginProjects(block: Project.() -> Unit) {
 val repositoryUrl = "https://github.com/$repository"
 val cloneUrl = "scm:git:git://github.com/$repository.git"
 
-pluginProjects {
+fun publishedProjects(block: Project.() -> Unit) {
+    subprojects
+        .filter { it.name != "test" }
+        .forEach { it.block() }
+}
+
+publishedProjects {
     apply<PublishPlugin>()
-    apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
     extra["pluginVersion"] = pluginVersion
     extra["majorVersion"] = majorVersion
     extra["snapshot"] = isSnapshot
 
-    gradlePlugin {
-        vcsUrl.set(repositoryUrl)
-        website.set(repositoryUrl)
-
-        plugins {
-            create(project.name) {
-                id = "$pluginId.${project.name}"
-                version = if (isSnapshot) "$majorVersion-SNAPSHOT" else pluginVersion
-                displayName = "Gradle Helper"
-                implementationClass = "replaced in subprojects"
-                description =
-                    "bundles fabric/forge/common gradle plugins and provides useful default configurations for minecraft mod developers"
-                tags.set(setOf("minecraft", "forge", "fabricmc", "loom"))
-            }
-        }
-    }
+    version = if (isSnapshot) "$majorVersion-SNAPSHOT" else pluginVersion
 
     configure<PublishingExtension> {
         repositories {
@@ -115,6 +105,26 @@ pluginProjects {
                     name = "MIT License"
                     url = "https://www.opensource.org/licenses/mit-license.php"
                 }
+            }
+        }
+    }
+}
+
+pluginProjects {
+    apply(plugin = "org.gradle.kotlin.kotlin-dsl")
+
+    gradlePlugin {
+        vcsUrl.set(repositoryUrl)
+        website.set(repositoryUrl)
+
+        plugins {
+            create(project.name) {
+                id = "$pluginId.${project.name}"
+                displayName = "Gradle Helper"
+                implementationClass = "replaced in subprojects"
+                description =
+                    "bundles fabric/forge/common gradle plugins and provides useful default configurations for minecraft mod developers"
+                tags.set(setOf("minecraft", "forge", "fabricmc", "loom"))
             }
         }
     }
@@ -193,9 +203,9 @@ val generateReleaseMetadata =
     }
 
 tasks.register("publishAll") {
-    pluginProjects {
+    publishedProjects {
         val isHelper = project.name == "helper"
-        if (isHelper && (isSnapshot || !isRelease)) return@pluginProjects
+        if (isHelper && (isSnapshot || !isRelease)) return@publishedProjects
 
         dependsOn(tasks["publish"])
 

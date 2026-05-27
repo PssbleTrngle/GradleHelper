@@ -10,6 +10,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.kotlin.dsl.withType
@@ -196,5 +197,11 @@ enum class ModLoader {
     FABRIC,
     NEOFORGE,
 }
+
+fun ModLoader.displayName(): String =
+    when (this) {
+        ModLoader.NEOFORGE -> "NeoForge"
+        else -> name.lowercase().capitalized()
+    }
 
 val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version") ?: "0.5.2"

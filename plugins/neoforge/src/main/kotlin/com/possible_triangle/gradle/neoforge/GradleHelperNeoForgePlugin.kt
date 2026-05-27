@@ -6,12 +6,10 @@ import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureLoaderProject
-import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import com.possible_triangle.gradle.upload.UploadExtension
 import net.neoforged.moddevgradle.boot.ModDevPlugin
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.Project
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 
@@ -34,37 +32,8 @@ class GradleHelperNeoForgePlugin : LoaderPlugin() {
         }
 
         configure<NeoForgeExtension> {
-            validateAccessTransformers = true
-
-            mods.create(mod.id.get()) {
-                sourceSet(mainSourceSet)
-            }
-
-            runs {
-                create("client") {
-                    gameDirectory = project.file("run")
-                    client()
-                }
-
-                create("server") {
-                    gameDirectory = project.file("run/server")
-                    programArgument("--nogui")
-                    server()
-                }
-
-                create("data") {
-                    if (hasSplitDataRuns()) {
-                        clientData()
-                    } else {
-                        data()
-                    }
-                }
-
-                forEach { run ->
-                    run.jvmArguments.addAll(JVM_ARGUMENTS)
-                    run.ideName = "NeoForge ${run.name.capitalized()}"
-                }
-            }
+            sharedConfiguration(project)
+            configureModRuns(project, ModLoader.NEOFORGE)
         }
 
         dependencies {

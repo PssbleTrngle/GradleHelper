@@ -7,6 +7,8 @@ import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.TransparentLoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.configureCommonProject
 import com.possible_triangle.gradle.mod
+import com.possible_triangle.gradle.neoforge.configureParchment
+import com.possible_triangle.gradle.neoforge.sharedConfiguration
 import net.neoforged.moddevgradle.boot.ModDevPlugin
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.Project
@@ -26,12 +28,8 @@ class GradleHelperCommonPlugin : LoaderPlugin() {
         apply<ModDevPlugin>()
 
         configure<NeoForgeExtension> {
-            config.parchmentMappingsVersion.orNull?.let {
-                parchment {
-                    minecraftVersion = mod.minecraftVersion.get()
-                    mappingsVersion = it
-                }
-            }
+            sharedConfiguration(project)
+            configureParchment(project, config.parchmentMappingsVersion)
         }
 
         afterEvaluate {
