@@ -6,6 +6,8 @@ import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
 import org.gradle.api.attributes.Attribute
+import org.gradle.api.attributes.AttributeCompatibilityRule
+import org.gradle.api.attributes.CompatibilityCheckDetails
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
@@ -123,6 +125,8 @@ fun Project.configureCommonProject() {
 val LOADER_ATTRIBUTE = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
 
 private fun Project.addLoaderAttribute(type: String) {
+    addLoaderCompatibilityRule()
+
     listOf("apiElements", "runtimeElements", "sourcesElements").forEach { variant ->
         configurations.named(variant) {
             attributes {
@@ -137,6 +141,24 @@ private fun Project.addLoaderAttribute(type: String) {
                 attributes {
                     attribute(LOADER_ATTRIBUTE, type)
                 }
+            }
+        }
+    }
+}
+
+private class LoaderCompatibilityRule : AttributeCompatibilityRule<String> {
+    override fun execute(details: CompatibilityCheckDetails<String>) {
+        if (details.producerValue == "common") {
+            details.compatible()
+        }
+    }
+}
+
+private fun Project.addLoaderCompatibilityRule() {
+    dependencies {
+        attributesSchema {
+            attribute(LOADER_ATTRIBUTE) {
+                compatibilityRules.add(LoaderCompatibilityRule::class.java)
             }
         }
     }
