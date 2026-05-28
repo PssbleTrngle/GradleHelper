@@ -17,7 +17,7 @@ class GradleHelperCorePlugin : Plugin<Project> {
     private fun Project.configure() {
         loadEnv()
 
-        logger.lifecycle("applying gradle helper plugin with version ${BuildParameters.PLUGIN_VERSION}")
+        logger.lifecycle("applying gradle helper ${BuildParameters.PLUGIN_VERSION} in ${project.name}")
 
         val rootMod = coreProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
         val mod = extensions.create<ModExtension, ModExtensionImpl>("mod")

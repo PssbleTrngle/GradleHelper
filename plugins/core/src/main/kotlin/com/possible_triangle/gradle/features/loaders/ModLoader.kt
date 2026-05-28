@@ -116,9 +116,10 @@ fun Project.configureCommonProject() {
         }
 
     artifacts {
-        add(dependsOnCode.name, mainSourceSet.java.sourceDirectories.singleFile)
-        // TODO kotlin
-        add(dependsOnResources.name, mainSourceSet.resources.sourceDirectories.singleFile)
+        mainSourceSet.java.sourceDirectories.files
+            .forEach { add(dependsOnCode.name, it) }
+        mainSourceSet.resources.sourceDirectories.files
+            .forEach { add(dependsOnResources.name, it) }
     }
 }
 
