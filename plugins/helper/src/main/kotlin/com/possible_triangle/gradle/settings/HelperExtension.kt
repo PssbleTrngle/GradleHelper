@@ -10,5 +10,11 @@ interface HelperExtension {
 
 internal fun Settings.createHelperExtension(): HelperExtension =
     extensions.create<HelperExtension>("helper").apply {
-        versionStrategy.convention(ResolutionStrategy.FETCH)
+        versionStrategy.convention(
+            if (BuildParameters.IS_DEV) {
+                ResolutionStrategy.SNAPSHOT
+            } else {
+                ResolutionStrategy.FETCH
+            },
+        )
     }

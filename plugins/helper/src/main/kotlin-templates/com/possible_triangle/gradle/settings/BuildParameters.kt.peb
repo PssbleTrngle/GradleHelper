@@ -2,4 +2,5 @@ package com.possible_triangle.gradle.settings
 
 object BuildParameters {
     const val MAJOR_VERSION = "{{ majorVersion }}"
+    const val IS_DEV = {{ isDev }}
 }

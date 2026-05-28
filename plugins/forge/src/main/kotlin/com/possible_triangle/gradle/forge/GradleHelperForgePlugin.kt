@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle.forge
 
 import com.possible_triangle.gradle.*
-import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
@@ -88,10 +87,6 @@ class GradleHelperForgePlugin : LoaderPlugin() {
                     if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
                 }
             }
-        }
-
-        if (project.detectKotlin()) {
-            project.modifyKotlinComponent()
         }
     }
 

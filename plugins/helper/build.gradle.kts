@@ -3,6 +3,7 @@ plugins {
 }
 
 val majorVersion: String by extra
+val isDev: Boolean by extra
 
 gradlePlugin {
     plugins {
@@ -16,5 +17,6 @@ gradlePlugin {
 sourceSets.main {
     blossom.kotlinSources {
         property("majorVersion", majorVersion)
+        property("isDev", isDev.toString())
     }
 }

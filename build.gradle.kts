@@ -65,6 +65,7 @@ fun Project.publish() {
     extra["pluginVersion"] = pluginVersion
     extra["majorVersion"] = majorVersion
     extra["snapshot"] = isSnapshot
+    extra["isDev"] = !isCI
 
     version = if (isSnapshot) "$majorVersion-SNAPSHOT" else pluginVersion
 
