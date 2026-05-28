@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle.upload
 
 import com.possible_triangle.gradle.env
-import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.loaders.isSubProject
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.publishing.DependencyFilter
@@ -163,11 +162,7 @@ internal class ModMavenPublishingExtensionImpl(
                         artifactId = this@ModMavenPublishingExtensionImpl.name.get()
                         version = artifactVersion.get()
 
-                        if (project.detectKotlin()) {
-                            from(project.components["kotlin"])
-                        } else {
-                            from(project.components["java"])
-                        }
+                        from(project.components["java"])
 
                         if (applyDefaultModifications) {
                             defaultPomModifications(project)
