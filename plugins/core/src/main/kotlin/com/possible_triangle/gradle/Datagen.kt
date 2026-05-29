@@ -38,4 +38,11 @@ fun Project.configureDatagen() {
     mainSourceSet.resources {
         srcDir(datagenOutput)
     }
+
+    configurations.named("dependsOnResources") {
+        val configuration = name
+        artifacts {
+            add(configuration, datagenOutput)
+        }
+    }
 }
