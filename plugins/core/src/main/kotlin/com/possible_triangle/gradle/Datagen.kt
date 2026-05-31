@@ -3,24 +3,26 @@ package com.possible_triangle.gradle
 import com.possible_triangle.gradle.features.loaders.isSubProject
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
+import java.io.File
 
 val JVM_ARGUMENTS = listOf("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
 
-val Project.defaultDataGenProject get() = if (isSubProject) findProject(":common") else this
+internal val Project.defaultDataGenProject get() = if (isSubProject) project(":common") else this
 
-val Project.datagenOutput get() = file("src/generated/resources")
+internal val Project.datagenOutput get() = file("src/generated/resources")
 
-val Project.existingResources
+internal val Project.existingResources
     get() =
-        listOfNotNull(
-            defaultDataGenProject?.file("src/main/resources"),
+        setOf(
+            defaultDataGenProject.file("src/main/resources"),
             file("src/main/resources"),
         )
 
 interface DatagenBuilder {
-    var owner: Project?
+    val owner: Property<Project>
 
     fun existing(vararg mods: String)
 
@@ -29,20 +31,15 @@ interface DatagenBuilder {
     fun sourceSet(sourceSet: Provider<SourceSet>)
 }
 
-fun DatagenBuilder.requireOwner() =
-    requireNotNull(owner) {
-        "could not locate default :common project, datagen owner must be configured manually"
-    }
-
-fun Project.configureDatagen() {
+internal fun Project.configureDatagen(
+    output: File,
+    resourcesConfiguration: String,
+) {
     mainSourceSet.resources {
-        srcDir(datagenOutput)
+        srcDir(output)
     }
 
-    configurations.named("dependsOnResources") {
-        val configuration = name
-        artifacts {
-            add(configuration, datagenOutput)
-        }
+    artifacts {
+        add(resourcesConfiguration, output)
     }
 }

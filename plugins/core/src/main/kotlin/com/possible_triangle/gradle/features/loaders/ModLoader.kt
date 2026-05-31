@@ -1,8 +1,12 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.DatagenBuilder
+import com.possible_triangle.gradle.configureDatagen
+import com.possible_triangle.gradle.datagenOutput
 import com.possible_triangle.gradle.defaultDataGenProject
+import com.possible_triangle.gradle.existingResources
 import com.possible_triangle.gradle.features.lazyDependencies
+import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
 import org.gradle.api.attributes.Attribute
@@ -49,7 +53,10 @@ abstract class AbstractLoadExtensionWithDatagen(
     private val _existingMods = mutableSetOf<String>()
     val existingMods: Set<String> get() = _existingMods
 
-    final override var owner: Project? = project.defaultDataGenProject
+    final override val owner = project.objects.property(project.provider { project.defaultDataGenProject })
+
+    val datagenOutput get() = owner.get().datagenOutput
+    val existingResources get() = owner.get().existingResources
 
     var enabledDataGen: Boolean = false
         private set
@@ -115,6 +122,8 @@ fun Project.configureCommonProject() {
             isCanBeConsumed = true
         }
 
+    configureDatagen(datagenOutput, dependsOnResources.name)
+
     artifacts {
         mainSourceSet.java.sourceDirectories.files
             .forEach { add(dependsOnCode.name, it) }
@@ -173,6 +182,8 @@ fun Project.configureLoaderProject(
 
     val dependsOnCode = configurations.register("dependsOnCode") { isCanBeResolved = true }
     val dependsOnResources = configurations.register("dependsOnResources") { isCanBeResolved = true }
+
+    configureDatagen(datagenOutput, dependsOnResources.name)
 
     listOf(dependsOnResources, dependsOnCode).forEach { configuration ->
         lazyDependencies(configuration.name) {
