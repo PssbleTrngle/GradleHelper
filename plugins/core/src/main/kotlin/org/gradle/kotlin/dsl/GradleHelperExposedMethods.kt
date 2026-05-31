@@ -73,10 +73,26 @@ fun DependencyHandlerScope.modInclude(
     addIncluded(dependencyNotation)
 }
 
+fun DependencyHandlerScope.modIncludeCompileOnly(
+    dependencyNotation: Any,
+    block: ModuleDependency.() -> Unit = {},
+) {
+    addModDependency("compileOnlyApi", dependencyNotation, block)
+    addIncluded(dependencyNotation)
+}
+
 fun DependencyHandlerScope.apiInclude(
     dependencyNotation: Any,
     block: ModuleDependency.() -> Unit = {},
 ) {
     addProvider("api", resolveDependency(dependencyNotation), block)
+    addIncluded(dependencyNotation)
+}
+
+fun DependencyHandlerScope.compileOnlyInclude(
+    dependencyNotation: Any,
+    block: ModuleDependency.() -> Unit = {},
+) {
+    addProvider("compileOnly", resolveDependency(dependencyNotation), block)
     addIncluded(dependencyNotation)
 }
