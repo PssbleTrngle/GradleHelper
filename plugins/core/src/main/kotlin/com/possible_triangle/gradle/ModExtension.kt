@@ -83,7 +83,7 @@ internal class AdditionalPropertiesImpl(
         values[key] = value
     }
 
-    override fun add(key: String) = add(key, project.provider { project.stringProperty(key) })
+    override fun add(key: String) = add(key, project.providers.gradleProperty(key))
 
     override fun toMap() = (parent?.toMap() ?: emptyMap()) + values.toMap()
 

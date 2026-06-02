@@ -6,7 +6,6 @@ import com.possible_triangle.gradle.features.loaders.WithAccessWidener
 import com.possible_triangle.gradle.features.loaders.WithDataGen
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
-import com.possible_triangle.gradle.stringProperty
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -30,13 +29,13 @@ internal open class FabricExtensionImpl(
     override val project: Project,
 ) : AbstractLoadExtensionWithDatagen(project),
     FabricExtension {
-    override val loaderVersion = project.objects.property(project.stringProperty("fabric_loader_version"))
-    override val apiVersion = project.objects.property(project.stringProperty("fabric_api_version"))
+    override val loaderVersion = project.objects.property(project.providers.gradleProperty("fabric_loader_version"))
+    override val apiVersion = project.objects.property(project.providers.gradleProperty("fabric_api_version"))
 
-    override val kotlinFabricVersion = project.objects.property(project.stringProperty("kotlin_fabric_version"))
+    override val kotlinFabricVersion = project.objects.property(project.providers.gradleProperty("kotlin_fabric_version"))
 
     override val parchmentMappingsVersion =
-        project.objects.property(project.stringProperty("parchment_mappings_version"))
+        project.objects.property(project.providers.gradleProperty("parchment_mappings_version"))
 
     override fun accessWidener(file: Provider<File>) {
         project.the<LoomGradleExtensionAPI>().accessWidenerPath.set { file.get() }

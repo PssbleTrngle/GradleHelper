@@ -3,7 +3,6 @@ package com.possible_triangle.gradle.forge
 import com.possible_triangle.gradle.access.generateAccessTransformer
 import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.property
-import com.possible_triangle.gradle.stringProperty
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
 import org.gradle.api.Project
@@ -32,11 +31,11 @@ internal open class ForgeExtensionImpl(
     override val project: Project,
 ) : AbstractLoadExtensionWithDatagen(project),
     ForgeExtension {
-    override val forgeVersion = project.provider { project.stringProperty("forge_version") }
+    override val forgeVersion = project.providers.gradleProperty("forge_version")
 
-    override val kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
+    override val kotlinForgeVersion = project.objects.property(project.providers.gradleProperty("kotlin_forge_version"))
 
-    override val parchmentMappingsVersion = project.objects.property(project.stringProperty("parchment_mappings_version"))
+    override val parchmentMappingsVersion = project.objects.property(project.providers.gradleProperty("parchment_mappings_version"))
 
     var mixinsEnabled: Boolean = false
         private set

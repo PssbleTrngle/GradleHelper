@@ -1,12 +1,16 @@
 package com.possible_triangle.gradle
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.extra
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 
 class ProjectEnvironment(
+    private val project: Project,
     private val values: Map<String, String>,
 ) {
     operator fun get(key: String) = values[key]
+
+    fun provider(key: String) = project.provider { get(key) }
 
     val isCI get() = get("CI") == "true"
 
@@ -27,11 +31,9 @@ private lateinit var loadedEnv: ProjectEnvironment
 
 fun Project.loadEnv(fileName: String = ".env") {
     val localEnv = rootProject.loadLocalEnv(fileName) + loadLocalEnv(fileName)
-    loadedEnv = ProjectEnvironment(System.getenv() + localEnv)
+    loadedEnv = ProjectEnvironment(project, System.getenv() + localEnv)
 }
 
 val env get(): ProjectEnvironment = loadedEnv
 
-fun Project.stringProperty(key: String): String? = if (extra.has(key)) extra[key].toString() else null
-
-fun Project.intProperty(key: String): Int? = stringProperty(key)?.toIntOrNull()
+fun ProviderFactory.intProperty(key: String): Provider<Int> = gradleProperty(key).map { it.toInt() }

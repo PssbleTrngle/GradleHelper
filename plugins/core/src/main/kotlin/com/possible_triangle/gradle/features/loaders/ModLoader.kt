@@ -7,7 +7,6 @@ import com.possible_triangle.gradle.defaultDataGenProject
 import com.possible_triangle.gradle.existingResources
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.property
-import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
 import org.gradle.api.attributes.Attribute
 import org.gradle.api.attributes.AttributeCompatibilityRule
@@ -238,4 +237,4 @@ fun ModLoader.displayName(): String =
         else -> name.lowercase().capitalized()
     }
 
-val Project.mixinExtrasVersion get() = stringProperty("mixin_extras_version") ?: "0.5.2"
+val Project.mixinExtrasVersion get() = providers.gradleProperty("mixin_extras_version").getOrElse("0.5.2")
