@@ -194,11 +194,7 @@ fun Project.configureLoaderProject(
 
     lazyDependencies("compileOnly") {
         config.dependsOn.forEach {
-            add(it) {
-                attributes {
-                    attribute(LOADER_ATTRIBUTE, "common")
-                }
-            }
+            add(it)
         }
     }
 
