@@ -4,6 +4,7 @@ import com.possible_triangle.gradle.access.generateAccessTransformer
 import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
+import com.possible_triangle.gradle.stringProperty
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
 import org.gradle.api.Project
@@ -34,7 +35,7 @@ internal open class CommonExtensionImpl(
         )
 
     override val parchmentMappingsVersion =
-        project.objects.property(project.providers.gradleProperty("parchment_mappings_version"))
+        project.objects.property(project.stringProperty("parchment_mappings_version"))
 
     override fun accessTransformer(file: Provider<File>) {
         project.configure<NeoForgeExtension> {

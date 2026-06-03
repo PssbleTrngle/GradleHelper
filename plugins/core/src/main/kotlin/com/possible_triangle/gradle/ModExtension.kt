@@ -81,7 +81,7 @@ fun Project.createModExtension(): ModExtension {
         }
     }
 
-    val rawModVersion = env.provider("RELEASE_VERSION").orElse(providers.gradleProperty("mod_version"))
+    val rawModVersion = env.provider("RELEASE_VERSION").orElse(stringProperty("mod_version"))
     val patchVersion = env.provider("PATCH_VERSION").orElse("999")
     val modVersion =
         rawModVersion.map {
@@ -91,19 +91,18 @@ fun Project.createModExtension(): ModExtension {
         }
 
     val mcVersion =
-        coreProject.providers
-            .gradleProperty("mc_version")
-            .orElse(coreProject.providers.gradleProperty("minecraft_version"))
+        stringProperty("mc_version")
+            .orElse(stringProperty("minecraft_version"))
 
-    configureDefault(providers.gradleProperty("mod_id")) { id }
-    configureDefault(providers.gradleProperty("mod_name")) { name }
+    configureDefault(stringProperty("mod_id")) { id }
+    configureDefault(stringProperty("mod_name")) { name }
     configureDefault(modVersion) { version }
-    configureDefault(providers.gradleProperty("mod_author")) { author }
-    configureDefault(providers.gradleProperty("mod_description")) { description }
+    configureDefault(stringProperty("mod_author")) { author }
+    configureDefault(stringProperty("mod_description")) { description }
     configureDefault(mcVersion) { minecraftVersion }
-    configureDefault(providers.gradleProperty("release_type").orElse("release")) { releaseType }
-    configureDefault(providers.gradleProperty("repository")) { repository }
-    configureDefault(providers.gradleProperty("maven_group")) { mavenGroup }
+    configureDefault(stringProperty("release_type").orElse("release")) { releaseType }
+    configureDefault(stringProperty("repository")) { repository }
+    configureDefault(stringProperty("maven_group")) { mavenGroup }
 
     return mod
 }
@@ -126,7 +125,7 @@ internal class AdditionalPropertiesImpl(
         values[key] = value
     }
 
-    override fun add(key: String) = add(key, project.providers.gradleProperty(key))
+    override fun add(key: String) = add(key, project.stringProperty(key))
 
     override fun toMap() = (parent?.toMap() ?: emptyMap()) + values.toMap()
 

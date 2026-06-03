@@ -2,7 +2,6 @@ package com.possible_triangle.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
 
 class ProjectEnvironment(
     private val project: Project,
@@ -36,4 +35,6 @@ fun Project.loadEnv(fileName: String = ".env") {
 
 val env get(): ProjectEnvironment = loadedEnv
 
-fun ProviderFactory.intProperty(key: String): Provider<Int> = gradleProperty(key).map { it.toInt() }
+fun Project.stringProperty(key: String): Provider<String> = provider { findProperty(key) as String? }
+
+fun Project.intProperty(key: String): Provider<Int> = stringProperty(key).map { it.toInt() }

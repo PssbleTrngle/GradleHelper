@@ -4,6 +4,7 @@ import com.possible_triangle.gradle.env
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
+import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
@@ -38,7 +39,7 @@ internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBu
     private val tokenKey = "${platform.uppercase()}_TOKEN"
     private val projectIdKey = "${platform}_project_id"
 
-    override val projectId = project.objects.property(project.providers.gradleProperty(projectIdKey))
+    override val projectId = project.objects.property(project.stringProperty(projectIdKey))
     override val token = project.objects.property(env[tokenKey])
     override val file: RegularFileProperty = project.objects.fileProperty()
 

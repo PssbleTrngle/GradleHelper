@@ -22,8 +22,7 @@ internal fun javaVersionFor(minecraftVersion: String): Int {
 
 private val Project.javaVersion
     get() =
-        providers
-            .intProperty("java_version")
+        intProperty("java_version")
             .orElse(project.mod.minecraftVersion.map(::javaVersionFor))
 
 internal fun Project.setupJava() {

@@ -3,6 +3,7 @@ package com.possible_triangle.gradle.neoforge
 import com.possible_triangle.gradle.access.generateAccessTransformer
 import com.possible_triangle.gradle.features.loaders.*
 import com.possible_triangle.gradle.property
+import com.possible_triangle.gradle.stringProperty
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts
 import org.gradle.api.Project
@@ -28,12 +29,12 @@ internal open class NeoforgeExtensionImpl(
     override val project: Project,
 ) : AbstractLoadExtensionWithDatagen(project),
     NeoforgeExtension {
-    override val neoforgeVersion = project.objects.property(project.providers.gradleProperty("neoforge_version"))
+    override val neoforgeVersion = project.objects.property(project.stringProperty("neoforge_version"))
 
-    override val kotlinForgeVersion = project.objects.property(project.providers.gradleProperty("kotlin_forge_version"))
+    override val kotlinForgeVersion = project.objects.property(project.stringProperty("kotlin_forge_version"))
 
     override val parchmentMappingsVersion =
-        project.objects.property(project.providers.gradleProperty("parchment_mappings_version"))
+        project.objects.property(project.stringProperty("parchment_mappings_version"))
 
     override val unitTests = project.objects.property(false)
 
