@@ -27,14 +27,18 @@ class SubprojectTest {
             }
 
         project.mod {
-            name.set("Another Name")
+            description.set("Description")
+        }
+
+        otherSubproject.mod {
+            description.set("Another Description")
         }
 
         assertEquals("example-mod", subproject.mod.id.get())
         assertEquals("example-mod", otherSubproject.mod.id.get())
 
-        assertEquals("Another Name", subproject.mod.name.get())
-        assertEquals("Another Name", otherSubproject.mod.name.get())
+        assertEquals("Description", subproject.mod.description.get())
+        assertEquals("Another Description", otherSubproject.mod.description.get())
     }
 
     @Test

@@ -2,7 +2,7 @@ package com.possible_triangle.gradle.test
 
 import com.possible_triangle.gradle.GradleHelperCorePlugin
 import com.possible_triangle.gradle.mod
-import org.gradle.api.internal.provider.AbstractProperty
+import org.gradle.api.internal.provider.MissingValueException
 import org.gradle.kotlin.dsl.extra
 import org.junit.Assert.assertThrows
 import kotlin.test.Test
@@ -33,7 +33,7 @@ class ModExtensionTest {
             id.set("custom-id")
         }
 
-        assertThrows(AbstractProperty.PropertyQueryException::class.java) {
+        assertThrows(MissingValueException::class.java) {
             project.mod.name.get()
         }
     }

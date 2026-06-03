@@ -6,6 +6,7 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
@@ -63,6 +64,48 @@ internal open class ModExtensionImpl(
     override val mavenGroup: Property<String> = project.objects.property()
     override val additional: AdditionalPropertiesImpl =
         AdditionalPropertiesImpl(project, project.parent?.mod?.additional)
+}
+
+fun Project.createModExtension(): ModExtension {
+    val rootMod = coreProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
+    val mod = extensions.create<ModExtension, ModExtensionImpl>("mod")
+
+    fun <T : Any> configureDefault(
+        default: Provider<T>,
+        supplier: ModExtension.() -> Property<T>,
+    ) {
+        if (rootMod != null) {
+            mod.supplier().convention(default.orElse(rootMod.supplier()))
+        } else {
+            mod.supplier().convention(default)
+        }
+    }
+
+    val rawModVersion = env.provider("RELEASE_VERSION").orElse(providers.gradleProperty("mod_version"))
+    val patchVersion = env.provider("PATCH_VERSION").orElse("999")
+    val modVersion =
+        rawModVersion.map {
+            it
+                .replace("<patch>", patchVersion.get())
+                .replace("<mc>", mod.minecraftVersion.get())
+        }
+
+    val mcVersion =
+        coreProject.providers
+            .gradleProperty("mc_version")
+            .orElse(coreProject.providers.gradleProperty("minecraft_version"))
+
+    configureDefault(providers.gradleProperty("mod_id")) { id }
+    configureDefault(providers.gradleProperty("mod_name")) { name }
+    configureDefault(modVersion) { version }
+    configureDefault(providers.gradleProperty("mod_author")) { author }
+    configureDefault(providers.gradleProperty("mod_description")) { description }
+    configureDefault(mcVersion) { minecraftVersion }
+    configureDefault(providers.gradleProperty("release_type").orElse("release")) { releaseType }
+    configureDefault(providers.gradleProperty("repository")) { repository }
+    configureDefault(providers.gradleProperty("maven_group")) { mavenGroup }
+
+    return mod
 }
 
 internal class AdditionalPropertiesImpl(
