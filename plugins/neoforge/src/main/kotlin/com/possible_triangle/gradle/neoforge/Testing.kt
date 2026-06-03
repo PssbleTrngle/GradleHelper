@@ -21,7 +21,7 @@ internal fun Project.setupJUnit() {
     configure<NeoForgeExtension> {
         unitTest {
             enable()
-            testedMod = mods[mod.id.get()]
+            testedMod = provider { mods[mod.id.get()] }
         }
     }
 
