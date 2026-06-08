@@ -14,6 +14,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+import org.gradle.api.provider.Provider
 import org.sonarqube.gradle.SonarProperties
 import com.possible_triangle.gradle.env as projectEnv
 
@@ -33,6 +34,11 @@ fun RepositoryHandler.githubPackages(
 
 fun RepositoryHandler.nexus(
     type: String = "public",
+    block: MavenArtifactRepository.() -> Unit = {},
+) = addNexus(type, block)
+
+fun RepositoryHandler.nexus(
+    type: Provider<String>,
     block: MavenArtifactRepository.() -> Unit = {},
 ) = addNexus(type, block)
 

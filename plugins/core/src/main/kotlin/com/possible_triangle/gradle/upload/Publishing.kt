@@ -3,6 +3,7 @@ package com.possible_triangle.gradle.upload
 import com.possible_triangle.gradle.env
 import com.possible_triangle.gradle.features.loaders.isSubProject
 import com.possible_triangle.gradle.mod
+import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.publishing.DependencyFilter
 import com.possible_triangle.gradle.publishing.removeDependencies
 import com.possible_triangle.gradle.publishing.removeRuntimeDependencies
@@ -48,7 +49,18 @@ fun RepositoryHandler.addNexus(
 ) {
     maven {
         name = "Nexus"
-        url = URI("https://registry.somethingcatchy.net/repository/maven-$type/")
+        setUrl("https://registry.somethingcatchy.net/repository/maven-$type/")
+        block()
+    }
+}
+
+fun RepositoryHandler.addNexus(
+    type: Provider<String>,
+    block: MavenArtifactRepository.() -> Unit,
+) {
+    maven {
+        name = "Nexus"
+        setUrl(type.map { "https://registry.somethingcatchy.net/repository/maven-$it/" })
         block()
     }
 }
@@ -62,7 +74,17 @@ private fun Project.defaultArtifactName(): Provider<String> =
         }
     }
 
+private fun Project.defaultArtifactVersion(isSnapshot: Provider<Boolean>): Provider<String> =
+    mod.version.map {
+        if (isSnapshot.get()) {
+            "$it-SNAPSHOT"
+        } else {
+            it
+        }
+    }
+
 interface ModMavenPublishingExtension {
+    val isSnapshot: Property<Boolean>
     val artifactVersion: Property<String>
     val group: Property<String>
     val name: Property<String>
@@ -72,8 +94,10 @@ interface ModMavenPublishingExtension {
 
     fun githubPackages(block: MavenArtifactRepository.() -> Unit = {})
 
+    fun nexus(block: MavenArtifactRepository.() -> Unit = {})
+
     fun nexus(
-        snapshot: Boolean = false,
+        snapshot: Boolean,
         block: MavenArtifactRepository.() -> Unit = {},
     )
 
@@ -93,9 +117,11 @@ private const val PUBLICATION_NAME = "maven"
 internal class ModMavenPublishingExtensionImpl(
     private val project: Project,
 ) : ModMavenPublishingExtension {
-    override val artifactVersion: Property<String> = project.objects.property<String>().convention(project.mod.version)
-    override val group: Property<String> = project.objects.property<String>().convention(project.mod.mavenGroup)
-    override val name: Property<String> = project.objects.property<String>().convention(project.defaultArtifactName())
+    override val isSnapshot: Property<Boolean> = project.objects.property(env["SNAPSHOT"] == "true")
+    override val artifactVersion: Property<String> =
+        project.objects.property(project.defaultArtifactVersion(isSnapshot))
+    override val group: Property<String> = project.objects.property(project.mod.mavenGroup)
+    override val name: Property<String> = project.objects.property(project.defaultArtifactName())
 
     private val parentExtension get() = project.the<PublishingExtension>()
 
@@ -105,11 +131,25 @@ internal class ModMavenPublishingExtensionImpl(
 
     override fun githubPackages(block: MavenArtifactRepository.() -> Unit) = repositories.addGithubPackages(project, block)
 
+    override fun nexus(block: MavenArtifactRepository.() -> Unit) {
+        val snapshot =
+            artifactVersion
+                .map { it.endsWith("-SNAPSHOT") }
+        nexus(snapshot, block)
+    }
+
     override fun nexus(
         snapshot: Boolean,
         block: MavenArtifactRepository.() -> Unit,
     ) {
-        val type = if (snapshot) "snapshots" else "releases"
+        nexus(project.provider { snapshot }, block)
+    }
+
+    private fun nexus(
+        snapshot: Provider<Boolean>,
+        block: MavenArtifactRepository.() -> Unit,
+    ) {
+        val type = snapshot.map { if (it) "snapshots" else "releases" }
         val token = env["NEXUS_TOKEN"]
         val user = env["NEXUS_USER"]
 
