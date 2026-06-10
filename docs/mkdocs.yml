@@ -64,6 +64,11 @@ plugins:
       enabled: !ENV [CI, false]
   - social:
       enabled: !ENV [CI, false]
+      cache: false
+      cards_layout_options:
+        description: Collection of gradle plugins bundling common minecraft modding setups to reduce boilerplate code
+        background_image: layouts/background.png
+        background_color: transparent
   - site-urls:
       prefix: "/"
 
