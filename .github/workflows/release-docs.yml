@@ -49,3 +49,8 @@ jobs:
             repo_url=https://github.com/${{ env.GITHUB_REPO }}
             site_url=${{ secrets.SITE_URL }}/${{ github.ref_name }}/
             edit_url=edit/${{ github.ref_name }}/docs/src/
+
+      - name: Re-Build Docs
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          event-type: rebuild-docs
