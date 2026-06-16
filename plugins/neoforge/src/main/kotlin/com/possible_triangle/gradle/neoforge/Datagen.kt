@@ -15,7 +15,7 @@ internal fun Project.configureDatagenRun() {
             runs.named("data") {
                 gameDirectory = project.file("run/data")
 
-                val existingResources = config.existingResources.flatMap { listOf("--existing", it.path) }
+                val existingResources = listOf("--existing", config.existingResources.path)
                 val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
                 val dataGenArgs =
                     listOf(

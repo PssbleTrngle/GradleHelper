@@ -12,7 +12,7 @@ internal fun Project.configureDatagenRun() {
     configure<LegacyForgeExtension> {
         if (config.enabledDataGen) {
             runs.named("data") {
-                val existingResources = config.existingResources.flatMap { listOf("--existing", it.path) }
+                val existingResources = listOf("--existing", config.existingResources.path)
                 val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
                 val dataGenArgs =
                     listOf(

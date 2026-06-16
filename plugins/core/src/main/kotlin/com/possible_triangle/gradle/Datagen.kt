@@ -15,11 +15,7 @@ internal val Project.defaultDataGenProject get() = if (isSubProject) project(":c
 internal val Project.datagenOutput get() = file("src/generated/resources")
 
 internal val Project.existingResources
-    get() =
-        setOf(
-            defaultDataGenProject.file("src/main/resources"),
-            file("src/main/resources"),
-        )
+    get() = file("src/main/resources")
 
 interface DatagenBuilder {
     val owner: Property<Project>
