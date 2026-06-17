@@ -3,7 +3,7 @@ package com.possible_triangle.gradle
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
-class ProjectEnvironment(
+class ProjectEnvironment internal constructor(
     private val project: Project,
     private val values: Map<String, String>,
 ) {
@@ -30,7 +30,9 @@ private lateinit var loadedEnv: ProjectEnvironment
 
 fun Project.loadEnv(fileName: String = ".env") {
     val localEnv = rootProject.loadLocalEnv(fileName) + loadLocalEnv(fileName)
-    loadedEnv = ProjectEnvironment(project, System.getenv() + localEnv)
+    val merged = System.getenv() + localEnv
+    val filtered = merged.filterValues { it.isNotEmpty() }
+    loadedEnv = ProjectEnvironment(project, filtered)
 }
 
 val env get(): ProjectEnvironment = loadedEnv
