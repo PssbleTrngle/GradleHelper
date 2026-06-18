@@ -8,7 +8,9 @@ import com.possible_triangle.gradle.existingResources
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Attribute
 import org.gradle.api.attributes.AttributeCompatibilityRule
 import org.gradle.api.attributes.CompatibilityCheckDetails
@@ -108,28 +110,36 @@ val Project.mainSourceSet: SourceSet
 
 val Project.isSubProject: Boolean get() = rootProject != project
 
-fun Project.configureCommonProject() {
-    addLoaderAttribute("common")
-
-    val dependsOnCode =
+private fun Project.createConfigurations(
+    resolvable: Boolean,
+): Pair<NamedDomainObjectProvider<Configuration>, NamedDomainObjectProvider<Configuration>> {
+    val code =
         configurations.register("dependsOnCode") {
-            isCanBeResolved = false
+            isCanBeResolved = resolvable
             isCanBeConsumed = true
         }
-    val dependsOnResources =
+    val resources =
         configurations.register("dependsOnResources") {
-            isCanBeResolved = false
+            isCanBeResolved = resolvable
             isCanBeConsumed = true
         }
 
-    configureDatagen(datagenOutput, dependsOnResources.name)
+    configureDatagen(datagenOutput, resources.name)
 
     artifacts {
         mainSourceSet.java.sourceDirectories.files
-            .forEach { add(dependsOnCode.name, it) }
+            .forEach { add(code.name, it) }
         mainSourceSet.resources.sourceDirectories.files
-            .forEach { add(dependsOnResources.name, it) }
+            .forEach { add(resources.name, it) }
     }
+
+    return resources to code
+}
+
+fun Project.configureCommonProject() {
+    addLoaderAttribute("common")
+
+    createConfigurations(resolvable = false)
 }
 
 val LOADER_ATTRIBUTE = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
@@ -180,12 +190,9 @@ fun Project.configureLoaderProject(
 ) {
     addLoaderAttribute(loader.name.lowercase())
 
-    val dependsOnCode = configurations.register("dependsOnCode") { isCanBeResolved = true }
-    val dependsOnResources = configurations.register("dependsOnResources") { isCanBeResolved = true }
+    val (resources, code) = createConfigurations(resolvable = true)
 
-    configureDatagen(datagenOutput, dependsOnResources.name)
-
-    listOf(dependsOnResources, dependsOnCode).forEach { configuration ->
+    listOf(resources, code).forEach { configuration ->
         lazyDependencies(configuration.name) {
             config.dependsOn.forEach {
                 add(dependencies.project(path = it.path, configuration = configuration.name))
@@ -200,25 +207,25 @@ fun Project.configureLoaderProject(
     }
 
     tasks.withType<ProcessResources> {
-        dependsOn(dependsOnResources)
-        from(dependsOnResources)
+        dependsOn(resources)
+        from(resources)
     }
 
     tasks.getByName<Jar>("sourcesJar") {
-        dependsOn(dependsOnResources)
-        from(dependsOnResources)
-        dependsOn(dependsOnCode)
-        from(dependsOnCode)
+        dependsOn(resources)
+        from(resources)
+        dependsOn(code)
+        from(code)
     }
 
     tasks.withType<JavaCompile> {
-        dependsOn(dependsOnCode)
-        source(dependsOnCode)
+        dependsOn(code)
+        source(code)
     }
 
     tasks.withType<KotlinCompile> {
-        dependsOn(dependsOnCode)
-        source(dependsOnCode)
+        dependsOn(code)
+        source(code)
     }
 }
 
