@@ -87,6 +87,14 @@ fun DependencyHandlerScope.modIncludeCompileOnly(
     addIncluded(dependencyNotation)
 }
 
+fun DependencyHandlerScope.modIncludeRuntimeOnly(
+    dependencyNotation: Any,
+    block: ModuleDependency.() -> Unit = {},
+) {
+    addModDependency("runtimeOnly", dependencyNotation, block)
+    addIncluded(dependencyNotation)
+}
+
 fun DependencyHandlerScope.apiInclude(
     dependencyNotation: Any,
     block: ModuleDependency.() -> Unit = {},
@@ -100,5 +108,13 @@ fun DependencyHandlerScope.compileOnlyInclude(
     block: ModuleDependency.() -> Unit = {},
 ) {
     addProvider("compileOnly", resolveDependency(dependencyNotation), block)
+    addIncluded(dependencyNotation)
+}
+
+fun DependencyHandlerScope.runtimeOnlyInclude(
+    dependencyNotation: Any,
+    block: ModuleDependency.() -> Unit = {},
+) {
+    addProvider("runtimeOnly", resolveDependency(dependencyNotation), block)
     addIncluded(dependencyNotation)
 }
