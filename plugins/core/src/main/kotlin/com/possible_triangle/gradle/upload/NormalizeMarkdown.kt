@@ -22,7 +22,6 @@ abstract class NormalizeMarkdown : DefaultTask() {
     private fun replaceLink(result: MatchResult): String {
         val prefix = result.groups[1] ?: error("invalid regex")
         val link = result.groups[2] ?: error("invalid regex")
-        println("MATCH '${prefix.value}' + '${link.value}': ${link.value.contains("://")}")
         return if (link.value.contains("://")) {
             result.value
         } else {
