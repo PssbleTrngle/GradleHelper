@@ -2,12 +2,15 @@ package com.possible_triangle.gradle.upload
 
 import com.modrinth.minotaur.TaskModrinthSyncBody
 import com.modrinth.minotaur.TaskModrinthUpload
+import com.possible_triangle.gradle.gitCommitHash
+import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.modifyReleaseMetadata
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 import com.modrinth.minotaur.ModrinthExtension as MinotaurExtension
@@ -56,8 +59,24 @@ internal class ModrinthExtensionImpl(
                 ),
             )
 
-            syncFile.orNull?.let {
-                syncBodyFrom.set(it.asFile.readText())
+            syncFile.orNull?.let { file ->
+                val normalizeTask =
+                    project.tasks.register<NormalizeMarkdown>("normalizeModrinthBodySyncFile") {
+                        from.set(project.provider { file.asFile.readText() })
+                        to.set(project.layout.buildDirectory.file("generated/modrinthBodySync.md"))
+                        baseUrl.set(
+                            project.provider {
+                                val branch = project.gitCommitHash()
+                                "https://raw.githubusercontent.com/${project.mod.repository.get()}/$branch/"
+                            },
+                        )
+                    }
+
+                syncBodyFrom.set(normalizeTask.flatMap { it.to }.map { it.asFile.readText() })
+
+                project.tasks.withType<TaskModrinthSyncBody> {
+                    dependsOn(normalizeTask)
+                }
             }
         }
 

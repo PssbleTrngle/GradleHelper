@@ -15,7 +15,7 @@ import java.io.File
 private const val TRANSFORM_TASK = "transformAccessWidener"
 
 private fun Project.generatedAccessTransformer() =
-    layout.buildDirectory.file("generated/accesstransformer.cfg").map {
+    layout.buildDirectory.file("accesstransformer.cfg").map {
         val file = it.asFile
         file.ensureParentDirsCreated()
         if (!file.exists()) file.createNewFile()
