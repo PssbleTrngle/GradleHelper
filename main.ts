@@ -2,7 +2,7 @@ import { compile } from "handlebars";
 import { readdir } from "node:fs/promises";
 
 const versions = ["v1.2", "v1.3", "v1.4"];
-const latest = "v1.3";
+const latest = "v1.4";
 
 async function generate(file: string) {
   const input = Bun.file(`templates/${file}`);
