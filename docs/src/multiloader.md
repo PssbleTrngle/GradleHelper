@@ -12,7 +12,6 @@ here is a table of when it makes sense to use which one.
 | Plugin                               | When to use                                                                 |
 | ------------------------------------ | --------------------------------------------------------------------------- |
 | `com.possible-triangle.common`       | Starting with 1.21.1                                                        |
-| `com.possible-triangle.architectury` | Required if a _common_ module from a dependency also used architectury loom |
 | `com.possible-triangle.vanilla`      | Minecraft 1.20.1 and below                                                  |
 
 ## Cross-Module Dependencies

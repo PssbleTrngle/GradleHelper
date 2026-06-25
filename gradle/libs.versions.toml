@@ -27,8 +27,6 @@ forge-srg = { module = "net.minecraftforge:srgutils", version = "0.5.10" }
 
 fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.16-SNAPSHOT" }
 
-architectury-loom = { group = "dev.architectury.loom", name = "dev.architectury.loom.gradle.plugin", version = "1.13-SNAPSHOT" }
-
 sonar-scanner = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonar-version" }
 spotless = { module = "com.diffplug.spotless:com.diffplug.spotless.gradle.plugin", version.ref = "spotless-version" }
 

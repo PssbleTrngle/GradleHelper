@@ -18,12 +18,6 @@ The `common` extension implements all `accessTransformer` methods that are prese
 as well as all `accessWidener` methods that are present in the [fabric plugin](/mod-loaders/fabric).
 The latter will be transformed into an access transformer, as [described in the neoforge page](/mod-loaders/neoforge#access-transformers)
 
-## Architectury
-
-The `com.possible-triangle.architectury` uses [Architectury Loom](https://docs.architectury.dev/loom/introduction), specifically version 1.13.
-
-The `common` extension implements all `accessWidener` methods that are present in the [fabric plugin](/mod-loaders/fabric).
-
 ## Vanilla
 
 The `com.possible-triangle.vanilla` uses [VanillaGradle](https://github.com/SpongePowered/VanillaGradle)

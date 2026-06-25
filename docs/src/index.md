@@ -48,19 +48,6 @@ For [multi-loader projects](/multiloader) projects, a combination of these can b
     using the NeoForge [ModDevGradle](https://projects.neoforged.net/neoforged/ModDevGradle) 
     and [NeoForm](https://projects.neoforged.net/neoforged/neoform)
 
--   [Architectury](/mod-loaders/common#architectury)
-
-    ***
-    
-    `com.possible-triangle.architectury`
-
-    using [Architectury Loom](https://docs.architectury.dev/loom/introduction) (1)
-    { .annotate }
-
-    1.  using version __1.13__
-
-    _required if a dependendies `common` module also uses architectury loom_
-
 -   [Vanilla](/mod-loaders/common#vanilla)
 
     ***
