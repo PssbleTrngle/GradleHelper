@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 
 internal fun javaVersionFor(minecraftVersion: String): Int {
     val semVer = SemVer.parse(minecraftVersion)
-    if (semVer.major > 1) return 26
+    if (semVer.major > 1) return 25
     if (semVer.minor > 20) return 21
     return 17
 }
