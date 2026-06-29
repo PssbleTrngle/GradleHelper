@@ -137,6 +137,12 @@ pluginProjects {
         }
     }
 
+    configurations.apiElements {
+        attributes {
+            attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("9.4.0"))
+        }
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()
