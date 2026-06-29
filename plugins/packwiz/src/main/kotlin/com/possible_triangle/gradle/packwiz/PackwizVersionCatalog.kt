@@ -39,13 +39,13 @@ data class PackwizUpdateInfo(
 @Serializable
 data class PackwizFile(
     val name: String,
-    val update: PackwizUpdateInfo,
+    val update: PackwizUpdateInfo? = null,
 )
 
 @Serializable
 data class PackwizFileReference(
     val file: String,
-    val metafile: Boolean,
+    val metafile: Boolean = false,
 )
 
 @Serializable
@@ -144,14 +144,14 @@ class PackwizVersionCatalog(
 
         successful.forEach { (slug, file) ->
             if (config.modrinth.getOrElse(true)) {
-                file.update.modrinth?.let {
+                file.update?.modrinth?.let {
                     extension.logVerbose("  adding $slug with prefix $prefix from modrinth")
                     library(prefix + "modrinth-$slug", "maven.modrinth", it.modId).version(it.version)
                 }
             }
 
             if (config.curseforge.getOrElse(true)) {
-                file.update.curseforge?.let {
+                file.update?.curseforge?.let {
                     extension.logVerbose("  adding $slug with prefix $prefix from curseforge")
                     library(
                         prefix + "curseforge-$slug",
