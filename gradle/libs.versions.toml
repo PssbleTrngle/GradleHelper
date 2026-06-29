@@ -1,15 +1,14 @@
 [versions]
-kotlin-version = "2.2.21"
+kotlin-version = "2.3.0"
 sonar-version = "7.3.0.8198"
 spotless-version = "8.4.0"
 neoforge-version = "2.0.141"
-power-mock-version = "2.0.9"
 
 [libraries]
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin-version" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.9.0" }
-kotlin-toml = { module = "com.akuleshov7:ktoml-core", version = "0.7.0" }
+kotlin-toml = { module = "com.akuleshov7:ktoml-core", version = "0.7.1" }
 
 gson = { group = "com.google.code.gson", name = "gson", version = "2.11.0" }
 
