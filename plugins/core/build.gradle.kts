@@ -6,6 +6,7 @@ plugins {
 dependencies {
     api(project(":publishing"))
 
+    api(libs.kotlin.gradle)
     api(libs.kotlin.serialization.json)
 
     api(libs.cursegradle)

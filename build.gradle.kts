@@ -152,7 +152,6 @@ pluginProjects {
     }
 
     dependencies {
-        api(rootProject.libs.kotlin.gradle)
         api(rootProject.libs.kotlin.serialization)
         implementation(rootProject.libs.gson)
 

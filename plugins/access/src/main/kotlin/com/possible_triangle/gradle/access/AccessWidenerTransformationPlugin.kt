@@ -9,18 +9,11 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
-import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import java.io.File
 
 private const val TRANSFORM_TASK = "transformAccessWidener"
 
-private fun Project.generatedAccessTransformer() =
-    layout.buildDirectory.file("accesstransformer.cfg").map {
-        val file = it.asFile
-        file.ensureParentDirsCreated()
-        if (!file.exists()) file.createNewFile()
-        file
-    }
+private fun Project.generatedAccessTransformer() = layout.buildDirectory.file("accesstransformer.cfg").map { it.asFile }
 
 fun Project.generateAccessTransformer(from: Provider<File>): Pair<Provider<File>, TaskProvider<Task>> {
     val output = generatedAccessTransformer()
