@@ -1,6 +1,5 @@
 package com.possible_triangle.gradle
 
-import com.possible_triangle.gradle.upload.publish
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
@@ -76,7 +75,12 @@ fun Project.setupReleaseMetadata() {
             tasks.register<GenerateReleaseMetadataTask>(TASK_NAME) {
                 getOutput().convention(project.layout.buildDirectory.file("release.json"))
             }
-        tasks.publish.finalizedBy(releaseMetadataTask)
+
+        tasks.register("upload") {
+            group = "publishing"
+            dependsOn("publish")
+            finalizedBy(releaseMetadataTask)
+        }
     }
 
     if (subprojects.isEmpty()) {
