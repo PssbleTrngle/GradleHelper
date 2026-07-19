@@ -1,0 +1,35 @@
+version: 2
+
+registries:
+  nexus:
+    type: maven-repository
+    url: https://registry.somethingcatchy.net/repository/maven-public
+    username: ${{ secrets.NEXUS_USER }}
+    password: ${{ secrets.NEXUS_TOKEN }}
+
+updates:
+  - package-ecosystem: "gradle"
+    target-branch: v1.4
+    registries:
+      - nexus
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    target-branch: v1.4
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    target-branch: docs
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "bun"
+    target-branch: docs
+    directory: "/"
+    schedule:
+      interval: "weekly"
