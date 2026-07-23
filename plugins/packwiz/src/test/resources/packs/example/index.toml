@@ -1,0 +1,26 @@
+hash-format = "sha256"
+
+[[files]]
+file = "mods/creeperconfetti+.pw.toml"
+hash = "e74117882357e5665631dec329bce153c78ea1d428b3b5405483099289d88b89"
+metafile = true
+
+[[files]]
+file = "mods/jei.pw.toml"
+hash = "d306891d79c1bf2e11521faf875747ae875dede848e7968ae33db1ea873e42aa"
+metafile = true
+
+[[files]]
+file = "mods/moonlight.pw.toml"
+hash = "b6d7448e14c747318b083d7903baa4801ad524853f34205aa19f0cfa18ec0a92"
+metafile = true
+
+[[files]]
+file = "mods/supplementaries-squared.pw.toml"
+hash = "46280c9487633e3bd1dd7bb24ccc4076058b2602d7dc2906f96509527346cf24"
+metafile = true
+
+[[files]]
+file = "mods/supplementaries.pw.toml"
+hash = "edda5333279b06528e2d1128d69bdeb5f55c0b446b95f1d766bf12938ad91039"
+metafile = true

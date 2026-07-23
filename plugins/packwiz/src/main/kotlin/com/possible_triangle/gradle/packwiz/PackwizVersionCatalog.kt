@@ -60,8 +60,21 @@ private inline fun <reified T> StringFormat.decodeFromFile(file: File): T =
         throw RuntimeException("failed to deserialize $file: ${ex.message}", ex)
     }
 
+fun String.normalizeSlug(): String =
+    substringBefore('.')
+        .replace("+", "plus")
+        .replace("\"", "")
+        .replace("'", "")
+        .replace("!", "")
+        .replace("@", "")
+        .replace("$", "")
+        .replace("(", "")
+        .replace("`", "")
+        .replace(".", "-")
+        .replace(",", "-")
+
 class PackwizVersionCatalog(
-    private val extension: PackwizExtension,
+    private val extension: PackwizExtensionInterface,
     private val logger: Logger,
 ) {
     fun importPackwiz(settings: Settings) {
@@ -97,33 +110,40 @@ class PackwizVersionCatalog(
         }
     }
 
-    private fun PackwizExtension.logVerbose(message: String) {
+    private fun PackwizExtensionInterface.logVerbose(message: String) {
         if (verbose.get()) logger.info(message)
     }
 
-    private fun VersionCatalogBuilder.add(config: PackwizConfiguration) {
+    fun findMods(config: PackwizConfigurationInterface): Map<String, PackwizFile> {
         val strategy = config.strategy.orElse(extension.strategy).get()
         val from = config.from.get().asFile
 
-        if (!from.exists()) return strategy.execute("directory $from does not exist")
+        if (!from.exists()) {
+            strategy.execute("directory $from does not exist")
+            return emptyMap()
+        }
 
         extension.logVerbose("importing from $from as ${config.name}")
 
         val indexFile = from.resolve("index.toml")
-        if (!indexFile.exists()) return strategy.execute("index.toml in $from does not exist")
+        if (!indexFile.exists()) {
+            strategy.execute("index.toml in $from does not exist")
+            return emptyMap()
+        }
 
         val index =
             try {
                 TOML.decodeFromFile<PackwizIndex>(indexFile)
             } catch (ex: Exception) {
-                return strategy.execute("unable to decode index.toml", ex)
+                strategy.execute("unable to decode index.toml", ex)
+                return emptyMap()
             }
 
         val mods =
             index.files
                 .filter { it.metafile }
                 .map { from.resolve(it.file) }
-                .associateBy { it.name.substringBefore('.') }
+                .associateBy { it.name.normalizeSlug() }
                 .mapValues { runCatching { TOML.decodeFromFile<PackwizFile>(it.value) } }
 
         extension.logVerbose("found ${mods.size} mod metadata files")
@@ -138,7 +158,17 @@ class PackwizVersionCatalog(
             strategy.execute(messages.joinToString("\n"))
         }
 
-        if (successful.isEmpty()) return strategy.execute("no packwiz mods found in ${config.name}")
+        if (successful.isEmpty()) {
+            strategy.execute("no packwiz mods found in ${config.name}")
+            return emptyMap()
+        }
+
+        return successful
+    }
+
+    private fun VersionCatalogBuilder.add(config: PackwizConfigurationInterface) {
+        val successful = findMods(config)
+        if (successful.isEmpty()) return
 
         val prefix = config.name.takeUnless { it == DEFAULT_PACK_NAME }?.let { "$it-" } ?: ""
 

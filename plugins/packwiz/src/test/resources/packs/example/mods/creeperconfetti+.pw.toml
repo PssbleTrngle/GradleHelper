@@ -1,0 +1,13 @@
+name = "Creeper Confetti Plus"
+filename = "creeper-confetti-plus-1.1.0+1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/bc6DOtvU/versions/xTfwCTH4/creeper-confetti-plus-1.1.0%2B1.21.1.jar"
+hash-format = "sha512"
+hash = "3d78713e9790d125b26c7da3e878c0be767fa869b63402526168e2d8258e4a43b22633d257d36114a13687737f8dd273d34310edb1d62f760a63acfa7e003a2a"
+
+[update]
+[update.modrinth]
+mod-id = "bc6DOtvU"
+version = "xTfwCTH4"
