@@ -21,12 +21,18 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
 
   - package-ecosystem: "github-actions"
     target-branch: docs
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      docs-actions:
+        patterns: ["*"]
 
   - package-ecosystem: "bun"
     target-branch: docs
