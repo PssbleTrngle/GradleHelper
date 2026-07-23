@@ -11,19 +11,19 @@ internal fun Project.configureDatagenRun() {
         loom.runs {
             named("data") {
                 client()
-                configName = "Fabric Datagen"
-                runDir("run/data")
+                displayName.set("Fabric Datagen")
+                runDirectory.set(file("run/data"))
 
-                property("fabric-api.datagen")
-                property("fabric-api.datagen.output-dir", "${config.datagenOutput}")
-                property("fabric-api.datagen.modid", mod.id.get())
-                property("porting_lib.datagen.existing_resources", "${config.existingResources}")
+                systemProperties.put("fabric-api.datagen", "")
+                systemProperties.put("fabric-api.datagen.output-dir", "${config.datagenOutput}")
+                systemProperties.put("fabric-api.datagen.modid", mod.id.get())
+                systemProperties.put("porting_lib.datagen.existing_resources", "${config.existingResources}")
                 if (config.existingMods.isNotEmpty()) {
-                    property("porting_lib.datagen.existing-mod", config.existingMods.joinToString(","))
+                    systemProperties.put("porting_lib.datagen.existing-mod", config.existingMods.joinToString(","))
                 }
 
                 config.datagenSourceSet.orNull?.let {
-                    source(it)
+                    sourceSet.set(it.name)
                 }
             }
         }

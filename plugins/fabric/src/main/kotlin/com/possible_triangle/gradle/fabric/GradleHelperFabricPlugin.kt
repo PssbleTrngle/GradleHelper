@@ -46,21 +46,21 @@ class GradleHelperFabricPlugin : LoaderPlugin() {
         loom.runs {
             named("client") {
                 client()
-                configName = "Fabric Client"
-                runDir("run")
+                displayName = "Fabric Client"
+                runDirectory = file("run")
             }
 
             named("server") {
                 server()
-                configName = "Fabric Server"
-                runDir("run/server")
+                displayName = "Fabric Server"
+                runDirectory = file("run/server")
             }
 
             create("data")
 
             forEach { run ->
-                run.ideConfigGenerated(true)
-                run.vmArgs.addAll(JVM_ARGUMENTS)
+                run.generateRunConfig = true
+                run.jvmArguments.addAll(JVM_ARGUMENTS)
             }
         }
 
