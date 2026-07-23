@@ -1,10 +1,14 @@
 package com.possible_triangle.gradle.upload
 
 import com.possible_triangle.gradle.features.loaders.displayName
+import com.possible_triangle.gradle.property
+import com.possible_triangle.gradle.stringProperty
 import net.darkhax.curseforgegradle.Constants
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.UploadArtifact
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.register
 
 data class CurseForgeDependency(
@@ -31,7 +35,9 @@ class CurseForgeDependencies : AbstractDependencyBuilder<CurseForgeDependency>()
     ) = embedded(CurseForgeDependency(dependency, id))
 }
 
-interface CurseForgeExtension : AbstractUploadExtension<CurseForgeDependencies>
+interface CurseForgeExtension : AbstractUploadExtension<CurseForgeDependencies> {
+    val environment: Property<String>
+}
 
 private fun UploadArtifact.addDependency(
     it: CurseForgeDependency,
@@ -50,6 +56,8 @@ internal class CurseForgeExtensionImpl(
     CurseForgeExtension {
     override val dependencies = CurseForgeDependencies()
 
+    override val environment = project.objects.property(project.stringProperty("mod_environment"))
+
     override fun setup() {
         if (!isConfigured()) return
 
@@ -65,6 +73,14 @@ internal class CurseForgeExtensionImpl(
                     modLoaders.get().forEach { addModLoader(it.displayName()) }
                     minecraftVersions.get().forEach { addGameVersion(it) }
                     displayName = versionName.get()
+
+                    environment.orNull?.let {
+                        val value = it.lowercase().capitalized()
+                        if (value != "Client" && value != "Server") {
+                            error("$value is not a valid environment type")
+                        }
+                        addGameVersion(value)
+                    }
 
                     dependencies.consume(
                         DependencyConsumer(
