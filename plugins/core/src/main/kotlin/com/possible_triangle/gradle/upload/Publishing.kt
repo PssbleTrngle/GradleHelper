@@ -74,15 +74,6 @@ private fun Project.defaultArtifactName(): Provider<String> =
         }
     }
 
-private fun Project.defaultArtifactVersion(isSnapshot: Provider<Boolean>): Provider<String> =
-    mod.version.map {
-        if (isSnapshot.get()) {
-            "$it-SNAPSHOT"
-        } else {
-            it
-        }
-    }
-
 interface ModMavenPublishingExtension {
     val isSnapshot: Property<Boolean>
     val artifactVersion: Property<String>
@@ -119,7 +110,7 @@ internal class ModMavenPublishingExtensionImpl(
 ) : ModMavenPublishingExtension {
     override val isSnapshot: Property<Boolean> = project.objects.property(env["SNAPSHOT"] == "true")
     override val artifactVersion: Property<String> =
-        project.objects.property(project.defaultArtifactVersion(isSnapshot))
+        project.objects.property(project.mod.version)
     override val group: Property<String> = project.objects.property(project.mod.mavenGroup)
     override val name: Property<String> = project.objects.property(project.defaultArtifactName())
 
@@ -132,10 +123,7 @@ internal class ModMavenPublishingExtensionImpl(
     override fun githubPackages(block: MavenArtifactRepository.() -> Unit) = repositories.addGithubPackages(project, block)
 
     override fun nexus(block: MavenArtifactRepository.() -> Unit) {
-        val snapshot =
-            artifactVersion
-                .map { it.endsWith("-SNAPSHOT") }
-        nexus(snapshot, block)
+        nexus(isSnapshot.get(), block)
     }
 
     override fun nexus(
@@ -200,7 +188,14 @@ internal class ModMavenPublishingExtensionImpl(
                     create<MavenPublication>(PUBLICATION_NAME) {
                         groupId = mavenGroup
                         artifactId = this@ModMavenPublishingExtensionImpl.name.get()
-                        version = artifactVersion.get()
+                        version =
+                            artifactVersion.get().let {
+                                if (isSnapshot.get()) {
+                                    "$it-SNAPSHOT"
+                                } else {
+                                    it
+                                }
+                            }
 
                         from(project.components["java"])
 
