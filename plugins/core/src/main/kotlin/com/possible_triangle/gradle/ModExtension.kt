@@ -1,5 +1,8 @@
 package com.possible_triangle.gradle
 
+import com.possible_triangle.gradle.upload.SimpleVersionStrategy
+import com.possible_triangle.gradle.upload.VersionStrategy
+import com.possible_triangle.gradle.upload.parseVersionStrategy
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.ListProperty
@@ -28,6 +31,8 @@ interface ModExtension {
     val releaseType: Property<String>
     val repository: Property<String>
     val mavenGroup: Property<String>
+
+    val versionStrategy: Property<VersionStrategy>
 
     val additional: AdditionalProperties
 }
@@ -64,6 +69,7 @@ internal open class ModExtensionImpl(
     override val mavenGroup: Property<String> = project.objects.property()
     override val additional: AdditionalPropertiesImpl =
         AdditionalPropertiesImpl(project, project.parent?.mod?.additional)
+    override val versionStrategy: Property<VersionStrategy> = project.objects.property()
 }
 
 fun Project.createModExtension(): ModExtension {
@@ -103,6 +109,11 @@ fun Project.createModExtension(): ModExtension {
     configureDefault(stringProperty("release_type").orElse("release")) { releaseType }
     configureDefault(stringProperty("repository")) { repository }
     configureDefault(stringProperty("maven_group")) { mavenGroup }
+    configureDefault(
+        stringProperty("version_strategy")
+            .map(::parseVersionStrategy)
+            .orElse(SimpleVersionStrategy()),
+    ) { versionStrategy }
 
     return mod
 }
@@ -147,11 +158,12 @@ internal class AdditionalPropertiesImpl(
 
 internal fun ModExtension.resolveProperties(): Map<String, String> {
     val mcVersionRange = minecraftVersion.map { "[$it,)" }
+    val modVersion = versionStrategy.map { it.modVersion(this) }
 
     val providers =
         mapOf(
-            "version" to version,
-            "mod_version" to version,
+            "version" to modVersion,
+            "mod_version" to modVersion,
             "mod_name" to name,
             "mod_id" to id,
             "mod_author" to author,

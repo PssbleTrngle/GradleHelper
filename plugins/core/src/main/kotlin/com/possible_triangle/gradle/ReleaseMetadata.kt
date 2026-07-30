@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle
 
+import com.possible_triangle.gradle.upload.metadataTagConvention
 import com.possible_triangle.gradle.upload.upload
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -88,7 +89,7 @@ fun Project.setupReleaseMetadata() {
 
 private fun Project.createReleaseMetadata() {
     coreProject.tasks.releaseMetadata.releases.create(project.name) {
-        tag.convention(project.mod.version)
+        tag.convention(project.metadataTagConvention())
     }
 }
 

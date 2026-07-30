@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle.upload
 
 import com.possible_triangle.gradle.env
-import com.possible_triangle.gradle.features.loaders.isSubProject
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.publishing.DependencyFilter
@@ -65,15 +64,6 @@ fun RepositoryHandler.addNexus(
     }
 }
 
-private fun Project.defaultArtifactName(): Provider<String> =
-    mod.id.map { modId ->
-        if (isSubProject) {
-            "$modId-${name.lowercase()}"
-        } else {
-            modId
-        }
-    }
-
 interface ModMavenPublishingExtension {
     val isSnapshot: Property<Boolean>
     val artifactVersion: Property<String>
@@ -112,7 +102,8 @@ internal class ModMavenPublishingExtensionImpl(
     override val artifactVersion: Property<String> =
         project.objects.property(project.mod.version)
     override val group: Property<String> = project.objects.property(project.mod.mavenGroup)
-    override val name: Property<String> = project.objects.property(project.defaultArtifactName())
+    override val name: Property<String> =
+        project.objects.property(project.artifactNameConvention())
 
     private val parentExtension get() = project.the<PublishingExtension>()
 
