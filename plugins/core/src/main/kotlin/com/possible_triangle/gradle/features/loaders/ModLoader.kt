@@ -6,6 +6,8 @@ import com.possible_triangle.gradle.datagenOutput
 import com.possible_triangle.gradle.defaultDataGenProject
 import com.possible_triangle.gradle.existingResources
 import com.possible_triangle.gradle.features.lazyDependencies
+import com.possible_triangle.gradle.mod
+import com.possible_triangle.gradle.modImpl
 import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.NamedDomainObjectProvider
@@ -188,7 +190,9 @@ fun Project.configureLoaderProject(
     config: AbstractLoaderExtension,
     loader: ModLoader,
 ) {
-    addLoaderAttribute(loader.name.lowercase())
+    val loaderName = loader.name.lowercase()
+    addLoaderAttribute(loaderName)
+    project.modImpl.loader.set(loaderName)
 
     val (resources, code) = createConfigurations(resolvable = true)
 

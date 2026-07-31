@@ -20,6 +20,14 @@ val Project.coreProject get() = rootProject.takeIf { it.plugins.hasPlugin(Gradle
 fun ExtensionAware.mod(block: ModExtension.() -> Unit) = extensions.configure(block)
 
 val Project.mod get() = the<ModExtension>()
+internal val Project.modImpl get() = mod as ModExtensionImpl
+
+interface ModVersionProperties {
+    val id: Provider<String>
+    val version: Provider<String>
+    val minecraftVersion: Provider<String>
+    val loader: Provider<String>
+}
 
 interface ModExtension {
     val id: Property<String>
@@ -57,7 +65,8 @@ interface AdditionalProperties {
 
 internal open class ModExtensionImpl(
     project: Project,
-) : ModExtension {
+) : ModExtension,
+    ModVersionProperties {
     override val id: Property<String> = project.objects.property()
     override val name: Property<String> = project.objects.property()
     override val version: Property<String> = project.objects.property()
@@ -70,6 +79,7 @@ internal open class ModExtensionImpl(
     override val additional: AdditionalPropertiesImpl =
         AdditionalPropertiesImpl(project, project.parent?.mod?.additional)
     override val versionStrategy: Property<VersionStrategy> = project.objects.property()
+    override val loader: Property<String> = project.objects.property()
 }
 
 fun Project.createModExtension(): ModExtension {
@@ -158,7 +168,7 @@ internal class AdditionalPropertiesImpl(
 
 internal fun ModExtension.resolveProperties(): Map<String, String> {
     val mcVersionRange = minecraftVersion.map { "[$it,)" }
-    val modVersion = versionStrategy.map { it.modVersion(this) }
+    val modVersion = versionStrategy.map { it.modVersion(this as ModVersionProperties) }
 
     val providers =
         mapOf(

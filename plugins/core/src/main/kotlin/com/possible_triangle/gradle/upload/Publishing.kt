@@ -100,7 +100,7 @@ internal class ModMavenPublishingExtensionImpl(
 ) : ModMavenPublishingExtension {
     override val isSnapshot: Property<Boolean> = project.objects.property(env["SNAPSHOT"] == "true")
     override val artifactVersion: Property<String> =
-        project.objects.property(project.mod.version)
+        project.objects.property(project.artifactVersionConvention())
     override val group: Property<String> = project.objects.property(project.mod.mavenGroup)
     override val name: Property<String> =
         project.objects.property(project.artifactNameConvention())
@@ -182,7 +182,7 @@ internal class ModMavenPublishingExtensionImpl(
                         version =
                             artifactVersion.get().let {
                                 if (isSnapshot.get()) {
-                                    "$it-SNAPSHOT"
+                                    it.toSnapshot()
                                 } else {
                                     it
                                 }

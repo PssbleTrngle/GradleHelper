@@ -1,5 +1,6 @@
 package com.possible_triangle.gradle
 
+import com.possible_triangle.gradle.upload.baseNameConvention
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.BasePluginExtension
@@ -73,18 +74,7 @@ internal fun Project.configureJarTasks() {
 }
 
 internal fun Project.configureBaseName() {
-    val name =
-        mod.id.flatMap { modId ->
-            mod.version.map { modVersion ->
-                if (coreProject != project) {
-                    "$modId-${name.lowercase()}-$modVersion"
-                } else {
-                    "$modId-$modVersion"
-                }
-            }
-        }
-
     configure<BasePluginExtension> {
-        archivesName.set(name)
+        archivesName.set(project.baseNameConvention())
     }
 }

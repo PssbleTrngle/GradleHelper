@@ -46,7 +46,7 @@ internal abstract class AbstractUploadExtensionImpl<TDependencies : DependencyBu
     override val minecraftVersions =
         project.objects.listProperty<String>().convention(project.mod.minecraftVersion.map(::setOf))
     override val modLoaders = project.objects.listProperty<ModLoader>()
-    override val version = project.objects.property(project.mod.version)
+    override val version = project.objects.property(project.uploadVersionConvention())
     override val versionName =
         project.objects.property(
             modLoaders.map { loaders ->
