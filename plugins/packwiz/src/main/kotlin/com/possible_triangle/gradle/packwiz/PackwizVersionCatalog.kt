@@ -69,6 +69,7 @@ fun String.normalizeSlug(): String =
         .replace("@", "")
         .replace("$", "")
         .replace("(", "")
+        .replace(")", "")
         .replace("`", "")
         .replace(".", "-")
         .replace(",", "-")
