@@ -26,6 +26,17 @@ mod {
 
 The `SimpleStrategy` will strip the version metadata (everything after the plus sign) from everything except the `metadataVersion`.
 
+### Examples
+
+<div class="grid examples" markdown>
+
+- ![](https://raw.githubusercontent.com/TeamGalena/Oreganized/refs/heads/main/1.21.x/.idea/icon.png) [Oreganized](https://github.com/TeamGalena/Oreganized)
+- ![](https://raw.githubusercontent.com/PssbleTrngle/DyeTheWorld/refs/heads/main/1.21.x/.idea/icon.png) [DyeTheWorld](https://github.com/PssbleTrngle/DyeTheWorld)
+
+</div>
+
+### Field Outputs
+
 === "mod.version = "1.0.0""
 
     | Field           | Value          |
@@ -64,6 +75,19 @@ The `SimpleStrategy` will strip the version metadata (everything after the plus 
 `version_strategy = with_minecraft_version`
 
 Wraps around the default version strategy and adds the minecraft version to the artifact name & some of the versions metadata.
+
+This strategy makes sense for projects that share the same versions between different minecraft version (without for example incrementing the major version).
+
+### Examples
+
+<div class="grid examples" markdown>
+
+- ![](https://raw.githubusercontent.com/PssbleTrngle/Atmosphere/refs/heads/main/1.21.x/.idea/icon.png) [Atmosphere](https://github.com/PssbleTrngle/Atmosphere)
+- ![](https://raw.githubusercontent.com/PssbleTrngle/FlightLib/refs/heads/main/1.21.x/.idea/icon.png) [FlightLib](https://github.com/PssbleTrngle/FlightLib)
+
+</div>
+
+### Field Outputs
 
 === "mod.version = "1.0.0""
 
@@ -112,6 +136,21 @@ Wraps around the default version strategy and adds the minecraft version to the 
 ## With-Loader Strategy
 
 `version_strategy = with_loader`
+
+Adds the loader to the artifact name & the version metadata of the generated `build/release.json` tag property.
+
+This strategy makes sense for projects that share the same versions between different loaders, but share the same mod id.
+
+### Examples
+
+<div class="grid examples" markdown>
+
+- ![](https://raw.githubusercontent.com/PssbleTrngle/SliceAndDice/refs/heads/main/neoforge/1.21.x/.idea/icon.png) [Slice & Dice Fabric](https://github.com/PssbleTrngle/SliceAndDice/tree/main/fabric/1.20.x)
+- ![](https://raw.githubusercontent.com/PssbleTrngle/dye_depot/refs/heads/main/neoforge/1.21/.idea/icon.png) [Dye Depot](https://github.com/PssbleTrngle/dye_depot)
+
+</div>
+
+### Field Outputs
 
 === "mod.version = "1.0.0""
 
