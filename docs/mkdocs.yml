@@ -55,6 +55,8 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - abbr
   - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
 
 plugins:
   - search
