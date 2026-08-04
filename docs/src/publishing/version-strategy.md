@@ -39,14 +39,14 @@ The `SimpleStrategy` will strip the version metadata (everything after the plus 
 
 === "mod.version = "1.0.0""
 
-    | Field           | Value          |
-    |-----------------|----------------|
-    | modVersion      | `1.0.0`        |
-    | metadataTag     | `1.0.0`        |
-    | uploadVersion   | `1.0.0`        |
-    | artifactVersion | `1.0.0`        |
-    | artifactName    | `mod_id`       |
-    | baseName        | `mod_id-1.0.0` |
+    | Field           | Value          | Subproject named `module` |
+    |-----------------|----------------|---------------------------|
+    | modVersion      | `1.0.0`        | *same*                    |
+    | metadataTag     | `1.0.0`        | *same*                    |
+    | uploadVersion   | `1.0.0`        | *same*                    |
+    | artifactVersion | `1.0.0`        | *same*                    |
+    | artifactName    | `mod_id`       | `mod_id-module`           |
+    | baseName        | `mod_id-1.0.0` | `mod_id-module-1.0.0`     |
 
 === "mod.version = "1.0.0+some.metadata""
 
