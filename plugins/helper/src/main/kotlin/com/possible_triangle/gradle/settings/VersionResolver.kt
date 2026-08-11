@@ -1,12 +1,8 @@
 package com.possible_triangle.gradle.settings
 
-import groovy.util.Node
-import groovy.util.NodeList
-import groovy.xml.XmlParser
+import com.possible_triangle.gradle.metadata.HttpRequestException
+import com.possible_triangle.gradle.metadata.fetchMavenMetadata
 import org.gradle.plugin.use.PluginId
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
 import java.net.URI
 
 enum class ResolutionStrategy {
@@ -16,56 +12,22 @@ enum class ResolutionStrategy {
     FETCH,
 }
 
-private inline fun <reified T> Node.first(path: String): T {
-    val list = get(path) as NodeList
-    return list.first() as T
-}
+private val MAVEN_BASE_URL = URI("https://registry.somethingcatchy.net/repository/maven-releases/")
 
-private inline fun <reified T> Node.value(): T = value() as T
+private fun fetchVersion(majorVersion: String, plugin: PluginId): String {
+    try {
+        val metadata = fetchMavenMetadata(
+            MAVEN_BASE_URL,
+            plugin.namespace!!,
+            plugin.id,
+        )
 
-private fun Node.values(): List<Node> = value<NodeList>().map { it as Node }
-
-private fun parseMetadataVersions(from: String): List<String> {
-    val parser = XmlParser()
-
-    val xml = parser.parseText(from)
-
-    val versioning = xml.first<Node>("versioning")
-    val versions = versioning.first<Node>("versions")
-
-    return versions.values().map { it.value<NodeList>().first() as String }
-}
-
-private const val MAVEN_BASE_URL = "https://registry.somethingcatchy.net/repository/maven-releases"
-
-internal fun metadataUri(plugin: PluginId): URI =
-    URI("$MAVEN_BASE_URL/${plugin.namespace!!.replace('.', '/')}/${plugin.name}/maven-metadata.xml")
-
-internal fun fetchMetadataRaw(plugin: PluginId): InputStream {
-    val uri = metadataUri(plugin)
-    val connection = uri.toURL().openConnection() as HttpURLConnection
-    connection.requestMethod = "GET"
-
-    val responseCode: Int = connection.responseCode
-
-    if (responseCode != HttpURLConnection.HTTP_OK) {
-        throw RuntimeException("unable to fetch gradle helper plugin version for ${plugin.name}: $responseCode")
+        return metadata.versioning.versions.last {
+            it.startsWith("$majorVersion.")
+        }
+    } catch (ex: HttpRequestException) {
+        throw RuntimeException("unable to fetch gradle helper plugin version for ${plugin.name}: ${ex.responseCode}")
     }
-
-    return connection.getInputStream()
-}
-
-private fun fetchVersion(
-    majorVersion: String,
-    plugin: PluginId,
-): String {
-    val inputStream = fetchMetadataRaw(plugin)
-    val response = InputStreamReader(inputStream).readText()
-    val versions = parseMetadataVersions(response)
-
-    return versions
-        .sorted()
-        .last { it.startsWith("$majorVersion.") }
 }
 
 internal fun ResolutionStrategy.versionOf(

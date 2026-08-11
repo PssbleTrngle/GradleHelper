@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     api(project(":publishing"))
+    api(project(":metadata"))
 
     api(libs.kotlin.gradle)
     api(libs.kotlin.serialization.json)

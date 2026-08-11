@@ -18,7 +18,7 @@ class GradleHelperCorePlugin : Plugin<Project> {
 
         logger.lifecycle("applying gradle helper ${BuildParameters.PLUGIN_VERSION} in ${project.name}")
 
-        val mod = project.createModExtension()
+        project.createModExtension()
 
         repositories {
             defaultRepositories()
