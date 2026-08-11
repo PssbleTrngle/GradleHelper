@@ -5,6 +5,10 @@ plugins {
 val majorVersion: String by extra
 val isDev: Boolean by extra
 
+dependencies {
+    api(project(":metadata"))
+}
+
 gradlePlugin {
     plugins {
         named(project.name) {

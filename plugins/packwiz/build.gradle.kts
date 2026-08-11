@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(libs.kotlin.toml)
+    api(libs.kotlin.serialization.toml)
 }
 
 gradlePlugin {

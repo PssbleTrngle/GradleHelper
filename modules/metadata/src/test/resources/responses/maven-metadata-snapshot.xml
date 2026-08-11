@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>dev.galena</groupId>
+  <artifactId>oreganized</artifactId>
+  <versioning>
+    <lastUpdated>20260811081742</lastUpdated>
+    <snapshot>
+      <timestamp>20260811.081742</timestamp>
+      <buildNumber>25</buildNumber>
+    </snapshot>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>module</extension>
+        <value>5.2.0-20260811.081742-25</value>
+        <updated>20260811081742</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>5.2.0-20260811.081742-25</value>
+        <updated>20260811081742</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>5.2.0-20260811.081742-25</value>
+        <updated>20260811081742</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <classifier>sources</classifier>
+        <extension>jar</extension>
+        <value>5.2.0-20260811.081742-25</value>
+        <updated>20260811081742</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+  <version>5.2.0-SNAPSHOT</version>
+</metadata>
