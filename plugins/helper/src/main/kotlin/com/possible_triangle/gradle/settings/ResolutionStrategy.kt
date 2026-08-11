@@ -14,13 +14,17 @@ enum class ResolutionStrategy {
 
 private val MAVEN_BASE_URL = URI("https://registry.somethingcatchy.net/repository/maven-releases/")
 
-private fun fetchVersion(majorVersion: String, plugin: PluginId): String {
+private fun fetchVersion(
+    majorVersion: String,
+    plugin: PluginId,
+): String {
     try {
-        val metadata = fetchMavenMetadata(
-            MAVEN_BASE_URL,
-            plugin.namespace!!,
-            plugin.id,
-        )
+        val metadata =
+            fetchMavenMetadata(
+                MAVEN_BASE_URL,
+                plugin.namespace!!,
+                plugin.id,
+            )
 
         return metadata.versioning.versions.last {
             it.startsWith("$majorVersion.")

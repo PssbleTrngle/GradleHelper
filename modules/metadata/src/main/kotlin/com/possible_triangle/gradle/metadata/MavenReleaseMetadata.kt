@@ -11,17 +11,19 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URI
 
-class HttpRequestException(val responseCode: Int) : RuntimeException("http request failed: $responseCode")
+class HttpRequestException(
+    val responseCode: Int,
+) : RuntimeException("http request failed: $responseCode")
 
 @Serializable
 @XmlSerialName("metadata")
- data class MavenMetadata(
-    @XmlElement val versioning: Versioning
+data class MavenMetadata(
+    @XmlElement val versioning: Versioning,
 )
 
 @Serializable
 @XmlSerialName("versioning")
- data class Versioning(
+data class Versioning(
     @XmlElement val latest: String? = null,
     @XmlElement val release: String? = null,
     @XmlChildrenName("version") val versions: List<String> = emptyList(),
@@ -31,7 +33,7 @@ class HttpRequestException(val responseCode: Int) : RuntimeException("http reque
 
 @Serializable
 @XmlSerialName("snapshot")
- data class Snapshot(
+data class Snapshot(
     @XmlElement val timestamp: String,
     @XmlElement val buildNumber: String,
 )
@@ -43,29 +45,37 @@ data class SnapshotVersion(
     @XmlElement val value: String,
 )
 
-private val Xml = XML.v1 {
-    policy {
-        ignoreUnknownChildren()
+private val Xml =
+    XML.v1 {
+        policy {
+            ignoreUnknownChildren()
+        }
     }
-}
 
-internal fun parseMetadataVersions(from: String): MavenMetadata {
-    return Xml.decodeFromString<MavenMetadata>(from)
-}
+internal fun parseMetadataVersions(from: String): MavenMetadata = Xml.decodeFromString<MavenMetadata>(from)
 
-internal fun metadataUri(repository: URI, groupId: String, artifactId: String, version: String?): URI =
+fun mavenDownloadUrl(
+    repository: URI,
+    groupId: String,
+    artifactId: String,
+    file: String,
+    version: String? = null,
+): URI =
     repository
         .resolve(groupId.replace('.', '/') + "/")
         .resolve("$artifactId/")
         .let {
             if (version == null) it
             it.resolve("$version/")
-        }
-        .resolve("maven-metadata.xml")
+        }.resolve(file)
 
-
-internal fun fetchMetadataRaw(repository: URI, groupId: String, artifactId: String, version: String?): InputStream {
-    val uri = metadataUri(repository, groupId, artifactId, version)
+internal fun fetchMetadataRaw(
+    repository: URI,
+    groupId: String,
+    artifactId: String,
+    version: String?,
+): InputStream {
+    val uri = mavenDownloadUrl(repository, groupId, artifactId, "maven-metadata.xml", version)
     val connection = uri.toURL().openConnection() as HttpURLConnection
     connection.requestMethod = "GET"
 
@@ -79,9 +89,12 @@ internal fun fetchMetadataRaw(repository: URI, groupId: String, artifactId: Stri
 }
 
 fun fetchMavenMetadata(
-    repository: URI, groupId: String, artifactId: String, version: String? = null
+    repository: URI,
+    groupId: String,
+    artifactId: String,
+    version: String? = null,
 ): MavenMetadata {
     val inputStream = fetchMetadataRaw(repository, groupId, artifactId, version)
     val response = InputStreamReader(inputStream).readText()
-   return parseMetadataVersions(response)
+    return parseMetadataVersions(response)
 }

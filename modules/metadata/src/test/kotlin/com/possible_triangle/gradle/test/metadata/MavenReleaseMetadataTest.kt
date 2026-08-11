@@ -4,9 +4,8 @@ import com.possible_triangle.gradle.metadata.parseMetadataVersions
 import kotlin.test.Test
 
 class MavenReleaseMetadataTest {
-
     private fun readResponse(type: String): String {
-        val stream = MavenReleaseMetadataTest::class.java.getResourceAsStream("/responses/maven-metadata-${type}.xml")!!
+        val stream = MavenReleaseMetadataTest::class.java.getResourceAsStream("/responses/maven-metadata-$type.xml")!!
         return stream.bufferedReader().readText()
     }
 
@@ -23,5 +22,4 @@ class MavenReleaseMetadataTest {
         val actual = parseMetadataVersions(response)
         val expected = ""
     }
-
 }

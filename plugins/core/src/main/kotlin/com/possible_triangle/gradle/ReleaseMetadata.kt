@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle
 
 import com.possible_triangle.gradle.metadata.fetchMavenMetadata
+import com.possible_triangle.gradle.metadata.mavenDownloadUrl
 import com.possible_triangle.gradle.upload.UploadExtension
 import com.possible_triangle.gradle.upload.metadataTagConvention
 import com.possible_triangle.gradle.upload.upload
@@ -11,13 +12,13 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.publish.Publication
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskContainer
+import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.the
@@ -109,35 +110,12 @@ private fun Project.createReleaseMetadata() {
 
     tasks.withType<PublishToMavenRepository> {
         doLast {
-            val metadataUrl = repository.url
-                .resolve(publication.groupId.replace('.', '/') + "/")
-                .resolve(publication.artifactId + "/")
-                .resolve(publication.version + "/")
-                .resolve("maven-metadata.xml")
-                .toURL()
-
-            if (metadataUrl.protocol == "file") return@doLast
-            val metadata =
-                fetchMavenMetadata(repository.url, publication.groupId, publication.artifactId, publication.version)
-
+            if (repository.url.toURL().protocol == "file") return@doLast
             project.modifyReleaseMetadata {
-                metadata.versioning.snapshot
+                mavenUrl = publication.downloadUrl(repository.url).toString()
             }
-
-            val connection = metadataUrl.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val responseCode = connection.responseCode
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("unable to maven metadata after publishing to ${repository.url}: $responseCode")
-            }
-
-            val body = connection.inputStream.bufferedReader().readText()
-
-            println(body)
         }
     }
-
 }
 
 fun Project.modifyReleaseMetadata(block: ReleaseMetadata.() -> Unit = {}) {
@@ -145,16 +123,20 @@ fun Project.modifyReleaseMetadata(block: ReleaseMetadata.() -> Unit = {}) {
         .named(project.name, block)
 }
 
-private fun MavenPublication.downloadUrl(repository: URI): String {
-    val realVersion = if (version.contains("-SNAPSHOT")) {
-        val metadata = fetchMavenMetadata(repository, groupId, artifactId, version)
-        val snapshot = metadata.versioning.snapshot ?: error("uploaded snapshot version metadata not found")
-        val value = "-${snapshot.timestamp}-${snapshot.buildNumber}"
-        metadata.versioning.snapshotVersions
-            .map { it.value }
-            .find { it.endsWith(value) }
-            ?: error("invalid snapshot maven metadata")
-    } else {
-        version
-    }
+private fun MavenPublication.downloadUrl(repository: URI): URI {
+    val realVersion =
+        if (version.contains("-SNAPSHOT")) {
+            val metadata = fetchMavenMetadata(repository, groupId, artifactId, version)
+            val snapshot = metadata.versioning.snapshot ?: error("uploaded snapshot version metadata not found")
+            val value = "-${snapshot.timestamp}-${snapshot.buildNumber}"
+            metadata.versioning.snapshotVersions
+                .map { it.value }
+                .find { it.endsWith(value) }
+                ?: error("invalid snapshot maven metadata")
+        } else {
+            version
+        }
+
+    val file = "$artifactId-$realVersion.jar"
+    return mavenDownloadUrl(repository, groupId, artifactId, file, version)
 }
