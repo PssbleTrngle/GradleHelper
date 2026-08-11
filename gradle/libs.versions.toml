@@ -23,7 +23,7 @@ forge-legacy-gradle = { group = "net.neoforged.moddev.legacyforge", name = "net.
 neoforge-srg = { group = "net.neoforged", name = "srgutils", version = "1.0.11" }
 
 forge-gradle = { module = "net.minecraftforge.gradle:ForgeGradle", version = "[6.0,6.2)" }
-forge-srg = { module = "net.minecraftforge:srgutils", version = "0.5.10" }
+forge-srg = { module = "net.minecraftforge:srgutils", version = "0.6.8" }
 
 fabric-loom-gradle = { module = "fabric-loom:fabric-loom.gradle.plugin", version = "1.17-SNAPSHOT" }
 
