@@ -1,7 +1,6 @@
 package com.possible_triangle.gradle.neoforge
 
 import com.possible_triangle.gradle.*
-import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.LoaderPlugin
 import com.possible_triangle.gradle.features.loaders.LoaderSpecifics
 import com.possible_triangle.gradle.features.loaders.ModLoader
@@ -37,28 +36,17 @@ class GradleHelperNeoForgePlugin : LoaderPlugin() {
         }
 
         dependencies {
+            kotlinForForge(config.kotlinForgeVersion)
             add("implementation", config.neoforgeVersion.map { "net.neoforged:neoforge:$it" })
-
-            lazyDependencies("api") {
-                config.kotlinForgeVersion.orNull?.let {
-                    add("thedarkcolour:kotlinforforge-neoforge:$it")
-                }
-            }
         }
     }
 
     override fun Project.finalize() {
-        val config = the<NeoforgeExtension>() as NeoforgeExtensionImpl
+        val config = the<NeoforgeExtension>()
 
         configure<NeoForgeExtension> {
             version = config.neoforgeVersion.get()
-
-            config.parchmentMappingsVersion.orNull?.let {
-                parchment {
-                    minecraftVersion = mod.minecraftVersion.get()
-                    mappingsVersion = it
-                }
-            }
+            configureParchment(project, config.parchmentMappingsVersion)
         }
 
         setupJUnit()

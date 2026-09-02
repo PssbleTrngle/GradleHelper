@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.neoforge
 
 import com.possible_triangle.gradle.JVM_ARGUMENTS
+import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.displayName
 import com.possible_triangle.gradle.features.loaders.mainSourceSet
@@ -31,6 +32,14 @@ fun ModDevExtension.sharedConfiguration(project: Project) {
     project.tasks.withType<Jar> {
         exclude("**/*.accesswidener")
         exclude("**/*.classtweaker")
+    }
+}
+
+fun Project.kotlinForForge(version: Provider<String>) {
+    lazyDependencies("api") {
+        version.orNull?.let {
+            add("thedarkcolour:kotlinforforge-neoforge:$it")
+        }
     }
 }
 

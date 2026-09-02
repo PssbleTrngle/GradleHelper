@@ -8,6 +8,7 @@ import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.configureLoaderProject
 import com.possible_triangle.gradle.neoforge.configureModRuns
 import com.possible_triangle.gradle.neoforge.configureParchment
+import com.possible_triangle.gradle.neoforge.kotlinForForge
 import com.possible_triangle.gradle.neoforge.sharedConfiguration
 import com.possible_triangle.gradle.publishing.removeDependencies
 import com.possible_triangle.gradle.upload.UploadExtension
@@ -49,15 +50,11 @@ class GradleHelperForgePlugin : LoaderPlugin() {
         }
 
         dependencies {
+            kotlinForForge(config.kotlinForgeVersion)
+
             lazyDependencies("annotationProcessor") {
                 if (config.mixinsEnabled) {
                     add("org.spongepowered:mixin:0.8.7:processor")
-                }
-            }
-
-            lazyDependencies("api") {
-                config.kotlinForgeVersion.orNull?.let {
-                    add("thedarkcolour:kotlinforforge:$it")
                 }
             }
         }
