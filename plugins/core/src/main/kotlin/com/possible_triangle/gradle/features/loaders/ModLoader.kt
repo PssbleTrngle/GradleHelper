@@ -1,14 +1,9 @@
 package com.possible_triangle.gradle.features.loaders
 
-import com.possible_triangle.gradle.DatagenBuilder
 import com.possible_triangle.gradle.configureDatagen
 import com.possible_triangle.gradle.datagenOutput
-import com.possible_triangle.gradle.defaultDataGenProject
-import com.possible_triangle.gradle.existingResources
 import com.possible_triangle.gradle.features.lazyDependencies
-import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.modImpl
-import com.possible_triangle.gradle.property
 import com.possible_triangle.gradle.stringProperty
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
@@ -16,7 +11,6 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Attribute
 import org.gradle.api.attributes.AttributeCompatibilityRule
 import org.gradle.api.attributes.CompatibilityCheckDetails
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
@@ -26,83 +20,6 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-interface LoaderExtension {
-    fun dependOn(vararg projects: Project)
-}
-
-abstract class AbstractLoaderExtension : LoaderExtension {
-    private val _dependsOn = arrayListOf<Project>()
-
-    val dependsOn get() = _dependsOn.toSet()
-
-    override fun dependOn(vararg projects: Project) {
-        _dependsOn.addAll(projects)
-    }
-}
-
-interface WithDataGen {
-    fun dataGen(factory: DatagenBuilder.() -> Unit = {})
-
-    fun modSourceSets(): List<SourceSet>
-}
-
-abstract class AbstractLoadExtensionWithDatagen(
-    project: Project,
-) : AbstractLoaderExtension(),
-    DatagenBuilder,
-    WithDataGen {
-    abstract val project: Project
-
-    private val _existingMods = mutableSetOf<String>()
-    val existingMods: Set<String> get() = _existingMods
-
-    final override val owner = project.objects.property(project.provider { project.defaultDataGenProject })
-
-    val datagenOutput get() = owner.get().datagenOutput
-    val existingResources get() = owner.get().existingResources
-
-    var enabledDataGen: Boolean = false
-        private set
-
-    var datagenSourceSet = project.objects.property<SourceSet>()
-
-    final override fun existing(vararg mods: String) {
-        this._existingMods.addAll(mods)
-    }
-
-    final override fun sourceSet(sourceSet: Provider<SourceSet>) {
-        datagenSourceSet.set(sourceSet)
-    }
-
-    final override fun splitSourceSet(name: String) {
-        val split =
-            project.the<SourceSetContainer>().register(name) {
-                compileClasspath += project.mainSourceSet.compileClasspath
-                compileClasspath += project.mainSourceSet.output
-                runtimeClasspath += project.mainSourceSet.runtimeClasspath
-                runtimeClasspath += project.mainSourceSet.output
-            }
-
-        project.tasks.named<Jar>("sourcesJar") {
-            from(split.map { it.allSource })
-        }
-
-        sourceSet(split)
-    }
-
-    final override fun dataGen(factory: DatagenBuilder.() -> Unit) {
-        enabledDataGen = true
-        factory(this)
-    }
-
-    override fun modSourceSets(): List<SourceSet> {
-        // val dependencies = dependsOn.map { it.mainSourceSet }
-        val datagen = listOfNotNull(datagenSourceSet.orNull)
-        // return dependencies + datagen
-        return datagen
-    }
-}
 
 val Project.mainSourceSet: SourceSet
     get() {
@@ -125,6 +42,11 @@ private fun Project.createConfigurations(
             isCanBeResolved = resolvable
             isCanBeConsumed = true
         }
+
+    configurations.register("dataElements") {
+        isCanBeResolved = resolvable
+        isCanBeConsumed = true
+    }
 
     configureDatagen(datagenOutput, resources.name)
 
@@ -201,6 +123,12 @@ fun Project.configureLoaderProject(
             config.dependsOn.forEach {
                 add(dependencies.project(path = it.path, configuration = configuration.name))
             }
+        }
+    }
+
+    lazyDependencies("compileOnly") {
+        config.dependsOn.forEach {
+            add(it)
         }
     }
 
