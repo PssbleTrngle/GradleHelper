@@ -17,7 +17,7 @@ internal fun Project.configureDatagenRun() {
                 systemProperties.put("fabric-api.datagen", "")
                 systemProperties.put("fabric-api.datagen.output-dir", "${config.datagenOutput}")
                 systemProperties.put("fabric-api.datagen.modid", mod.id.get())
-                systemProperties.put("porting_lib.datagen.existing_resources", "${config.existingResources}")
+                systemProperties.put("porting_lib.datagen.existing_resources", "${config.existingResources.first()}")
                 if (config.existingMods.isNotEmpty()) {
                     systemProperties.put("porting_lib.datagen.existing-mod", config.existingMods.joinToString(","))
                 }

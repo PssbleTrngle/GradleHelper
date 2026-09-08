@@ -26,7 +26,7 @@ interface NeoforgeExtension :
 }
 
 internal open class NeoforgeExtensionImpl(
-    override val project: Project,
+    project: Project,
 ) : AbstractLoadExtensionWithDatagen(project),
     NeoforgeExtension {
     override val neoforgeVersion = project.objects.property(project.stringProperty("neoforge_version"))

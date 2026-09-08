@@ -24,8 +24,8 @@ interface CommonExtension :
 }
 
 internal open class CommonExtensionImpl(
-    override val project: Project,
-) : AbstractLoaderExtension(),
+    project: Project,
+) : AbstractLoaderExtension(project),
     CommonExtension {
     override val neoformVersion =
         project.objects.property(

@@ -11,12 +11,15 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
 
 interface LoaderExtension {
     fun dependOn(vararg projects: Project)
 }
 
-abstract class AbstractLoaderExtension : LoaderExtension {
+abstract class AbstractLoaderExtension(
+    val project: Project,
+) : LoaderExtension {
     private val _dependsOn = arrayListOf<Project>()
 
     val dependsOn get() = _dependsOn.toSet()
@@ -24,6 +27,11 @@ abstract class AbstractLoaderExtension : LoaderExtension {
     override fun dependOn(vararg projects: Project) {
         _dependsOn.addAll(projects)
     }
+
+    val existingResources: Collection<File>
+        get() {
+            return listOf(project.existingResources) + dependsOn.map { it.existingResources }
+        }
 }
 
 interface WithDataGen {
@@ -36,18 +44,15 @@ interface WithDataGen {
 
 abstract class AbstractLoadExtensionWithDatagen(
     project: Project,
-) : AbstractLoaderExtension(),
+) : AbstractLoaderExtension(project),
     DatagenBuilder,
     WithDataGen {
-    abstract val project: Project
-
     private val _existingMods = mutableSetOf<String>()
     val existingMods: Set<String> get() = _existingMods
 
     final override val owner = project.objects.property(project.provider { project.defaultDataGenProject })
 
     val datagenOutput get() = owner.get().datagenOutput
-    val existingResources get() = owner.get().existingResources
 
     var enabledDataGen: Boolean = false
         private set

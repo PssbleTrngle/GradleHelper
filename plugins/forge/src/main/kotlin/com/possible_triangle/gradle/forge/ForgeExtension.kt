@@ -29,7 +29,7 @@ interface ForgeExtension :
 }
 
 internal open class ForgeExtensionImpl(
-    override val project: Project,
+    project: Project,
 ) : AbstractLoadExtensionWithDatagen(project),
     ForgeExtension {
     override val forgeVersion = project.stringProperty("forge_version")

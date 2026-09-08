@@ -27,7 +27,7 @@ interface FabricExtension :
 }
 
 internal open class FabricExtensionImpl(
-    override val project: Project,
+    project: Project,
 ) : AbstractLoadExtensionWithDatagen(project),
     FabricExtension {
     override val loaderVersion = project.objects.property(project.stringProperty("fabric_loader_version"))
