@@ -2,6 +2,7 @@ package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.configureDatagen
 import com.possible_triangle.gradle.datagenOutput
+import com.possible_triangle.gradle.exposeMavenDownloadUrl
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.modImpl
 import com.possible_triangle.gradle.stringProperty
@@ -159,6 +160,8 @@ fun Project.configureLoaderProject(
         dependsOn(code)
         source(code)
     }
+
+    exposeMavenDownloadUrl()
 }
 
 enum class ModLoader {

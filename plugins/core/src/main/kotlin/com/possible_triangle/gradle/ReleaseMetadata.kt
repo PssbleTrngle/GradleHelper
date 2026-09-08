@@ -107,7 +107,9 @@ private fun Project.createReleaseMetadata() {
         tag.convention(project.metadataTagConvention())
         preRelease.convention(project.the<UploadExtension>().maven.isSnapshot)
     }
+}
 
+fun Project.exposeMavenDownloadUrl() {
     tasks.withType<PublishToMavenRepository> {
         doLast {
             if (repository.url.toURL().protocol == "file") return@doLast
