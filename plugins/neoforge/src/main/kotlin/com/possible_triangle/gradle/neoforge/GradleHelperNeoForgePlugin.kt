@@ -51,22 +51,12 @@ class GradleHelperNeoForgePlugin : LoaderPlugin() {
 
         setupJUnit()
         configureDatagenRun()
-        configureModSourceSets()
 
         config.kotlinForgeVersion.orNull?.let {
             configure<UploadExtension> {
                 forEach {
                     if (includeKotlinDependency.get()) dependencies.required("kotlin-for-forge")
                 }
-            }
-        }
-    }
-
-    private fun Project.configureModSourceSets() {
-        val config = the<NeoforgeExtension>()
-        configure<NeoForgeExtension> {
-            mods.named(mod.id.get()) {
-                modSourceSets.addAll(provider(config::modSourceSets))
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.neoforge
 
 import com.possible_triangle.gradle.mod
+import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
@@ -15,7 +16,6 @@ internal fun Project.configureDatagenRun() {
             runs.named("data") {
                 gameDirectory = project.file("run/data")
 
-                config.dependsOn
                 val existingResources = config.existingResources.flatMap { listOf("--existing", it.path) }
                 val existingMods = config.existingMods.flatMap { listOf("--existing-mod", it) }
                 val dataGenArgs =
@@ -29,8 +29,25 @@ internal fun Project.configureDatagenRun() {
 
                 programArguments.addAll(dataGenArgs)
 
-                config.datagenSourceSet.orNull?.let {
-                    sourceSet.set(it)
+                config.datagenSourceSet.orNull?.let { dataSourceSet ->
+                    // mod source sets are used to decide which classes are loaded
+                    // in order to actually only load the data source set during data runs and not during client runs,
+                    // we have to give this data run a "fake" copy of the mod
+                    loadedMods =
+                        loadedMods.get().map {
+                            if (it.name == mod.id.get()) {
+                                val cloned = objects.newInstance(ModModel::class.java, it.name)
+                                cloned.modSourceSets =
+                                    it.modSourceSets.map { sets ->
+                                        sets + dataSourceSet
+                                    }
+                                cloned
+                            } else {
+                                it
+                            }
+                        }
+
+                    sourceSet.set(dataSourceSet)
                 }
             }
         } else {
