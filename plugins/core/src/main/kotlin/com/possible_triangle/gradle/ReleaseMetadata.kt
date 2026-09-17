@@ -34,6 +34,7 @@ interface ReleaseMetadata {
     val modrinthUrl: Property<String>
     val curseforgeUrl: Property<String>
     val mavenUrl: Property<String>
+    val exclude: Property<Boolean>
 }
 
 @Serializable
@@ -75,6 +76,7 @@ abstract class GenerateReleaseMetadataTask : DefaultTask() {
         val encoded =
             JSON.encodeToString(
                 releases
+                    .filterNot { it.exclude.get() }
                     .associateBy { it.name }
                     .mapValues { SerializedReleaseMetadata.from(it.value) },
             )
@@ -106,6 +108,7 @@ private fun Project.createReleaseMetadata() {
     coreProject.tasks.releaseMetadata.releases.create(project.name) {
         tag.convention(project.metadataTagConvention())
         preRelease.convention(project.the<UploadExtension>().maven.isSnapshot)
+        exclude.convention(false)
     }
 }
 
