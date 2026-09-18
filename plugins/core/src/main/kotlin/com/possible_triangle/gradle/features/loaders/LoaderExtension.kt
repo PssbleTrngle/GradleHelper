@@ -78,13 +78,14 @@ abstract class AbstractLoadExtensionWithDatagen(
 
         val dataCompileClassPath = project.configurations.getByName("${name}CompileClasspath")
         val dataRuntimeClasspath = project.configurations.getByName("${name}RuntimeClasspath")
+        val elements = "dataElements"
 
         sourceSet.configure {
             compileClasspath += dataCompileClassPath
             runtimeClasspath += dataRuntimeClasspath
 
             java.sourceDirectories.files.forEach {
-                project.artifacts.add("dataElements", it)
+                project.artifacts.add(elements, it)
             }
         }
 
@@ -103,8 +104,18 @@ abstract class AbstractLoadExtensionWithDatagen(
 
         project.lazyDependencies("${name}Implementation") {
             dependsOn.forEach {
-                add(project.dependencies.project(path = it.path, configuration = "dataElements"))
+                add(project.dependencies.project(path = it.path, configuration = elements))
             }
+        }
+
+        val api = project.configurations.register("${name}Api")
+
+        project.configurations.named(elements) {
+            extendsFrom(api)
+        }
+
+        project.configurations.named("${name}Implementation") {
+            extendsFrom(api)
         }
 
         return sourceSet
