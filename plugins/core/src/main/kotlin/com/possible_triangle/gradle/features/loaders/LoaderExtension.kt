@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.features.loaders
 
 import com.possible_triangle.gradle.*
+import com.possible_triangle.gradle.features.detectKotlin
 import com.possible_triangle.gradle.features.lazyDependencies
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
@@ -81,6 +82,10 @@ abstract class AbstractLoadExtensionWithDatagen(
         val elements = "dataElements"
 
         sourceSet.configure {
+            if (project.detectKotlin()) {
+                java.srcDir("src/data/kotlin")
+            }
+
             compileClasspath += dataCompileClassPath
             runtimeClasspath += dataRuntimeClasspath
 
@@ -91,15 +96,17 @@ abstract class AbstractLoadExtensionWithDatagen(
 
         val compilePrefix = "compile${name.capitalized()}"
 
+        val kotlinCompile = project.tasks.findByName("${compilePrefix}Kotlin") as KotlinCompile?
+
         project.tasks.named<JavaCompile>("${compilePrefix}Java") {
+            kotlinCompile?.let { dependsOn(it) }
             dependsOn(dataCompileClassPath)
             source(dataCompileClassPath)
         }
 
-        project.tasks.withType<KotlinCompile> {
-            if (name != "${compilePrefix}Kotlin") return@withType
-            dependsOn(dataCompileClassPath)
-            source(dataCompileClassPath)
+        kotlinCompile?.let {
+            it.dependsOn(dataCompileClassPath)
+            it.source(dataCompileClassPath)
         }
 
         project.lazyDependencies("${name}Implementation") {
@@ -108,7 +115,9 @@ abstract class AbstractLoadExtensionWithDatagen(
             }
         }
 
-        val api = project.configurations.register("${name}Api")
+        val api =
+            project.configurations.findByName("${name}Api")
+                ?: project.configurations.register("${name}Api").get()
 
         project.configurations.named(elements) {
             extendsFrom(api)
