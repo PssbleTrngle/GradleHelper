@@ -86,14 +86,19 @@ class WithLoader(
     override fun artifactName(mod: ModVersionProperties): String = "${inner.artifactName(mod)}-${mod.loaderName}"
 }
 
-internal fun parseVersionStrategy(id: String): VersionStrategy =
-    when (id.lowercase()) {
-        "simple" -> SimpleVersionStrategy()
-        "suffix_minecraft_version" -> WithMinecraftVersion(SimpleVersionStrategy())
-        "with_minecraft_version" -> WithMinecraftVersion(SimpleVersionStrategy())
-        "with_loader" -> WithLoader(SimpleVersionStrategy())
+private fun parseSingleVersionStrategy(id: String): (VersionStrategy) -> VersionStrategy =
+    when (id.trim().lowercase()) {
+        "simple" -> { _ -> SimpleVersionStrategy() }
+        "with_minecraft_version", "suffix_minecraft_version" -> ::WithMinecraftVersion
+        "with_loader" -> ::WithLoader
         else -> error("unknown version strategy '$id'")
     }
+
+internal fun parseVersionStrategy(id: String): VersionStrategy {
+    val ids = id.split(",")
+    val factories = ids.map(::parseSingleVersionStrategy)
+    return factories.fold(SimpleVersionStrategy() as VersionStrategy) { inner, factory -> factory(inner) }
+}
 
 internal fun Project.metadataTagConvention(): Provider<String> = mod.versionStrategy.map { it.metadataTag(modImpl) }
 
