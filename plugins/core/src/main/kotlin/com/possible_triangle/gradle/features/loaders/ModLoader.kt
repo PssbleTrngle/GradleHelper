@@ -45,7 +45,7 @@ private fun Project.createConfigurations(
         }
 
     configurations.register("dataElements") {
-        isCanBeResolved = resolvable
+        isCanBeResolved = false
         isCanBeConsumed = true
     }
 
