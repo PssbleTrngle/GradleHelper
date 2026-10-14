@@ -84,7 +84,7 @@ abstract class AbstractLoadExtensionWithDatagen(
                 java.srcDir("src/data/kotlin")
             }
 
-            java.sourceDirectories.files.forEach {
+            output.classesDirs.forEach {
                 project.artifacts.add(elements, it)
             }
         }
@@ -96,13 +96,9 @@ abstract class AbstractLoadExtensionWithDatagen(
         project.tasks.named<JavaCompile>("${compilePrefix}Java") {
             kotlinCompile?.let { dependsOn(it) }
             dependsOn(sourceSet.get().compileClasspath)
-            // source(sourceSet.get().compileClasspath)
         }
 
-        kotlinCompile?.let {
-            it.dependsOn(sourceSet.get().compileClasspath)
-            // it.source(sourceSet.get().compileClasspath)
-        }
+        kotlinCompile?.dependsOn(sourceSet.get().compileClasspath)
 
         project.lazyDependencies("${name}Implementation") {
             dependsOn.forEach {
