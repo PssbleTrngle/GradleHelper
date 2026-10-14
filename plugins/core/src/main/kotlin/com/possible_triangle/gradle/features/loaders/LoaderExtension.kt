@@ -77,11 +77,11 @@ abstract class AbstractLoadExtensionWithDatagen(
                 runtimeClasspath += project.mainSourceSet.output
             }
 
-        val elements = "dataElements"
+        val elements = "dataApiElements"
 
         sourceSet.configure {
             if (project.detectKotlin()) {
-                java.srcDir("src/data/kotlin")
+                java.srcDir("src/$name/kotlin")
             }
 
             output.classesDirs.forEach {
@@ -100,21 +100,21 @@ abstract class AbstractLoadExtensionWithDatagen(
 
         kotlinCompile?.dependsOn(sourceSet.get().compileClasspath)
 
-        project.lazyDependencies("${name}Implementation") {
+        project.lazyDependencies(sourceSet.get().implementationConfigurationName) {
             dependsOn.forEach {
                 add(project.dependencies.project(path = it.path, configuration = elements))
             }
         }
 
         val api =
-            project.configurations.findByName("${name}Api")
-                ?: project.configurations.register("${name}Api").get()
+            project.configurations.findByName(sourceSet.get().apiConfigurationName)
+                ?: project.configurations.register(sourceSet.get().apiConfigurationName).get()
 
         project.configurations.named(elements) {
             extendsFrom(api)
         }
 
-        project.configurations.named("${name}Implementation") {
+        project.configurations.named(sourceSet.get().implementationConfigurationName) {
             extendsFrom(api)
         }
 

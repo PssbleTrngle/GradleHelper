@@ -44,7 +44,7 @@ private fun Project.createConfigurations(
             isCanBeConsumed = true
         }
 
-    configurations.register("dataElements") {
+    configurations.register("dataApiElements") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
