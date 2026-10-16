@@ -1,6 +1,7 @@
 package com.possible_triangle.gradle.neoforge
 
 import com.possible_triangle.gradle.JVM_ARGUMENTS
+import com.possible_triangle.gradle.ModVersionProperties
 import com.possible_triangle.gradle.features.lazyDependencies
 import com.possible_triangle.gradle.features.loaders.ModLoader
 import com.possible_triangle.gradle.features.loaders.displayName
@@ -36,9 +37,10 @@ fun ModDevExtension.sharedConfiguration(project: Project) {
 }
 
 fun Project.kotlinForForge(version: Provider<String>) {
+    val modImpl = mod as ModVersionProperties
     lazyDependencies("api") {
         version.orNull?.let {
-            add("thedarkcolour:kotlinforforge-neoforge:$it")
+            add("thedarkcolour:kotlinforforge-${modImpl.loader.get()}:$it")
         }
     }
 }
