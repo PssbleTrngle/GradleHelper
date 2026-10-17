@@ -200,6 +200,7 @@ val generateReleaseMetadata =
         val properties =
             mapOf(
                 "tag" to pluginVersion,
+                "changelog" to env["CHANGELOG"],
             )
 
         val output = layout.buildDirectory.file("release.json")
