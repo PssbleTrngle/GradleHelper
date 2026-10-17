@@ -51,7 +51,7 @@ fun String.addVersionMetadata(part: String): String =
         plus("+$part")
     }
 
-sealed class PassthroughVersionStrategy : VersionStrategy {
+open class PassthroughVersionStrategy : VersionStrategy {
     override fun modVersion(mod: ModVersionProperties): String = mod.version.get()
 
     override fun metadataTag(mod: ModVersionProperties): String = modVersion(mod)
@@ -110,6 +110,8 @@ class WithLoader(
     override fun metadataTag(mod: ModVersionProperties): String = inner.metadataTag(mod).addVersionMetadata(mod.loaderName)
 
     override fun artifactName(mod: ModVersionProperties): String = "${inner.artifactName(mod)}-${mod.loaderName}"
+
+    override fun baseName(mod: ModVersionProperties): String = "${artifactName(mod)}-${modVersion(mod)}"
 }
 
 private fun parseSingleVersionStrategy(id: String): (VersionStrategy) -> VersionStrategy =

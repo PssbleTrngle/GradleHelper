@@ -34,6 +34,7 @@ internal fun Project.setupJava() {
             languageVersion.set(javaVersion.map(JavaLanguageVersion::of))
         }
         withSourcesJar()
+        withJavadocJar()
     }
 }
 
