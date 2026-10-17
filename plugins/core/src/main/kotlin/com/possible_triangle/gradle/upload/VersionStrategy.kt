@@ -13,17 +13,17 @@ private fun Project.moduleSuffix(): String {
 }
 
 interface VersionStrategy {
-    fun modVersion(mod: ModVersionProperties): String = mod.version.get()
+    fun modVersion(mod: ModVersionProperties): String
 
-    fun metadataTag(mod: ModVersionProperties): String = modVersion(mod)
+    fun metadataTag(mod: ModVersionProperties): String
 
-    fun artifactName(mod: ModVersionProperties): String = mod.id.get()
+    fun artifactName(mod: ModVersionProperties): String
 
-    fun artifactVersion(mod: ModVersionProperties): String = modVersion(mod)
+    fun artifactVersion(mod: ModVersionProperties): String
 
-    fun uploadVersion(mod: ModVersionProperties): String = modVersion(mod)
+    fun uploadVersion(mod: ModVersionProperties): String
 
-    fun baseName(mod: ModVersionProperties): String = "${artifactName(mod)}-${modVersion(mod)}"
+    fun baseName(mod: ModVersionProperties): String
 }
 
 fun String.toSnapshot(): String =
@@ -51,30 +51,56 @@ fun String.addVersionMetadata(part: String): String =
         plus("+$part")
     }
 
-class PassthroughVersionStrategy : VersionStrategy
+sealed class PassthroughVersionStrategy : VersionStrategy {
+    override fun modVersion(mod: ModVersionProperties): String = mod.version.get()
 
-open class SimpleVersionStrategy : VersionStrategy {
+    override fun metadataTag(mod: ModVersionProperties): String = modVersion(mod)
+
+    override fun artifactName(mod: ModVersionProperties): String = mod.id.get()
+
+    override fun artifactVersion(mod: ModVersionProperties): String = modVersion(mod)
+
+    override fun uploadVersion(mod: ModVersionProperties): String = modVersion(mod)
+
+    override fun baseName(mod: ModVersionProperties): String = "${artifactName(mod)}-${modVersion(mod)}"
+}
+
+open class SimpleVersionStrategy : PassthroughVersionStrategy() {
     override fun metadataTag(mod: ModVersionProperties): String = super.modVersion(mod)
 
     override fun modVersion(mod: ModVersionProperties): String = super.modVersion(mod).stripVersionMetadata()
 }
 
-class WithMinecraftVersion(
-    private val inner: VersionStrategy,
+open class WrappedVersionStrategy(
+    protected val inner: VersionStrategy,
 ) : VersionStrategy {
+    override fun modVersion(mod: ModVersionProperties) = inner.modVersion(mod)
+
+    override fun metadataTag(mod: ModVersionProperties) = inner.metadataTag(mod)
+
+    override fun artifactName(mod: ModVersionProperties) = inner.artifactName(mod)
+
+    override fun baseName(mod: ModVersionProperties) = inner.baseName(mod)
+
+    override fun artifactVersion(mod: ModVersionProperties) = inner.artifactVersion(mod)
+
+    override fun uploadVersion(mod: ModVersionProperties) = inner.uploadVersion(mod)
+}
+
+class WithMinecraftVersion(
+    inner: VersionStrategy,
+) : WrappedVersionStrategy(inner) {
     override fun modVersion(mod: ModVersionProperties): String = inner.modVersion(mod)
 
     override fun metadataTag(mod: ModVersionProperties): String =
         inner.metadataTag(mod).addVersionMetadata("mc${mod.minecraftVersion.get()}")
 
     override fun artifactName(mod: ModVersionProperties): String = "${inner.artifactName(mod)}-${mod.minecraftVersion.get()}"
-
-    override fun baseName(mod: ModVersionProperties) = inner.baseName(mod)
 }
 
 class WithLoader(
-    private val inner: VersionStrategy,
-) : VersionStrategy {
+    inner: VersionStrategy,
+) : WrappedVersionStrategy(inner) {
     private val ModVersionProperties.loaderName
         get() =
             loader.orNull ?: error("cannot only WithLoader strategy in a loader project")

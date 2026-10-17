@@ -152,7 +152,7 @@ pluginProjects {
     }
 
     dependencies {
-        api(rootProject.libs.kotlin.serialization)
+        implementation(rootProject.libs.kotlin.serialization)
         implementation(rootProject.libs.gson)
 
         testImplementation(rootProject.libs.bundles.testing)

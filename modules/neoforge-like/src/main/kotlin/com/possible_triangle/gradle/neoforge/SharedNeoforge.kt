@@ -39,8 +39,14 @@ fun ModDevExtension.sharedConfiguration(project: Project) {
 fun Project.kotlinForForge(version: Provider<String>) {
     val modImpl = mod as ModVersionProperties
     lazyDependencies("api") {
-        version.orNull?.let {
-            add("thedarkcolour:kotlinforforge-${modImpl.loader.get()}:$it")
+        version.orNull?.let { version ->
+            val name =
+                when (val loader = modImpl.loader.get()) {
+                    "neoforge" -> "kotlinforforge-$loader"
+                    "forge" -> "kotlinforforge"
+                    else -> error("loader '$loader' is not supported by kotlin for forge")
+                }
+            add("thedarkcolour:$name:$version")
         }
     }
 }

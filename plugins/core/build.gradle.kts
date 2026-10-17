@@ -7,8 +7,8 @@ dependencies {
     api(project(":publishing"))
     api(project(":metadata"))
 
-    api(libs.kotlin.gradle)
-    api(libs.kotlin.serialization.json)
+    implementation(libs.kotlin.gradle)
+    implementation(libs.kotlin.serialization.json)
 
     api(libs.cursegradle)
     api(libs.minotaur)
