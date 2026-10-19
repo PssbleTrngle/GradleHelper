@@ -87,13 +87,16 @@ fun Project.createModExtension(): ModExtension {
     val mod = extensions.create<ModExtension, ModExtensionImpl>("mod")
 
     fun <T : Any> configureDefault(
-        default: Provider<T>,
+        from: Provider<T>,
+        rootDefault: Provider<T>? = null,
         supplier: ModExtension.() -> Property<T>,
     ) {
         if (rootMod != null) {
-            mod.supplier().convention(default.orElse(rootMod.supplier()))
+            mod.supplier().convention(from.orElse(rootMod.supplier()))
+        } else if (rootDefault != null) {
+            mod.supplier().convention(from.orElse(rootDefault))
         } else {
-            mod.supplier().convention(default)
+            mod.supplier().convention(from)
         }
     }
 
@@ -121,8 +124,8 @@ fun Project.createModExtension(): ModExtension {
     configureDefault(stringProperty("maven_group")) { mavenGroup }
     configureDefault(
         stringProperty("version_strategy")
-            .map(::parseVersionStrategy)
-            .orElse(SimpleVersionStrategy()),
+            .map(::parseVersionStrategy),
+        rootDefault = provider(::SimpleVersionStrategy),
     ) { versionStrategy }
 
     return mod
