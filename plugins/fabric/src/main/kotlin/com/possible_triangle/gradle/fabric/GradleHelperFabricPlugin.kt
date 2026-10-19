@@ -59,6 +59,9 @@ class GradleHelperFabricPlugin : LoaderPlugin() {
             create("data")
 
             forEach { run ->
+                if (project.parent != null) {
+                    run.ideConfigFolder = project.name
+                }
                 run.generateRunConfig = true
                 run.jvmArguments.addAll(JVM_ARGUMENTS)
             }
