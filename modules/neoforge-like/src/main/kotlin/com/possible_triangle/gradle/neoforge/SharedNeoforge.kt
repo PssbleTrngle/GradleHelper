@@ -81,9 +81,11 @@ fun ModDevExtension.configureModRuns(
 
         forEach { run ->
             run.jvmArguments.addAll(JVM_ARGUMENTS)
-            run.ideName = "${loader.displayName()} ${run.name.capitalized()}"
             if (project.parent != null) {
                 run.ideFolderName = project.name
+                run.ideName = "${project.name.capitalized()} ${run.name.capitalized()}"
+            } else {
+                run.ideName = "${loader.displayName()} ${run.name.capitalized()}"
             }
         }
     }

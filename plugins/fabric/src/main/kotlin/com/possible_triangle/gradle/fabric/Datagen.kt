@@ -11,7 +11,6 @@ internal fun Project.configureDatagenRun() {
         loom.runs {
             named("data") {
                 client()
-                displayName.set("Fabric Datagen")
                 runDirectory.set(file("run/data"))
 
                 systemProperties.put("fabric-api.datagen", "")

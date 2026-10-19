@@ -15,6 +15,7 @@ import net.fabricmc.loom.LoomNoRemapGradlePlugin
 import net.fabricmc.loom.LoomRemapGradlePlugin
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.Project
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
 
@@ -46,13 +47,11 @@ class GradleHelperFabricPlugin : LoaderPlugin() {
         loom.runs {
             named("client") {
                 client()
-                displayName = "Fabric Client"
                 runDirectory = file("run")
             }
 
             named("server") {
                 server()
-                displayName = "Fabric Server"
                 runDirectory = file("run/server")
             }
 
@@ -61,6 +60,9 @@ class GradleHelperFabricPlugin : LoaderPlugin() {
             forEach { run ->
                 if (project.parent != null) {
                     run.ideConfigFolder = project.name
+                    run.displayName = "${project.name.capitalized()} ${name.capitalized()}"
+                } else {
+                    run.displayName = "Fabric ${name.capitalized()}"
                 }
                 run.generateRunConfig = true
                 run.jvmArguments.addAll(JVM_ARGUMENTS)
