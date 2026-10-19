@@ -19,6 +19,7 @@ val Project.coreProject get() = rootProject.takeIf { it.plugins.hasPlugin(Gradle
 
 fun ExtensionAware.mod(block: ModExtension.() -> Unit) = extensions.configure(block)
 
+val Project.optionalMod get() = extensions.findByType<ModExtension>()
 val Project.mod get() = the<ModExtension>()
 internal val Project.modImpl get() = mod as ModExtensionImpl
 
@@ -77,13 +78,13 @@ internal open class ModExtensionImpl(
     override val repository: Property<String> = project.objects.property()
     override val mavenGroup: Property<String> = project.objects.property()
     override val additional: AdditionalPropertiesImpl =
-        AdditionalPropertiesImpl(project, project.parent?.mod?.additional)
+        AdditionalPropertiesImpl(project, project.parent?.optionalMod?.additional)
     override val versionStrategy: Property<VersionStrategy> = project.objects.property()
     override val loader: Property<String> = project.objects.property()
 }
 
 fun Project.createModExtension(): ModExtension {
-    val rootMod = coreProject.takeUnless { it == this }?.extensions?.findByType<ModExtension>()
+    val rootMod = coreProject.takeUnless { it == this }?.optionalMod
     val mod = extensions.create<ModExtension, ModExtensionImpl>("mod")
 
     fun <T : Any> configureDefault(
