@@ -12,10 +12,12 @@ fun Project.configureSpotless(block: SpotlessExtension.() -> Unit) {
 
         configure<SpotlessExtension> {
             kotlin {
+                targetExclude("build/generated/**")
                 ktlint()
             }
 
             java {
+                targetExclude("build/generated/**")
                 importOrder()
                 removeUnusedImports()
             }
