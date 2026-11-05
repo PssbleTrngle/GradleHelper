@@ -82,8 +82,13 @@ fun ModDevExtension.configureModRuns(
         forEach { run ->
             run.jvmArguments.addAll(JVM_ARGUMENTS)
             if (project.parent != null) {
+                val readableName =
+                    project.name
+                        .split("_")
+                        .map { it.capitalized() }
+                        .joinToString(" ")
                 run.ideFolderName = project.name
-                run.ideName = "${project.name.capitalized()} ${run.name.capitalized()}"
+                run.ideName = "$readableName ${run.name.capitalized()}"
             } else {
                 run.ideName = "${loader.displayName()} ${run.name.capitalized()}"
             }
