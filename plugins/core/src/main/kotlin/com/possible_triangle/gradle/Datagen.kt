@@ -7,6 +7,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import java.io.File
+import kotlin.collections.flatMap
 
 val JVM_ARGUMENTS = listOf("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
 
@@ -21,6 +22,17 @@ interface DatagenBuilder {
     val owner: Property<Project>
 
     fun existing(vararg mods: String)
+
+    fun existing(vararg files: File)
+
+    fun existing(vararg projects: Project) {
+        existing(
+            *projects
+                .flatMap { project ->
+                    listOf("main", "generated").map { project.file("src/$it/resources") }
+                }.toTypedArray(),
+        )
+    }
 
     fun splitSourceSet(name: String = "data")
 

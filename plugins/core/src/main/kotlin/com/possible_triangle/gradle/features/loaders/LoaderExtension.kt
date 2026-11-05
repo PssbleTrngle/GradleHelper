@@ -28,11 +28,6 @@ abstract class AbstractLoaderExtension(
     override fun dependOn(vararg projects: Project) {
         _dependsOn.addAll(projects)
     }
-
-    val existingResources: Collection<File>
-        get() {
-            return listOf(project.existingResources) + dependsOn.map { it.existingResources }
-        }
 }
 
 interface WithDataGen {
@@ -49,7 +44,13 @@ abstract class AbstractLoadExtensionWithDatagen(
     DatagenBuilder,
     WithDataGen {
     private val _existingMods = mutableSetOf<String>()
-    val existingMods: Set<String> get() = _existingMods
+    private val additionalFiles = mutableSetOf<File>()
+    val existingMods: Collection<String> get() = _existingMods
+
+    val existingResources: Collection<File>
+        get() {
+            return listOf(project.existingResources) + dependsOn.map { it.existingResources } + additionalFiles
+        }
 
     final override val owner = project.objects.property(project.provider { project.defaultDataGenProject })
 
@@ -62,6 +63,10 @@ abstract class AbstractLoadExtensionWithDatagen(
 
     final override fun existing(vararg mods: String) {
         this._existingMods.addAll(mods)
+    }
+
+    override fun existing(vararg files: File) {
+        this.additionalFiles.addAll(files)
     }
 
     final override fun sourceSet(sourceSet: Provider<SourceSet>) {
