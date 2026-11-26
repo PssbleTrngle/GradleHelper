@@ -4,11 +4,13 @@ import com.possible_triangle.gradle.ModVersionProperties
 import com.possible_triangle.gradle.coreProject
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.modImpl
+import com.possible_triangle.gradle.optionalMod
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
 private fun Project.moduleSuffix(): String {
     if (this == coreProject) return ""
+    if (mod.id.get() != coreProject.optionalMod?.id?.get()) return ""
     return "-${project.name.lowercase()}"
 }
 
@@ -66,9 +68,11 @@ open class PassthroughVersionStrategy : VersionStrategy {
 }
 
 open class SimpleVersionStrategy : PassthroughVersionStrategy() {
-    override fun metadataTag(mod: ModVersionProperties): String = super.modVersion(mod)
+    override fun metadataTag(mod: ModVersionProperties) = super.modVersion(mod)
 
-    override fun modVersion(mod: ModVersionProperties): String = super.modVersion(mod).stripVersionMetadata()
+    override fun modVersion(mod: ModVersionProperties) = super.modVersion(mod).stripVersionMetadata()
+
+    override fun artifactName(mod: ModVersionProperties) = super.artifactName(mod).replace('_', '-')
 }
 
 open class WrappedVersionStrategy(

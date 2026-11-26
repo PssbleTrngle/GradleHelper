@@ -16,8 +16,8 @@ class WithWithLoaderTest {
         assertEquals("1.0.0", strategy.artifactVersion(input))
         assertEquals("1.0.0+loader", strategy.metadataTag(input))
         assertEquals("1.0.0", strategy.uploadVersion(input))
-        assertEquals("test_mod-loader", strategy.artifactName(input))
-        assertEquals("test_mod-loader-1.0.0", strategy.baseName(input))
+        assertEquals("test-mod-loader", strategy.artifactName(input))
+        assertEquals("test-mod-loader-1.0.0", strategy.baseName(input))
     }
 
     @Test
@@ -28,8 +28,8 @@ class WithWithLoaderTest {
         assertEquals("0.0.0-dev", strategy.artifactVersion(input))
         assertEquals("0.0.0-dev+loader", strategy.metadataTag(input))
         assertEquals("0.0.0-dev", strategy.uploadVersion(input))
-        assertEquals("test_mod-loader", strategy.artifactName(input))
-        assertEquals("test_mod-loader-0.0.0-dev", strategy.baseName(input))
+        assertEquals("test-mod-loader", strategy.artifactName(input))
+        assertEquals("test-mod-loader-0.0.0-dev", strategy.baseName(input))
     }
 
     @Test
@@ -40,7 +40,7 @@ class WithWithLoaderTest {
         assertEquals("1.2.3", strategy.artifactVersion(input))
         assertEquals("1.2.3+mc1.21.1.loader", strategy.metadataTag(input))
         assertEquals("1.2.3", strategy.uploadVersion(input))
-        assertEquals("test_mod-loader", strategy.artifactName(input))
-        assertEquals("test_mod-loader-1.2.3", strategy.baseName(input))
+        assertEquals("test-mod-loader", strategy.artifactName(input))
+        assertEquals("test-mod-loader-1.2.3", strategy.baseName(input))
     }
 }

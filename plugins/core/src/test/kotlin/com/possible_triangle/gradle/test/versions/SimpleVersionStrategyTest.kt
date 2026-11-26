@@ -15,8 +15,8 @@ class SimpleVersionStrategyTest {
         assertEquals("1.0.0", strategy.artifactVersion(input))
         assertEquals("1.0.0", strategy.metadataTag(input))
         assertEquals("1.0.0", strategy.uploadVersion(input))
-        assertEquals("test_mod", strategy.artifactName(input))
-        assertEquals("test_mod-1.0.0", strategy.baseName(input))
+        assertEquals("test-mod", strategy.artifactName(input))
+        assertEquals("test-mod-1.0.0", strategy.baseName(input))
     }
 
     @Test
@@ -27,8 +27,8 @@ class SimpleVersionStrategyTest {
         assertEquals("0.0.0-dev", strategy.artifactVersion(input))
         assertEquals("0.0.0-dev", strategy.metadataTag(input))
         assertEquals("0.0.0-dev", strategy.uploadVersion(input))
-        assertEquals("test_mod", strategy.artifactName(input))
-        assertEquals("test_mod-0.0.0-dev", strategy.baseName(input))
+        assertEquals("test-mod", strategy.artifactName(input))
+        assertEquals("test-mod-0.0.0-dev", strategy.baseName(input))
     }
 
     @Test
@@ -39,7 +39,7 @@ class SimpleVersionStrategyTest {
         assertEquals("1.2.3", strategy.artifactVersion(input))
         assertEquals("1.2.3+loader", strategy.metadataTag(input))
         assertEquals("1.2.3", strategy.uploadVersion(input))
-        assertEquals("test_mod", strategy.artifactName(input))
-        assertEquals("test_mod-1.2.3", strategy.baseName(input))
+        assertEquals("test-mod", strategy.artifactName(input))
+        assertEquals("test-mod-1.2.3", strategy.baseName(input))
     }
 }

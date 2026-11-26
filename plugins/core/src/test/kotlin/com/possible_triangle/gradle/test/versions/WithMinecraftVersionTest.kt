@@ -16,8 +16,8 @@ class WithMinecraftVersionTest {
         assertEquals("1.0.0", strategy.artifactVersion(input))
         assertEquals("1.0.0+mc1.21.1", strategy.metadataTag(input))
         assertEquals("1.0.0", strategy.uploadVersion(input))
-        assertEquals("test_mod-1.21.1", strategy.artifactName(input))
-        assertEquals("test_mod-1.0.0", strategy.baseName(input))
+        assertEquals("test-mod-1.21.1", strategy.artifactName(input))
+        assertEquals("test-mod-1.0.0", strategy.baseName(input))
     }
 
     @Test
@@ -28,8 +28,8 @@ class WithMinecraftVersionTest {
         assertEquals("0.0.0-dev", strategy.artifactVersion(input))
         assertEquals("0.0.0-dev+mc1.21.1", strategy.metadataTag(input))
         assertEquals("0.0.0-dev", strategy.uploadVersion(input))
-        assertEquals("test_mod-1.21.1", strategy.artifactName(input))
-        assertEquals("test_mod-0.0.0-dev", strategy.baseName(input))
+        assertEquals("test-mod-1.21.1", strategy.artifactName(input))
+        assertEquals("test-mod-0.0.0-dev", strategy.baseName(input))
     }
 
     @Test
@@ -40,7 +40,7 @@ class WithMinecraftVersionTest {
         assertEquals("1.2.3", strategy.artifactVersion(input))
         assertEquals("1.2.3+loader.mc1.21.1", strategy.metadataTag(input))
         assertEquals("1.2.3", strategy.uploadVersion(input))
-        assertEquals("test_mod-1.21.1", strategy.artifactName(input))
-        assertEquals("test_mod-1.2.3", strategy.baseName(input))
+        assertEquals("test-mod-1.21.1", strategy.artifactName(input))
+        assertEquals("test-mod-1.2.3", strategy.baseName(input))
     }
 }
