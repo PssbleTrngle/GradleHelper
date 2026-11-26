@@ -2,6 +2,7 @@ package com.possible_triangle.gradle.test.versions
 
 import com.possible_triangle.gradle.ModVersionProperties
 import org.gradle.api.internal.provider.DefaultProvider
+import org.gradle.api.internal.provider.Providers
 
 internal class TestModVersionProperties(
     version: String,
@@ -13,4 +14,5 @@ internal class TestModVersionProperties(
     override val version = DefaultProvider { version }
     override val minecraftVersion = DefaultProvider { minecraftVersion }
     override val loader = DefaultProvider { loader }
+    override val module = Providers.notDefined<String>()
 }

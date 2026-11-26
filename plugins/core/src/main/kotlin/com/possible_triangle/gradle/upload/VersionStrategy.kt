@@ -1,18 +1,12 @@
 package com.possible_triangle.gradle.upload
 
 import com.possible_triangle.gradle.ModVersionProperties
-import com.possible_triangle.gradle.coreProject
 import com.possible_triangle.gradle.mod
 import com.possible_triangle.gradle.modImpl
-import com.possible_triangle.gradle.optionalMod
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 
-private fun Project.moduleSuffix(): String {
-    if (this == coreProject) return ""
-    if (mod.id.get() != coreProject.optionalMod?.id?.get()) return ""
-    return "-${project.name.lowercase()}"
-}
+private fun ModVersionProperties.moduleSuffix(): String = module.orNull?.let { "-$it" } ?: ""
 
 interface VersionStrategy {
     fun modVersion(mod: ModVersionProperties): String
@@ -140,12 +134,12 @@ internal fun Project.uploadVersionConvention(): Provider<String> = mod.versionSt
 
 internal fun Project.artifactNameConvention(): Provider<String> =
     mod.versionStrategy.map {
-        val suffix = moduleSuffix()
+        val suffix = modImpl.moduleSuffix()
         it.artifactName(modImpl) + suffix
     }
 
 internal fun Project.baseNameConvention(): Provider<String> =
     mod.versionStrategy.map {
-        val suffix = moduleSuffix()
+        val suffix = modImpl.moduleSuffix()
         it.baseName(modImpl) + suffix
     }

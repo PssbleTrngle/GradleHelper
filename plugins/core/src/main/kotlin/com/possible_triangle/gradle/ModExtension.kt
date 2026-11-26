@@ -28,6 +28,7 @@ interface ModVersionProperties {
     val version: Provider<String>
     val minecraftVersion: Provider<String>
     val loader: Provider<String>
+    val module: Provider<String>
 }
 
 interface ModExtension {
@@ -40,6 +41,7 @@ interface ModExtension {
     val releaseType: Property<String>
     val repository: Property<String>
     val mavenGroup: Property<String>
+    val module: Property<String>
 
     val versionStrategy: Property<VersionStrategy>
 
@@ -81,6 +83,22 @@ internal open class ModExtensionImpl(
         AdditionalPropertiesImpl(project, project.parent?.optionalMod?.additional)
     override val versionStrategy: Property<VersionStrategy> = project.objects.property()
     override val loader: Property<String> = project.objects.property()
+    override val module: Property<String> =
+        project.objects.property(
+            project.provider {
+                if (project == project.coreProject) {
+                    null
+                } else if (id.get() !=
+                    project.coreProject.optionalMod
+                        ?.id
+                        ?.get()
+                ) {
+                    null
+                } else {
+                    project.name.lowercase()
+                }
+            },
+        )
 }
 
 fun Project.createModExtension(): ModExtension {
